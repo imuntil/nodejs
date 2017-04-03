@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+</head>
+<body>
+<h1>socket.io example</h1>
+
+<form action="#">
+    <textarea id="message" cols="30" rows="4"></textarea>
+    <input type="submit" value="send message"/>
+</form>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io.connect('http://127.0.0.1:3000');
+    var message = document.querySelector('#message');
+    $(message.form).submit(function () {
+        socket.emit('message', {text: message.value});
+        return false;
+    });
+    socket.on('push message', function (data) {
+        $('form').after('<p>' + data.text + '</p>');
+    });
+</script>
+</body>
+</html>

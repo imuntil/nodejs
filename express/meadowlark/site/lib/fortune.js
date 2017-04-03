@@ -1,0 +1,15 @@
+/**
+ * Created by 斌 on 2017/4/3.
+ */
+const fortuneCookies = [
+    `Conquer your fears or they will conquer you.`,
+    `Rivers need springs.`,
+    `Do not fear what you don't know`,
+    `You will have a pleasant surprise`,
+    `Whenever possible, keep it simple`,
+]
+
+exports.getFortune = function () {
+    let idx = Math.floor(Math.random() * fortuneCookies.length);
+    return fortuneCookies[idx];
+}

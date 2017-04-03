@@ -1,0 +1,27 @@
+//
+   Created by 斌 on 2017/3/1.
+
+extends layout
+block content
+   div.col-md-4.alert.alert-warning.register-warn
+   div.col-md-4.register-info
+
+   form.col-md-12.register
+      div.form-group.col-md-4
+         label(for='nickname') 昵称
+         input(type='text', placeholder='昵称')#nickname.form-control
+         button(type='submit').btn.btn-default Submit
+
+
+   ul.list-group.nicknames-list.col-md-12
+
+   form.chat-box.col-md-12
+      div.form-group.col-md-4
+         textarea#chatting.form-control
+         button(type='submit').btn.btn-default Submit
+
+   div.chat-room.col-md-12
+
+   script(src='/javascripts/jquery.min.js')
+   script(src='/socket.io/socket.io.js')
+   script(src='/javascripts/register.js')

@@ -1,0 +1,24 @@
+$mb : 5%;
+
+.register {
+  .form-group {
+    *{
+      margin-bottom: $mb;
+    }
+  }
+}
+.register-warn {
+  visibility: hidden;
+}
+.chat-box {
+  display: none;
+}
+
+.chat-box {
+  @extend .register;
+}
+.register-info {
+  position: absolute;
+  right:1%;
+  top:1%;
+}

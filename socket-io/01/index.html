@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+</head>
+<body>
+<h1>Socket.io example</h1>
+<span id="number"></span>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io.connect('http://127.0.0.1:3000');
+    var span = document.querySelector('#number');
+    socket.on('users', function (message) {
+         span.innerHTML = message.number;
+    });
+</script>
+</body>
+</html>
+

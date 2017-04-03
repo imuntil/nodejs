@@ -1,0 +1,17 @@
+//
+   Created by 斌 on 2017/2/25.
+extends layout
+
+block content
+   h2 Form example
+   form(method='post', action='/post-name')
+      fieldset
+         legend Add a user
+         p
+            label First name
+            input(name='user[first_name]')
+         p
+            label Last name
+            input(name='user[last_name]')
+         p
+            input(type='submit',value='save', class='btn primary')

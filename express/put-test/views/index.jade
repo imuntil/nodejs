@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  form(method='post', action='/')
+    input(name='_method', value='PUT', type='hidden')
+    input(type='text', name='user[name]')
+    input(type='submit', value='submit')

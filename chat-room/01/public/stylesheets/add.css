@@ -1,0 +1,15 @@
+.register .form-group *, .chat-box .form-group * {
+  margin-bottom: 5%; }
+
+.register-warn {
+  visibility: hidden; }
+
+.chat-box {
+  display: none; }
+
+.register-info {
+  position: absolute;
+  right: 1%;
+  top: 1%; }
+
+/*# sourceMappingURL=add.css.map */

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+</head>
+<body>
+<h1>socket.io example</h1>
+<button>send ping to server</button>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="socket.io/socket.io.js"></script>
+<script>
+var socket = io.connect('http://127.0.0.1:3000');
+    socket.on('ping-from-server', function (data) {
+        console.log('received ping, sending pong' + data.text);
+        socket.emit('pong-from-client', {text:'pong'});
+    });
+    socket.on('pong-from-server', function (data) {
+        console.log('received pong, .....' + data.text);
+    });
+    $('button').click(function () {
+        console.log('send ping to server');
+        socket.emit('ping-from-client', {text:'ping'});
+    });
+</script>
+</body>
+</html>

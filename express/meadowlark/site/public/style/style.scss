@@ -1,0 +1,14 @@
+a.currency {
+  text-decoration: none;
+}
+a.currency.selected {
+  font:{
+    weight: bold;
+    size: 150%;
+  }
+}
+
+.vp-thumb>img {
+  max-height:120px;
+  max-width: 120px;
+}

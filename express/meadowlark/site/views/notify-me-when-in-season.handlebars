@@ -1,0 +1,43 @@
+<div class="form-container">
+    <form action="/api/notify-me" class="form-horizontal news-letter-form" role="form" method="post">
+        <input type="hidden" name="sku" value="{{sku}}">
+        <div class="form-group">
+            <label for="field-Email" class="col-sm-2 control-label">Email</label>
+            <div class="col-sm-4">
+                <input type="email" class="form-control" id="field-Email" name="email" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-4">
+                <button type="submit" class="btn btn-default">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+{{#section 'jquery'}}
+    <script>
+        $(function () {
+            $('.news-letter-form').on('submit',function (e) {
+
+                console.log(e);
+                e.preventDefault();
+                let form = $(this);
+                let action = form.attr('action'),
+                sku = form.find('input[name="sku"]').val(),
+                email = form.find('input[name="email"]').val();
+                $.ajax({
+                    url:action,
+                    data:{sku:sku, email:email},
+                    method:'post',
+                    success(data) {
+                        alert(data.msg);
+                    },
+                    error(err) {
+                        console.error(err);
+                    }
+                })
+
+            })
+        })
+    </script>
+{{/section}}

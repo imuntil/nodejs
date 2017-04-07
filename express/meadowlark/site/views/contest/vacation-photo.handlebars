@@ -1,0 +1,70 @@
+<form action="/api/contest/vacation-photo"
+      id="vp-form"
+      class="form-horizontal vp-form" role="form"
+      enctype="multipart/form-data" method="post">
+    <div class="form-group">
+        <label for="field-name" class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="field-name" name="name">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="field-email" class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-4">
+            <input type="email" class="form-control" id="field-email" name="email" required>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-md-3">
+            <a href="#" class="thumbnail vp-thumb">
+                <img src="http://placehold.it/120x120" alt="...">
+            </a>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="field-photo" class="col-sm-2 control-babel">Vacation photo</label>
+        <div class="col-sm-4">
+            <input type="file" class="form-control" accept="image/*"
+                   name="photo" id="filed-photo">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-4">
+            <button class="btn btn-primary vp-submit" type="submit">Submit</button>
+        </div>
+    </div>
+</form>
+{{#section 'jquery'}}
+    <script>
+        $(function () {
+            $('input[type="file"]').on('change', function (event) {
+                let files = event.target.files, file = files[0];
+
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let src = e.target.result;
+                    $('.vp-thumb img').attr('src', src);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            $('.vp-form').on('submit', function (e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    type:'POST',
+                    url:form.attr('action'),
+                    data: new FormData(form[0]),
+                    processData: false,
+                    contentType: false,
+                    success(data) {
+                        alert(data.msg);
+                    },
+                    error(err) {
+                        console.error(err);
+                    }
+                });
+            });
+        });
+    </script>
+{{/section}}

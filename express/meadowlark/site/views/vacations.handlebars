@@ -1,0 +1,50 @@
+<h1>Vacations</h1>
+{{#each vacations}}
+    <div class="vacation">
+        <h3>{{name}}</h3>
+        <p>{{description}}</p>
+        {{#if inSeason}}
+            <span class="price">{{price}}</span>
+            <a href="/cart/add?sku={{sku}}" class="btn btn-default">Buy Now</a>
+        {{else}}
+            <span class="out-of-season">We're sorry, this vacation is currently not in season</span>
+            <a href="/notify-me-when-in-season?sku={{sku}}">
+                Notify me when this vacation is in season.
+            </a>
+        {{/if}}
+    </div>
+{{/each}}
+<hr>
+<p class="set-currency">
+    Currency:
+    <a href="api/set-currency/USD" class="currency {{currencyUSD}}">USD</a>
+    <a href="api/set-currency/GBP" class="currency {{currencyGBP}}">GBP</a>
+    <a href="api/set-currency/BTC" class="currency {{currencyBTC}}">BTC</a>
+</p>
+{{#section 'jquery'}}
+    <script>
+        $(function () {
+            $('.set-currency').on('click', 'a', function (e) {
+                e.preventDefault();
+                let _a = $(this);
+                let url = _a.attr('href');
+                $.ajax({
+                    url:url,
+                    method:'get',
+                    success(data) {
+                        console.log(data);
+                        trigger(_a);
+                    },
+                    error(err) {
+                        console.error(err);
+                    }
+                });
+            });
+
+            function trigger($el) {
+                $el.parent().find('a').removeClass('selected');
+                $el.addClass('selected');
+            }
+        });
+    </script>
+{{/section}}

@@ -1,0 +1,58 @@
+<form action="/api/user/update" class="form-horizontal edit-form">
+    <input type="hidden" name="_csrf" value="{{_csrfToken}}">
+    <div class="form-group">
+        <label for="field-nick" class="col-sm-2 control-label">昵称</label>
+        <div class="col-sm-4">
+            <input type="text"
+                   value="{{user.nick}}"
+                   class="form-control" id="field-nick" name="nick">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="field-phone" class="col-sm-2 control-label">手机</label>
+        <div class="col-sm-4">
+            <input type="tel"
+                   value="{{user.phone}}"
+                   class="form-control" id="field-phone" name="phone">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="field-address" class="col-sm-2 control-label">地址</label>
+        <div class="col-sm-4">
+            <input type="text"
+                   value="{{user.address}}"
+                   class="form-control" id="field-address" name="address" maxlength="40">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-4">
+            <button class="btn btn-default" type="submit" value="Update">Update</button>
+        </div>
+    </div>
+</form>
+{{#section 'jquery'}}
+    <script>
+        $(function () {
+            $('.edit-form').on('submit', function (e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    type:'POST',
+                    url:form.attr('action'),
+                    data:{
+                        _csrf: form.find(`input[name='_csrf']`).val(),
+                        nick: form.find(`input[name='nick']`).val(),
+                        phone: form.find(`input[name='phone']`).val(),
+                        address: form.find(`input[name='address']`).val(),
+                    },
+                    success(data) {
+                        console.log(data);
+                    },
+                    error(errors) {
+                        console.error(errors);
+                    }
+                })
+            })
+        });
+    </script>
+{{/section}}

@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-6 col-md-3">
+        <div class="col-xs-6 col-md-3 col-md-offset-2">
             <a href="#" class="thumbnail vp-thumb">
                 <img src="http://placehold.it/120x120" alt="...">
             </a>
@@ -51,10 +51,14 @@
             $('.vp-form').on('submit', function (e) {
                 e.preventDefault();
                 let form = $(this);
+                let formData = new FormData(form[0]);
                 $.ajax({
                     type:'POST',
+                    headers:{
+                        'csrf-token':'{{_csrfToken}}',
+                    },
                     url:form.attr('action'),
-                    data: new FormData(form[0]),
+                    data: formData,
                     processData: false,
                     contentType: false,
                     success(data) {

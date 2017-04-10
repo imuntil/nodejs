@@ -12,6 +12,10 @@ const expressSession = require('express-session');
 const RedisStore = require('connect-redis')(expressSession);
 const vHost = require('vhost');
 const fs = require('fs');
+const validator = require('express-validator');
+const passport = require('passport');
+// const flash = require('')
+require('./lib/passport');
 
 //route
 const notifyMeWhenInSeasonRouter = require('./route/notify-me-when-in-season')
@@ -38,7 +42,10 @@ const handlebars = require('express3-handlebars')
                 if (!this._sections) this._sections = {};
                 this._sections[name] = options.fn(this);
                 return null;
-            }
+            },
+            static(name) {
+                return require('./lib/static').map(name)
+            },
         }
     });
 app.engine('handlebars', handlebars.engine);
@@ -49,14 +56,27 @@ app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public'));
 app.use(require(`body-parser`)());
 app.use(require(`cookie-parser`)(credentials.cookieSecret));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(validator());
 //使用会话
 app.use(expressSession({
     store: new RedisStore({
         host:'localhost',
         port:'6379'
     }),
-    secret: credentials.cookieSecret
+    secret: credentials.cookieSecret,
+    cookie:{
+        maxAge:60*60*24*7*1000
+    }
 }));
+
+//防范跨站请求伪造攻击（CSRF）， 必须在cookie-parser＆connect-session之后引入
+app.use(require('csurf')());
+app.use((req, res, next) => {
+    res.locals._csrfToken = req.csrfToken();
+    next();
+});
 
 app.use((req, res, next) => {
     if (cluster.isWorker) console.log(`Worker ${cluster.worker.id} received request`);
@@ -84,7 +104,14 @@ app.use((req, res, next) => {
     next();
 })
 
-app.use('/', home);
+//获取登录状态
+app.use(function(req,res,next){
+    res.locals.isLogin = req.session.isLogin;
+    console.log('user._id:',res.locals.isLogin);
+    next();
+});
+
+app.use('/home', home);
 app.use('/about', about);
 app.use('/notify-me-when-in-season', notifyMeWhenInSeasonRouter);
 app.use('/headers', headers);
@@ -93,8 +120,8 @@ app.use('/tours', tours);
 app.use('/contest', vacationPhoto);
 app.use('/cart-thank-you', cartThankYou);
 app.use('/vacations', vacations);
+require('./controllers/user').registerRouter(app);
 
-// app.use('/set-currency/', api);
 
 
 app.get(`/jquery-test`, (req, res) => {
@@ -139,6 +166,8 @@ app.get('/epic-fail', (req, res) => {
 
 
 //API
+//跨域资源共享
+app.use('/api', require('cors')());
 app.use('/api', require('./api/app-api'));
 
 let autoViews = {};

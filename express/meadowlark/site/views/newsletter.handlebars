@@ -1,6 +1,6 @@
 <h2>Sign up for our newsletter to receive news and specials!</h2>
 <form method="post" action="/api/process?form=newsletter" class="form-horizontal" role="form">
-    <input type="hidden" name="_csrf" value="{{csrf}}">
+    <input type="hidden" name="_csrf" value="{{_csrfToken}}">
     <div class="form-group">
         <label for="field-name" class="col-sm-2 control-label">Name</label>
         <div class="col-sm-4">
@@ -29,6 +29,7 @@
                      url:form.attr('action'),
                      type:'post',
                      data:{
+                         _csrf: form.find('input[name="_csrf"]').val(),
                          name: form.find('input[name="name"]').val(),
                          email: form.find('input[name="email"]').val(),
                      },

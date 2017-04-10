@@ -1,0 +1,60 @@
+<form action="/api/user/sign-up" class="form-horizontal sign-up-form" method="post">
+    <input type="hidden" name="_csrf" value="{{_csrfToken}}">
+    <div class="form-group">
+        <label for="field-email" class="col-sm-2 control-label">邮箱</label>
+        <div class="col-sm-4">
+            <input type="email" class="form-control" id="field-email" name="email" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="field-password" class="col-sm-2 control-label">密码</label>
+        <div class="col-sm-4">
+            <input type="password" class="form-control" id="field-password" name="password" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="field-password-repeat" class="col-sm-2 control-label">确认密码</label>
+        <div class="col-sm-4">
+            <input type="password" class="form-control" id="field-password-repeat" name="password-repeat" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-4">
+            <button class="btn btn-default" type="submit" value="注册">注册</button>
+        </div>
+    </div>
+</form>
+{{#section 'jquery'}}
+    <script>
+        $(function () {
+            $('.sign-up-form').on('submit', function (e) {
+                e.preventDefault();
+                let form = $(this);
+                let p = form.find(`input[name='password']`).val(),
+                    rp = form.find(`input[name='password-repeat']`).val();
+                if (p !== rp) {
+                    alert('两次密码不一致');
+                    return;
+                }
+                $.ajax({
+                    type:'POST',
+                    url:form.attr('action'),
+                    data:{
+                        _csrf:form.find(`input[name='_csrf']`).val(),
+                        email:form.find(`input[name='email']`).val(),
+                        password: form.find(`input[name='password']`).val(),
+                    },
+                    success(data) {
+                        alert(data.msg);
+                        if (data.code === 1) {
+                            window.location.href = '/user/login';
+                        }
+                    },
+                    error(errors) {
+                        console.error(errors);
+                    }
+                })
+            });
+        })
+    </script>
+{{/section}}

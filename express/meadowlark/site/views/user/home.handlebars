@@ -1,0 +1,70 @@
+<div class="container-fluid">
+    {{>list-group}}
+    <div class="row col-md-9 col-md-offset-1">
+        <div class="row col-md-5">
+            {{#if user.nick}}
+                <h1>hello {{user.nick}}</h1>
+            {{else}}
+                <h1>hello Tourists</h1>
+            {{/if}}
+
+            <p>{{user.email}}</p>
+            <a href="/user/edit" class="btn btn-default">完善信息</a>
+        </div>
+        <div class="row col-md-3">
+            <a href="#" class="thumbnail">
+                {{#if user.avatar}}
+                    <img src="{{static user.avatar}}" alt="...">
+                {{else}}
+                    <img src="http://placehold.it/100x100" alt="...">
+                {{/if}}
+            </a>
+            <a href="javascript:;" class="btn btn-default a-1" style="position: relative;">
+                选择头像
+                <input type="file" class="form-control" accept="image/*"
+                       name="avatar" style="opacity: 0; position:absolute;top: 0;left: 0;">
+            </a>
+            <a href="javascript:;" class="btn btn-success a-2" style="display: none;">保存</a>
+        </div>
+    </div>
+</div>
+{{#section 'jquery'}}
+    <script>
+        $(function () {
+            let inputFile = $(`input[type='file']`)
+            inputFile.on('change', function (e) {
+                let files = e.target.files, file = files[0];
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let src = e.target.result;
+                    $('.thumbnail img').attr('src', src);
+                    $('.a-1').hide();
+                    $('.a-2').show();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            $('.a-2').on('click', function (e) {
+                e.preventDefault();
+                let form = new FormData();
+                form.append('avatar', inputFile[0].files[0]);
+                $.ajax({
+                    type:'POST',
+                    headers:{
+                        'csrf-token':'{{_csrfToken}}',
+                    },
+                    url:'/api/user/avatar',
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    success(data) {
+                        console.log(data);
+                    },
+                    error(errors) {
+                        console.error(errors);
+                    }
+                })
+            })
+        });
+    </script>
+{{/section}}

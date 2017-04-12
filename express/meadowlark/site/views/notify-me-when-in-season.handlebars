@@ -1,7 +1,7 @@
 <div class="form-container">
     <form action="/api/notify-me" class="form-horizontal news-letter-form" role="form" method="post">
         <input type="hidden" name="sku" value="{{sku}}">
-        <input type="hidden" name="_scrf" value="{{_scrfToken}}">
+        <input type="hidden" name="_csrf" value="{{_csrfToken}}">
         <div class="form-group">
             <label for="field-Email" class="col-sm-2 control-label">Email</label>
             <div class="col-sm-4">

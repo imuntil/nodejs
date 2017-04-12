@@ -7,7 +7,7 @@ const vacationSchema = mongoose.Schema({
     name: String,
     slug: String,
     category: String,
-    sku: String,            //库存
+    sku: String,            //库存,产品编号
     description: String,
     priceInCents: Number,
     tags: [String],
@@ -16,7 +16,7 @@ const vacationSchema = mongoose.Schema({
     requireWaiver: Boolean,
     maximumGuests: Number,
     notes: String,
-    packagesSold: Number
+    packagesSold: Number,
 });
 
 vacationSchema.methods.getDisplayPrice = function () {

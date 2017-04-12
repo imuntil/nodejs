@@ -8,8 +8,8 @@ module.exports = {
     registerRouter(app) {
         app.get('/user/home', this._fetchUser, this.home);
         app.get('/user/edit', this._fetchUser, this.edit);
-        app.get('/user/preferences', this.preferences);
-        app.get('/user/orders', this.orders);
+        app.get('/user/safe', this._fetchUser, this.safe);
+        app.get('/user/orders', this._fetchOrder, this.orders);
     },
 
     _fetchUser(req, res, next) {
@@ -18,13 +18,18 @@ module.exports = {
                 return next(err);
             }
             if (!user) {return next()}
-            customerViewModel(user)
-                .then(user => {
-                    res.locals.user = user;
-                    next();
-                })
-                .catch(err => next(err));
+            res.locals.user = customerViewModel.getCustomerViewModel(user);
+            next();
         })
+    },
+
+    _fetchOrder(req, res, next) {
+        customerViewModel.getUserOrdersViewModel(req.session.isLogin)
+            .then(orders => {
+                res.locals.orders = orders;
+                next();
+            })
+            .catch(err => next(err));
     },
 
     home(req, res, next) {
@@ -40,28 +45,22 @@ module.exports = {
         res.render('user/edit')
     },
 
-    preferences(req, res, next) {
-
-        User.findById(req.session.isLogin, (err, user) => {
-            if (err) {return next(err)}
-            if (!user) {return next()}
-            customerViewModel(user)
-                .then(user => {
-                    res.render('user/preferences', {user: user});
-                })
-                .catch(err => next(err));
-        });
-    },
     orders(req, res, next) {
-
-        User.findById(req.session.isLogin, (err, user) => {
-            if (err) {return next(err)}
-            if (!user) {return next()}
-            customerViewModel(user)
-                .then(user => {
-                    res.render('user/orders', {user: user});
-                })
-                .catch(err => next(err));
+        res.render('user/orders', {
+            order:'active',
+            h1:'/user/home',
+            h2:'javascript:',
+            h3:'/user/safe',
         });
     },
+
+    safe(req, res, next) {
+        res.render('user/safe', {
+            safe:'active',
+            h1:'/user/home',
+            h2:'/user/orders',
+            h3:'javascript:;',
+        });
+    },
+
 };

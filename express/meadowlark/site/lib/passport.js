@@ -25,7 +25,7 @@ passport.use('local.sign', new LocalStategy({
     passReqToCallback: true,
 }, (req, email, password, done) => {
     req.checkBody('email', 'invalid email').isEmail();
-    req.checkBody('password', 'invalid password').len(6, 20).isAlpha();
+    req.checkBody('password', 'invalid password').len(6, 20);
     let errors = req.validationErrors();
     if (errors) {
         let messages = [];

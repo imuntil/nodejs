@@ -2,6 +2,8 @@
  * Created by 斌 on 2017/4/8.
  */
 const Customer = require('../models/user');
+const Orders = require('../models/orders');
+const Vacations = require('../models/vacation');
 const _ = require('lodash');
 
 function smartJoin(arr, seperator = ' ') {
@@ -9,34 +11,62 @@ function smartJoin(arr, seperator = ' ') {
         .filter(elt => (elt !== undefined || elt !== null || elt.toString().trim() !== ''))
         .join(seperator);
 }
+const status = {
+    '0': '未支付',
+    '1': '已支付',
+}
 
 function getCustomerViewModel(customer) {
+    return _.assign(customer._doc, ['password']);
+}
 
-    return customer.getOrders()
-        .then((orders) => {
-            let _orders = [];
+function getUserOrdersViewModel(id) {
+
+    return Orders.find({customID: id})
+        .then(orders => {
             if (orders) {
-                _orders = orders.orders.map( order => {
+                let _orders = orders.map( order => {
                     return {
                         orderNumber: order.orderNumber,
-                        date: order.date,
+                        date: order.date.toDateString(),
                         status: order.status,
+                        textStatus: status[order.status],
                         url:'/orders/' + order.orderNumber,
+                        money: order.money,
+                        count: order.count,
+                        sku: order.sku,
                     }
                 });
+
+                if (!_orders) { return []; }
+                let promises = _orders.map(order => {
+                    return Vacations.findOne({sku: order.sku})
+                        .then(doc => {
+                            return _.assign(order, {
+                                vacation:doc
+                            })
+                        })
+                        .catch(err => {
+                            return err;
+                        });
+                });
+
+                return Promise.all(promises)
+                    .then(orders => {
+                        return orders;
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        return [];
+                    })
             }
-
-
-            let vm = _.omit(customer._doc, ['password']);
-
-            return _.assign(vm, {
-                orders: _orders,
-            });
-
         })
         .catch(err => {
             return err;
         });
 }
 
-module.exports = getCustomerViewModel;
+module.exports = {
+    getCustomerViewModel,
+    getUserOrdersViewModel,
+};

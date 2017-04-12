@@ -119,8 +119,9 @@ app.use('/newsletter', newsletter);
 app.use('/tours', tours);
 app.use('/contest', vacationPhoto);
 app.use('/cart-thank-you', cartThankYou);
-app.use('/vacations', vacations);
+// app.use('/vacations', vacations);
 require('./controllers/user').registerRouter(app);
+require('./controllers/vacation').registerRouter(app);
 
 
 

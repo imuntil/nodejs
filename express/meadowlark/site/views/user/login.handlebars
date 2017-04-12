@@ -34,6 +34,7 @@
                     },
                     success(data) {
                         alert(data.msg);
+                        if (data.code !== 1) {return}
                         window.location.href = '/user/home';
                     },
                     error(errors) {

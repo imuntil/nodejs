@@ -7,6 +7,7 @@ const _ = require('lodash');
 const Attraction = require('../models/attraction');
 const NewsletterSignedListener = require('../models/newsletter-signup');
 const VacationInSeasonListener = require('../models/vacation-in-season-listener')
+const Orders = require('../models/orders');
 const User = require('../models/user');
 const upload = require('../lib/storage');
 const passport = require('passport');
@@ -157,6 +158,14 @@ router.post(
     }
 );
 
+router.get(
+    '/user/logout',
+    (req, res, next) => {
+        req.session.isLogin = false;
+        res.redirect('/home');
+    }
+);
+
 //user 更新信息
 router.post(
     '/user/update',
@@ -188,6 +197,87 @@ router.post(
         } else {
             res.json({ code:3, msg:'上传失败' })
         }
+    }
+);
+
+//修改密码
+router.post(
+    '/user/modify-password',
+    upload.empty(),
+    (req, res, next) => {
+
+        //核对两次密码是否一致
+        //code.....
+        //核对新密码是否合法，字符、长度等
+        req.checkBody('old', 'invalid pass').len(6, 20);
+        req.checkBody('_new', 'invalid pass').len(6, 20);
+        let errors = req.validationErrors();
+        console.log(errors);
+        if (errors) {
+            return res.json({
+                code:-1,
+                msg:'密码格式有误',
+            });
+        }
+        if (req.body.old === req.body._new) {
+            return res.json({
+                code: -1,
+                msg:'新旧密码不能一样',
+            });
+        }
+
+        User.findById(req.session.isLogin, (err, doc) => {
+            if (err || !doc) {
+                console.error(err);
+                return res.json({
+                    code:3,
+                    msg:'未知错误',
+                    detail: err,
+                });
+            }
+
+            //核对旧密码
+            if (!doc.validPassword(req.body.old)) {
+                return res.json({
+                    code: 0,
+                    msg:'原密码有误,修改失败',
+                });
+            }
+
+            //修改密码
+            doc.password = doc.encryptPassword(req.body._new);
+            doc.save()
+                .then(() => res.json({code:1, msg:'修改成功'}))
+                .catch(err => {
+                    console.error(err);
+                    res.json({code:-1, msg:'修改失败', detail: err})
+                })
+        });
+    }
+);
+
+
+//order 提交订单
+router.post(
+    '/vacation/join',
+    upload.empty(),
+    (req, res, next) => {
+        console.log(req.body);
+        let order = new Orders();
+        order.date = new Date();
+        order.orderNumber = +order.date + '-' + Math.floor(Math.random()*10000);
+        order.customID = req.session.isLogin;
+        order.money = req.body.money;
+        order.count = req.body.count;
+        order.sku = req.body.sku;
+        order.status = 0;
+        order.save()
+            .then(() => {
+                res.json({code:1, msg: 'success'});
+            })
+            .catch(err => {
+                res.json({code:2, msg:'数据库出错', detail: err});
+            });
     }
 );
 

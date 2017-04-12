@@ -22,3 +22,17 @@ a.currency.selected {
   max-height:120px;
   max-width: 120px;
 }
+
+#user-orders-table td{
+  text-align: center;
+  vertical-align: middle;
+  &.special {
+    a {
+      display: block;
+      img {
+        display: block;
+        margin:5px auto;
+      }
+    }
+  }
+}

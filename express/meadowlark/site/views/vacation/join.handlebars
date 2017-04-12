@@ -1,0 +1,67 @@
+<div class="vacation">
+    <h3>{{name}}</h3>
+    <p>{{description}}</p>
+    <span class="price">{{price}}</span> <br>
+    <span>最高参与人数: &nbsp;{{maximumGuests}}</span>
+</div>
+<div class="form-container">
+    <form action="/api/vacation/join" enctype="multipart/form-data"
+          class="form-horizontal join-form" method="post">
+        <!--<input type="hidden" name="_csrf" value="{{_csrfToken}}">-->
+        <input type="hidden" name="sku" value="{{sku}}">
+        <input type="hidden" name="money" class="money" value="{{price}}">
+        <!--<div class="form-group">-->
+            <!--<label for="field-time" class="col-sm-2 control-label">日期</label>-->
+            <!--<div class="col-sm-4">-->
+                <!--<input type="date" class="form-control" id="field-time" name="date">-->
+            <!--</div>-->
+        <!--</div>-->
+        <div class="form-group">
+            <label for="field-count" class="col-sm-2 control-label">参加人数</label>
+            <div class="col-sm-4">
+                <input type="number" class="form-control" id="field-count" name="count" min="1" value="1">
+            </div>
+        </div>
+        <p>总金额 <i class="money">{{price}}</i></p>
+        <div class="form-group">
+            <div class="col-sm-4 col-sm-offset-4">
+                <button class="btn btn-offset" type="submit">GO</button>
+            </div>
+        </div>
+    </form>
+</div>
+{{#section 'jquery'}}
+    <script>
+        $(function () {
+            $(`input[name='count']`).on('change', function (e) {
+                let money = $(this).val() * '{{price}}'
+                $('.money').val(money).text(money);
+            });
+
+            $('.join-form').on('submit', function (e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    type:'post',
+                    headers:{
+                        'csrf-token': '{{_csrfToken}}'
+                    },
+                    url: form.attr('action'),
+                    data: new FormData(form[0]),
+                    processData: false,
+                    contentType: false,
+                    success(data) {
+                        console.log(data);
+                        alert(data.msg);
+                        if (data.code ===1) {
+                            window.location.href = '/user/orders'
+                        }
+                    },
+                    error(error) {
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+{{/section}}

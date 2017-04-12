@@ -19,4 +19,13 @@ a.currency.selected {
   max-height: 120px;
   max-width: 120px; }
 
+#user-orders-table td {
+  text-align: center;
+  vertical-align: middle; }
+  #user-orders-table td.special a {
+    display: block; }
+    #user-orders-table td.special a img {
+      display: block;
+      margin: 5px auto; }
+
 /*# sourceMappingURL=style.css.map */

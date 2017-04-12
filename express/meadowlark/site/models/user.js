@@ -26,7 +26,7 @@ userSchema.methods.validPassword = function (password) {
 };
 
 userSchema.methods.getOrders = function () {
-    return Orders.findOne({customID: this._id});
+    return Orders.find({customID: this._id});
 };
 
 const User = mongoose.model('User', userSchema);

@@ -1,0 +1,81 @@
+<div class="container-fluid">
+    {{>list-group}}
+    <div class="row col-md-9 col-md-offset-1">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                当前账号: &nbsp;&nbsp;{{user.email}}
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item modify-password">
+                    <a href="javascript:void(0);" data-toggle="modal" data-target="#modify-modal">修改密码</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="/api/user/logout">退出登录</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="modal fade" id="modify-modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">修改密码</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/api/user/modify-password" class="safe-form" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="field-old" class="control-label">旧密码：</label>
+                                <input type="password" class="form-control" id="field-old" name="old" required maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label for="field-new" class="control-label">新密码：</label>
+                                <input type="password" class="form-control" id="field-new" name="_new" required maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label for="field-new-repeat" class="control">重复密码：</label>
+                                <input type="password" class="form-control" id="field-new-repeat" name="repeat" required maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-default">提交</button>
+                                <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{#section 'jquery'}}
+    <script>
+        $(function () {
+            $('.safe-form').on('submit', function (e) {
+                e.preventDefault();
+                let form = $(this);
+                if (form.find(`input[name='_new']`).val() !== form.find(`input[name='repeat']`).val()) {
+                    alert('两次密码不一致');
+                    return;
+                }
+                $.ajax({
+                    type:'post',
+                    url: form.attr('action'),
+                    data: new FormData(form[0]),
+                    processData: false,
+                    contentType: false,
+                    headers:{
+                        'csrf-token':'{{_csrfToken}}'
+                    },
+                    success(data) {
+                        alert(data.msg);
+                    },
+                    error(error) {
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+{{/section}}

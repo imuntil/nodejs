@@ -14,6 +14,7 @@ const vHost = require('vhost');
 const fs = require('fs');
 const validator = require('express-validator');
 const passport = require('passport');
+const bodyParser = require('body-parser');
 // const flash = require('')
 require('./lib/passport');
 
@@ -54,20 +55,23 @@ app.set('view engine', 'handlebars');
 app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(__dirname + '/public'));
-app.use(require(`body-parser`)());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(require(`cookie-parser`)(credentials.cookieSecret));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(validator());
+
 //使用会话
 app.use(expressSession({
     store: new RedisStore({
         host:'localhost',
-        port:'6379'
+        port:'6379',
+        ttl: 60*60*24*7
     }),
     secret: credentials.cookieSecret,
     cookie:{
-        maxAge:60*60*24*7*1000
+        maxAge: 60*60*24*7,
     }
 }));
 
@@ -106,12 +110,34 @@ app.use((req, res, next) => {
 
 //获取登录状态
 app.use(function(req,res,next){
+    // console.log('session:', req.session);
+    console.log('cookies:', req.cookies);
+    console.log('signed:', req.signedCookies);
     res.locals.isLogin = req.session.isLogin;
-    console.log('user._id:',res.locals.isLogin);
     next();
 });
 
-app.use('/home', home);
+
+let _router = express.Router();
+_router.get('/', (req, res) => {
+    res.cookie('jjjjj', 'jjjjj', {
+        domain: 'localhost',
+        path:'/',
+    });
+    res.send('api');
+});
+let _routerw = express.Router();
+_routerw.get('/', (req, res) => {
+    res.cookie('kkkkk', 'kkkkkk', {
+        domain: 'localhost',
+        path:'/',
+    });
+    res.send('www');
+});
+app.use(vHost('api.*', _router));
+app.use(vHost('kk.*', _routerw));
+
+app.use('/', home);
 app.use('/about', about);
 app.use('/notify-me-when-in-season', notifyMeWhenInSeasonRouter);
 app.use('/headers', headers);
@@ -170,6 +196,8 @@ app.get('/epic-fail', (req, res) => {
 //跨域资源共享
 app.use('/api', require('cors')());
 app.use('/api', require('./api/app-api'));
+
+
 
 let autoViews = {};
 app.use((req, res, next) => {

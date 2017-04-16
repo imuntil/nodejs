@@ -11,6 +11,8 @@ const Orders = require('../models/orders');
 const User = require('../models/user');
 const upload = require('../lib/storage');
 const passport = require('passport');
+const path = require('path');
+const fs = require('fs');
 
 //获取所有attractions（景点）
 router.get('/attractions', (req, res) => {
@@ -113,7 +115,9 @@ router.post('/notify-me', (req, res) => {
 //保存用户的货币偏好
 router.get('/set-currency/:currency', (req, res) => {
     req.session.currency = req.params.currency || 'USD';
-    res.json({ code:1, msg:'success' })
+    req.session.save();
+    // res.json({ code:1, msg:'success' })
+    res.redirect(303, '/vacation/all')
 });
 
 //报名参加tours
@@ -149,9 +153,11 @@ router.post(
     '/user/login',
     (req, res, next) => {
         passport.authenticate('local.login', (err, user, info) => {
+            console.log(user);
             if (user) {
                 //建立登录会话
                 req.session.isLogin = user._id;
+                req.session.save();
             }
             res.json(info);
         })(req, res, next);
@@ -199,6 +205,23 @@ router.post(
         }
     }
 );
+router.post('/user/avatar-base64', upload.avatar.single('avatar'), (req, res, next) => {
+
+    //接收前台POST过来的base64
+    let imgData = req.body.avatar;
+    let imgName = req.session.isLogin;
+    console.log('img-name:', imgName);
+    //过滤data:URL
+    let base64Data = imgData.replace(/^data:image\/\w+;base64,/, "");
+    let dataBuffer = new Buffer(base64Data, 'base64');
+    fs.writeFile("./public/data/avatar/" + imgName + '.jpg' , dataBuffer, function(err) {
+        if(err){
+            res.json({code: -1});
+        }else{
+            return res.json({code:1, msg:'success'});
+        }
+    });
+});
 
 //修改密码
 router.post(
@@ -281,4 +304,34 @@ router.post(
     }
 );
 
+
+router.get(
+    '/test/download',
+    (req, res, next) => {
+        // // res.links({
+        // //     next:'/',
+        // //     last:'vacation/all'
+        // // });
+        // res.location('http://www.baidu.com');
+        // // res.download('public/img/logo.jpg');
+        // res.end();
+
+        let options = {
+            root: path.resolve(__dirname, '../') + '/public/',
+            dotfiles: 'allow',
+            headers:{
+                'x-timestamp': Date.now(),
+                'x-sent': true,
+            }
+        };
+        res.sendFile('img/logo.png', options, err => {
+            if (err) {
+                console.log(err);
+                res.status(err.status).end();
+            } else {
+                console.log('success');
+            }
+        })
+    }
+);
 module.exports = router;

@@ -31,40 +31,85 @@
 {{#section 'jquery'}}
     <script>
         $(function () {
-            let inputFile = $(`input[type='file']`)
+//            let inputFile = $(`input[type='file']`)
+//            inputFile.on('change', function (e) {
+//                let files = e.target.files, file = files[0];
+//                let reader = new FileReader();
+//                reader.onload = function (e) {
+//                    let src = e.target.result;
+//                    $('.thumbnail img').attr('src', src);
+//                    $('.a-1').hide();
+//                    $('.a-2').show();
+//                };
+//                reader.readAsDataURL(file);
+//            });
+
+            <!--$('.a-2').on('click', function (e) {-->
+                <!--e.preventDefault();-->
+                <!--let form = new FormData();-->
+                <!--form.append('avatar', inputFile[0].files[0]);-->
+                <!--$.ajax({-->
+                    <!--type:'POST',-->
+                    <!--headers:{-->
+                        <!--'csrf-token':'{{_csrfToken}}',-->
+                    <!--},-->
+                    <!--url:'/api/user/avatar',-->
+                    <!--data: form,-->
+                    <!--processData: false,-->
+                    <!--contentType: false,-->
+                    <!--success(data) {-->
+                        <!--console.log(data);-->
+                    <!--},-->
+                    <!--error(errors) {-->
+                        <!--console.error(errors);-->
+                    <!--}-->
+                <!--})-->
+            <!--})-->
+
+
+            let inputFile = $(`input[type='file']`);
+            let canvasImg = new Image();
+            let canvas = document.createElement('canvas');
             inputFile.on('change', function (e) {
                 let files = e.target.files, file = files[0];
                 let reader = new FileReader();
                 reader.onload = function (e) {
                     let src = e.target.result;
+                    canvasImg.src = src;
                     $('.thumbnail img').attr('src', src);
                     $('.a-1').hide();
                     $('.a-2').show();
+
+                    canvasImg.onload = canvasImgLoad;
                 };
                 reader.readAsDataURL(file);
             });
 
-            $('.a-2').on('click', function (e) {
+            function canvasImgLoad() {
+                canvas.width = this.width;
+                canvas.height = this.height;
+                let context = canvas.getContext('2d');
+                context.drawImage(this, 0, 0, canvas.width, canvas.height);
+            }
+
+            $('.a-2').click(function (e) {
                 e.preventDefault();
-                let form = new FormData();
-                form.append('avatar', inputFile[0].files[0]);
+                let base64s = canvas.toDataURL();
                 $.ajax({
                     type:'POST',
                     headers:{
                         'csrf-token':'{{_csrfToken}}',
                     },
-                    url:'/api/user/avatar',
-                    data: form,
-                    processData: false,
-                    contentType: false,
+                    data:{avatar: base64s},
+                    url:'/api/user/avatar-base64',
                     success(data) {
                         console.log(data);
                     },
-                    error(errors) {
-                        console.error(errors);
+                    error(err) {
+                        console.error(err);
                     }
-                })
-            })
+                });
+            });
         });
     </script>
 {{/section}}

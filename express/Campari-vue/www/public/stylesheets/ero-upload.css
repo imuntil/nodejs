@@ -1,0 +1,14 @@
+.ero-thumb-imgs-box {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  position: relative; }
+  .ero-thumb-imgs-box .ero-thumb-img {
+    position: relative; }
+  .ero-thumb-imgs-box .ero-thumb-delete {
+    position: absolute;
+    right: 2rem;
+    top: 0;
+    font-size: 3rem; }
+
+/*# sourceMappingURL=ero-upload.css.map */

@@ -1,4 +1,5 @@
 const async = require('async');
+const fs = require('fs')
 
 let concurrencyCount = 0;
 let fetchUrl = function (url, callback) {

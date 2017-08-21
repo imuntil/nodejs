@@ -1,0 +1,98 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background-color: #f6f6f6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden; }
+
+.login-form {
+  padding: 2rem;
+  border: 1px solid #dddddd;
+  border-radius: 1rem;
+  margin-top: 5rem; }
+  .login-form h3 {
+    margin-bottom: 2rem; }
+
+.main-body {
+  min-width: 992px;
+  position: relative;
+  height: 100%; }
+
+.left-bar {
+  width: 165px;
+  float: left;
+  background-color: #eeeeee;
+  padding-top: 100px;
+  height: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+  .left-bar ul {
+    padding-left: 2rem; }
+  .left-bar li {
+    width: 100%;
+    display: block;
+    font-size: 2rem; }
+    .left-bar li span {
+      font-size: 1.5rem;
+      margin-right: 1rem; }
+  .left-bar a {
+    width: 100%;
+    display: block;
+    padding-bottom: 1.5rem;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 1.5rem;
+    padding-left: 2rem; }
+  .left-bar a.st {
+    padding-top: 1.5rem; }
+
+.main-box {
+  min-width: 825px;
+  display: block;
+  height: 100%;
+  position: relative;
+  overflow: hidden; }
+  .main-box.scroll-able {
+    overflow-y: scroll; }
+  .main-box .cover {
+    background: url("/images/bg.jpg") no-repeat;
+    background-size: cover;
+    height: 100%; }
+  .main-box .hello {
+    width: 50%;
+    margin: 0 auto;
+    padding-top: 20rem; }
+    .main-box .hello h1 {
+      font-size: 16rem;
+      color: #fff;
+      text-align: center; }
+    .main-box .hello h3 {
+      font-size: 8rem;
+      color: #fff;
+      text-align: center; }
+
+.table-box {
+  padding: 100px 4rem;
+  font-size: 1.5rem; }
+  .table-box caption {
+    text-align: right; }
+  .table-box td {
+    vertical-align: middle !important; }
+  .table-box button {
+    margin-right: 1rem; }
+  .table-box form {
+    margin-bottom: 2rem; }
+    .table-box form .form-group {
+      margin-right: 2rem; }
+  .table-box .pagination {
+    float: right; }
+
+.add-box label {
+  float: left; }
+
+/*# sourceMappingURL=style.css.map */

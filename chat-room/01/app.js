@@ -15,7 +15,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 var router = express.Router();
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 23333;
 // save user's nickname
 var nicknames = [];
 

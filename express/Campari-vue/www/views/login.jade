@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  div.container
+    form(role='form', action='/sys/login', method='post').col-sm-4.col-sm-offset-4.login-form
+      h3 管理系统
+      div.form-group
+        input(type='text', placeholder='用户名', name='username').form-control.input-lg
+      div.form-group
+        input(type='password', placeholder='密码', name='password').form-control.input-lg
+      div.form-group
+        button(type='submit').btn.btn-lg.btn-default.col-sm-4.col-sm-offset-4 登录

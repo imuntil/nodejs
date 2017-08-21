@@ -1,0 +1,84 @@
+//
+   Created by 斌 on 2017/4/24.
+
+extends layout2
+block content2
+  script(src='/javascripts/jqPaginator.min.js')
+  div.table-box
+    form.form-inline(role='form', action='?')
+      div.form-group
+        select.form-control(name='category')
+          option(value='', selected=('' === '#{category}')) --
+          option(value='sku', selected=('sku' === '#{category}')) SKU
+          option(value='CNName', selected=('CNName' === '#{category}')) 中文名
+          option(value='ENName', selected=('ENName' === '#{category}')) 英文名
+      div.form-group
+        input(type='search', name='key', value='#{key}').form-control
+      button(type='submit').btn.btn-default 查询
+      button(type='reset').btn.btn-default 重置
+    table.table.table-hover.table-striped
+      caption 共#{count}条数据
+      thead
+        tr
+          td 序列号
+          td SKU
+          td 名称(cn/en)
+          td 价格
+          td 库存
+          td 类别
+          td 销量
+          td 生成时间
+          td 操作
+        tbody
+          each item, i in list
+            tr
+              td!=i + 1
+              td!=item.sku
+              td
+                |#{item.CNName} </br>
+                |#{item.ENName}
+              td!=item.price
+              td!=item.stock
+              td!=item._type
+              td!=item.sales
+              td!=item.date.toLocaleString()
+              td
+                a.btn.btn-default(href='/sys/add-product?sku=' + "#{item.sku}") 编辑
+                button.btn.btn-warning(onclick='_delete("#{item.sku}")') 删除
+    div#pagination.pagination
+    script.
+      function _delete (item) {
+        var con = window.confirm('确定要删除' + item + '么')
+        if (!con) return
+        $.ajax({
+          type:'POST',
+          url:'/sys/product-list/del?sku=' + item,
+          complete: function () {
+            location.reload()
+          }
+        })
+      }
+      $(function () {
+        $('#pagination').jqPaginator({
+          totalPages: #{totalPage} || 1,
+          visiblePages: 6,
+          currentPage: #{current} || 1,
+          onPageChange: function (num, type) {
+            if (type === 'init') return
+            var s = location.search;
+            if (s.length <= 1) {
+              location.href = '?page=' + num
+            } else if (s.indexOf('page') === -1) {
+              location.href += '&page=' + num
+            } else {
+              var href = location.href.replace(/page=\d*/i, 'page=' + num)
+              location.href = href
+            }
+          }
+        });
+        $('button[type="reset"]').click(function (e) {
+          e.preventDefault()
+          $('select[name="category"]').val('')
+          $('input[name="key"]').val('')
+        })
+      })

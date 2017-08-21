@@ -1,0 +1,42 @@
+//
+   Created by 斌 on 2017/4/23.
+
+extends layout2
+block content2
+  div.table-box
+    form.form-inline(role='form')
+      div.form-group
+        select.form-control
+          option 昵称
+          option 手机号码
+      div.form-group
+        input(type='text').form-control
+      button(type='submit').btn.btn-default 查询
+    table.table.table-hover.table-striped
+      caption 共#{list.length}条数据
+      thead
+        tr
+          th  序列号
+          th  会员昵称
+          th  手机号码
+          th  注册时间
+          th  操作
+      tbody
+        each item in list
+          tr
+            td  #{item.no}
+            td  #{item.nick}
+            td  #{item.phone}
+            td  #{item.date}
+            td
+              button.btn.btn-default 详情
+              button.btn.btn-warning 删除
+    ul.pagination
+      li
+        a(href='#') &laquo;
+      li.active
+        a(href='#') 1
+      li
+        a(href='#') 2
+      li
+        a(href='#') &raquo;

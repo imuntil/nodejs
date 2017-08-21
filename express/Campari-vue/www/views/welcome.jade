@@ -1,0 +1,26 @@
+//
+   Created by 斌 on 2017/4/23.
+
+extends layout2
+block content2
+  div.cover
+    div.hello
+      h1
+        h3
+  script.
+    var a = $('.hello h1'),
+        b = $('.hello h3');
+    f()
+    function f () {
+      var n = new Date(),
+          h = n.getHours();
+      a.text(h + ':' + n.getMinutes())
+      if (h < 12) {
+        b.text('Good morning')
+      } else if (h < 19) {
+        b.text('Good afternoon')
+      } else {
+        b.text('Good evening')
+      }
+      setTimeout(f, 1000)
+    }

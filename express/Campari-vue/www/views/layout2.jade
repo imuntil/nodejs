@@ -1,0 +1,29 @@
+//
+   Created by 斌 on 2017/4/23.
+extends layout
+block content
+  nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse
+    div.container-fluid
+      div.navbar-header
+        a.navbar-brand(href='#') Campari
+  div.main-body
+    div.left-bar
+      ul
+        li
+          span.glyphicon.glyphicon-folder-open
+          ='会员列表'
+          a.st(href='/sys/user-list') 会员列表
+        li
+          span.glyphicon.glyphicon-folder-open
+          ='商品管理'
+          a.st(href='/sys/product-list') 商品管理
+          a(href='/sys/add-product') 添加商品
+        li
+          span.glyphicon.glyphicon-folder-open
+          ='订单管理'
+          a.st(href='#') 订单列表
+          a(href='#') 未发货订单
+          a(href='#') 支付流水
+    div.main-box.row(class= scrollAble ? 'scroll-able' : '')
+      block content2
+

@@ -1,0 +1,81 @@
+//
+   Created by 斌 on 2017/4/24.
+
+extends layout2
+block content2
+  script(src='/ueditor/ueditor.config.js')
+  script(src='/ueditor/ueditor.all.min.js')
+  script(src='/ueditor/lang/zh-cn/zh-cn.js')
+  script(src='/javascripts/fine-uploader.min.js')
+  include component/fine-tpl
+  div.table-box.add-box
+    form(role='form', action=!pro.sku ? '/sys/add-product' : '/sys/update-product', method='post', enctype='multipart/form-data').form-horizontal.post-form
+      div.form-group
+        label.control-label.col-sm-2 sku
+        div.col-sm-8
+          input.form-control(type='text', required, name='sku', value=!pro.sku ? '' : '#{pro.sku}', readonly=!!pro.sku)
+      div.form-group
+        label.control-label.col-sm-2 商品中文名称
+        div.col-sm-8
+          input.form-control(type='text', required, name='CNName', value=!pro.CNName ? '' : '#{pro.CNName}')
+      div.form-group
+        label.control-label.col-sm-2 商品英文名称
+        div.col-sm-8
+          input.form-control(type='text', required, name='ENName', value=!pro.ENName ? '' : '#{pro.CNName}')
+      div.form-group
+        label.control-label.col-sm-2 商品酒精度
+        div.col-sm-8
+          input.form-control(type='number', required, name='alcoholic', value=!pro.alcoholic ? '' : '#{pro.alcoholic}')
+      div.form-group
+        label.control-label.col-sm-2 商品产地
+        div.col-sm-8
+          input.form-control(type='text', required, name='origin', value=!pro.origin ? '' : '#{pro.origin}')
+      div.form-group
+        label.control-label.col-sm-2 商品净含量
+        div.col-sm-8
+          input.form-control(type='number', required, name='content', value=!pro.content ? '' : '#{pro.content}')
+      div.form-group
+        label.control-label.col-sm-2 商品价格
+        div.col-sm-8
+          input.form-control(type='number', required, name='price', value=!pro.price ? '' : '#{pro.price}')
+      div.form-group
+        label.control-label.col-sm-2 商品折扣价
+        div.col-sm-8
+          input.form-control(type='number', required, name='discounted', value=!pro.discounted ? '' : '#{pro.discounted}')
+      div.form-group
+        label.control-label.col-sm-2 商品描述
+        div.col-sm-8
+          script(type='text/plain', style='width=700px', id='editor', value=!pro.introduce ? '' : '#{pro.introduce}')
+      div.form-group
+        label.control-label.col-sm-2 商品类别
+        div.col-sm-8
+          select.form-control(name='_type')
+            option(value='1') 开胃酒&利口酒
+            option(value='2') 伏特加
+            option(value='3') 威士忌
+            option(value='4') 白兰地
+            option(value='5') 朗姆酒
+            option(value='6') 起泡葡萄酒
+            option(value='7') 葡萄酒
+      div.form-group
+        label.control-label.col-sm-2 商品重量
+        div.col-sm-8
+          input.form-control(type='text', required, name='weight', value=!pro.weight ? '' : '#{pro.weight}')
+      div.form-group
+        label.control-label.col-sm-2 商品库存
+        div.col-sm-8
+          input.form-control(type='number', required, name='stock', value=!pro.stock ? '' : '#{pro.stock}')
+      div.form-group
+        label.control-label.col-sm-2 商品图片
+        div.col-sm-8
+          //div#fine-uploader-manual-trigger
+          a.btn.btn-default(style='position: relative') 选择图片
+            input.a-file(type='file', accept='image/*', multiple, style='position:absolute;width:100%;height:100%;left:0;top:0;opacity:0;')
+          div.row.ero-thumb-imgs-box
+
+      div.form-group(style="text-align: center;")
+        button(type='submit').btn.btn-primary.add-btn 保存
+        button(type='reset').btn.btn-default 重置
+        a.btn.btn-default.cancel-add 取消
+      div#introduct-content(style='display: none')!=pro.introduce
+      script(src='/javascripts/page/add.js')

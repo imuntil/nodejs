@@ -1,7 +1,7 @@
 const express = require('express')
 
 const fibonacci = n => {
-	if (typeof n !== 'number') {
+	if (typeof n !== 'number' || n !== n) {
 		throw new Error('n should be a Number')
 	}
 	if (n < 0) throw new Error('n should >= 0')
@@ -26,6 +26,6 @@ app.get('/fib', (req, res) => {
 
 module.exports = app
 
-app.listen(3000, () => {
-	console.log('app is listening at port 3000')
+app.listen(3000, function () {
+  console.log('app is listening at port 3000')
 })

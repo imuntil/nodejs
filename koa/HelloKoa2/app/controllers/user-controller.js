@@ -7,6 +7,8 @@ exports.getUser = async (ctx, next) => {
     if (~~ctx.query.id !== 1) {
         throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
     }
+    const user = await User.findById("5a00574e57cbc3036abe86fc").exec()
+    console.log('————————————————————————————', user)
     ctx.body = {
         username: 'zhin',
         age: '24'
@@ -22,16 +24,14 @@ exports.registerUser = async (ctx, next) => {
 }
 
 exports.login = async (ctx, next) => {
+    const { phone, password } = ctx.request.body
+    if (!password || !phone) {
+        throw new ApiError(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD)
+    }
     return passport.authenticate('local.login', (err, user, info, status) => {
-        console.log('xxxxxxxxxx')
-        console.log(err)
-        console.log(user)
-        console.log('xxxxxxxxxx')
-        if (user) {
-            ctx.body = 'welcome'
-        } else {
-            ctx.body = 'something wrong'
-            // return ctx.login(user)
+        const { msg } = info
+        if (!user) {
+            throw new ApiError(msg)
         }
     })(ctx)
 }

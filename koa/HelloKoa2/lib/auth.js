@@ -1,15 +1,14 @@
 const passport = require('koa-passport')
 const LocalStrategy = require('passport-local')
 const User = require('../models/user')
+const ApiErrorNames = require('../app/error/ApiErrorNames')
 
 passport.serializeUser((user, done) => {
-    console.log('-------------serializeUser————————————————————')
+    console.log('111111111111')
     done(null, user.id)
 })
 passport.deserializeUser(async (id, done) => {
-    console.log('-------------deserializeUser————————————————————')
-    console.log(id)
-    console.log('-------------deserializeUser————————————————————')
+    console.log(22222222222222)
     try {
         const user = await User.findById(id).exec()
         done(null, user)
@@ -21,15 +20,12 @@ passport.deserializeUser(async (id, done) => {
 passport.use('local.login', new LocalStrategy({
     usernameField: 'phone',
     passwordField: 'password'
-}, async (username, password, done) => {
-    console.log('-------------------local.login')
-    console.log(username)
-    console.log(password)
-    console.log('------------------end')
+}, async (req, username, password, done) => {
     if (!username || !password) {
-        return done(null, false)
+        return done(null, false, { msg: ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD })
     }
     const user = await User.findOne({ phone: username })
-    console.log(user)
-    done(null, user)
+    user
+        ? done(null, user, { code: 1, msg: 'success' })
+        : done(null, false, { msg: ApiErrorNames.WRONG_ACCOUNT_OR_PASSWORD })
 }))

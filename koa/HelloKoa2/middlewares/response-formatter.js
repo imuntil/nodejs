@@ -5,7 +5,7 @@ const responseFormatter = (ctx) => {
         ctx.body = {
             code: 0,
             message: 'success',
-            data: ctx.body
+            ...ctx.body
         }
     } else {
         ctx.body = {

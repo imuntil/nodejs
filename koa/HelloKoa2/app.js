@@ -6,8 +6,10 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const mongoose = require('mongoose')
+const passport = require('koa-passport')
 
 const responseFormatter = require('./middlewares/response-formatter')
+require('./lib/auth')
 
 const index = require('./routes/index')
 const users = require('./routes/users')
@@ -27,6 +29,9 @@ app.use(require('koa-static')(__dirname + '/public'))
 app.use(views(__dirname + '/views', {
   extension: 'pug'
 }))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 // logger
 app.use(async (ctx, next) => {
@@ -49,6 +54,12 @@ app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
 
-mongoose.createConnection('localhost', 'start', 27017)
+mongoose.Promise = global.Promise
+// mongoose.createConnection('mongodb://127.0.0.1:27017/start', {
+//   useMongoClient: true
+// })
+mongoose.connect('mongodb://localhost:27017/start',{
+    useMongoClient: true
+})
 
 module.exports = app

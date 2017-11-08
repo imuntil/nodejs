@@ -20,7 +20,7 @@ class UserController {
 				user
 			}
 		} catch (err) {
-			console.log(err.message)
+			console.log(err)
 			ctx.body = 'err'
 		}
 	}

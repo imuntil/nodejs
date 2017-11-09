@@ -3,3 +3,7 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  form(role='form', action='/api/users/test', method='post', enctype='multipart/form-data')
+    input(type='file', accept='image/*' name="avatar")
+    input(type='submit')
+

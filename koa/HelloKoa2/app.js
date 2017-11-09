@@ -8,6 +8,7 @@ const logger = require('koa-logger')
 const mongoose = require('mongoose')
 const passport = require('koa-passport')
 const koaBody = require('koa-body')
+const session = require('koa-session')
 
 const responseFormatter = require('./middlewares/response-formatter')
 require('./lib/auth')
@@ -23,9 +24,13 @@ onerror(app)
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }))
+app.keys = ['session-key']
+app.use(session({
+  maxAge: 1000 * 60 * 30
+}, app))
 app.use(json())
 app.use(logger())
-// app.use(koaBody({ multipart: true }))
+app.use(koaBody({ multipart: true }))
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {

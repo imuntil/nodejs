@@ -4,11 +4,9 @@ const User = require('../models/user')
 const ApiErrorNames = require('../app/error/ApiErrorNames')
 
 passport.serializeUser((user, done) => {
-    console.log('111111111111')
     done(null, user.id)
 })
 passport.deserializeUser(async (id, done) => {
-    console.log(22222222222222)
     try {
         const user = await User.findById(id).exec()
         done(null, user)

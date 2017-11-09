@@ -7,70 +7,82 @@ const os = require('os');
 const path = require('path');
 
 class UserController {
-	// 获取用户信息
-	static async getUser (ctx, next) {
-		const { id, phone } = ctx.params
-		if (!id && !phone) {
-			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
-		}
-		if (id && !/^[0-9a-fA-F]{24}$/.test(id)) {
-			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
-		}
-		const q = id ? User.findById(id) : User.findOne({ phone })
-		try {
-			const user = await q.select('-__v').exec()
-			ctx.body = { data: { user } }
-		} catch (err) {
-			throw err
-		}
-	}
+  // 获取用户信息
+  static async getUser (ctx, next) {
+    const { ip } = ctx.params
+    if (!ip) {
+      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+    }
+    // id or phone
+    const isId = /^[0-9a-fA-F]{24}$/.test(ip)
+    const q = isId ? User.findById(ip) : User.findOne({ phone: ip })
+    const user = await q.select('-__v').exec()
+    ctx.body = { data: { user } }
+  }
 
-	// 获取验证码
-	static async getCode (ctx, next) {
-		ctx.body = ctx.params
-	}
+  // 获取验证码
+  static async getCode (ctx, next) {
+    const code = Math.floor(Math.random() * 1000000)
+    ctx.session.code = code
+    ctx.body = { data: { code } }
+  }
 
-	// 查看手机号码是否可用(注册前)
-	static async phoneAble (ctx, next) {}
 
-	// 用户注册
-	static async register (ctx, next) {
-		const { nick, phone } = ctx.request.body
-		// const user = await User.findOne({ phone })
-		await User.create({ nick, phone })
-		ctx.body = { data: { nick, phone } }
-	}
+  // 用户注册
+  static async register (ctx, next) {
+    const { nick, phone } = ctx.request.body
+    await User.create({ nick, phone })
+    ctx.body = { data: { nick, phone } }
+  }
 
-	// 用户登录
-	static async login (ctx, next) {
-		const { phone, password } = ctx.request.body
-		if (!password || !phone) {
-			throw new ApiError(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD)
-		}
-		return passport.authenticate('local.login', (err, user, info, status) => {
-			const { msg } = info
-			if (!user) {
-				throw new ApiError(msg)
-			}
-		})(ctx)
-	}
+  // 用户登录
+  static async login (ctx, next) {
+    const { phone, password } = ctx.request.body
+    if (!password || !phone) {
+      throw new ApiError(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD)
+    }
+    return passport.authenticate('local.login', (err, user, info, status) => {
+      const { msg } = info
+      if (!user) {
+        throw new ApiError(msg)
+      }
+    })(ctx)
+  }
 
-	// 上传头像
-	static async uploadAvatar (ctx, next) {
-		if ('POST' !== ctx.method) return await next()
-		console.log(ctx.request.body)
-		const file = ctx.request.body.files.avatar
-		const reader = fs.createReadStream(file.path);
-		const p = '../../public/upload/' + Date.now() + '.png'
-		const stream = fs.createWriteStream(path.resolve(__dirname, p));
-		reader.pipe(stream);
-		const base = '/upload/' + path.parse(stream.path).base
-		ctx.body = {
-			data: {
-				path: base
-			}
-		}
-	}
+  // 修改密码
+  static async modifyPassword (ctx, next) {
+
+  }
+
+  // 修改昵称
+  static async modifyNick (ctx, next) {
+
+  }
+
+  // 修改头像
+  static async modifyAvatar (ctx, next) {
+    const { phone, id, nick } = ctx.request.body
+    if (!nick || (!phone && !id)) {
+      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+    }
+  }
+
+  // 上传头像
+  static async uploadAvatar (ctx, next) {
+    if ('POST' !== ctx.method) return await next()
+    console.log(ctx.request.body)
+    const file = ctx.request.body.files.avatar
+    const reader = fs.createReadStream(file.path);
+    const p = '../../public/upload/' + Date.now() + '.png'
+    const stream = fs.createWriteStream(path.resolve(__dirname, p));
+    reader.pipe(stream);
+    const base = '/upload/' + path.parse(stream.path).base
+    ctx.body = {
+      data: {
+        path: base
+      }
+    }
+  }
 }
 
 module.exports = UserController

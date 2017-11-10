@@ -1,4 +1,6 @@
 const router = require('koa-router')()
+const userController = require('../../app/controllers/user-controller')
+
 router
 // 发送短信验证码
   .get('/code', userController.getCode)
@@ -17,6 +19,5 @@ router
    */
   .get('/:ip', userController.getUser)
 
-const userController = require('../../app/controllers/user-controller')
 
 module.exports = router

@@ -11,6 +11,7 @@ const koaBody = require('koa-body')
 const session = require('koa-session')
 
 const responseFormatter = require('./middlewares/response-formatter')
+const phoneValidate = require('./middlewares/phone-validate')
 require('./lib/auth')
 
 const index = require('./routes/index')
@@ -30,7 +31,7 @@ app.use(session({
 }, app))
 app.use(json())
 app.use(logger())
-app.use(koaBody({ multipart: true }))
+// app.use(koaBody({ multipart: true }))
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {
@@ -50,6 +51,7 @@ app.use(async (ctx, next) => {
 
 // format response
 app.use(responseFormatter('^/api'))
+app.use(phoneValidate)
 
 // routes
 app.use(index.routes(), index.allowedMethods())

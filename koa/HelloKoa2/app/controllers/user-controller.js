@@ -30,9 +30,13 @@ class UserController {
 
   // 用户注册
   static async register (ctx, next) {
-    const { nick, phone } = ctx.request.body
-    await User.create({ nick, phone })
-    ctx.body = { data: { nick, phone } }
+	  const { nick, phone, password } = ctx.request.body
+    if (!nick || !phone || !password) {
+	    throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+    }
+    const user = await User.create({ nick, phone, password }).select('_id phone nick')
+	  console.log(user)
+	  ctx.body = { data: { nick, phone } }
   }
 
   // 用户登录
@@ -51,20 +55,35 @@ class UserController {
 
   // 修改密码
   static async modifyPassword (ctx, next) {
-
+    const { phone, id, pn, po } = ctx.request.body
+    if (!pn || !po || (!phone && !id)) {
+      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+    }
   }
 
   // 修改昵称
   static async modifyNick (ctx, next) {
-
+	  const { phone, id, nick } = ctx.request.body
+	  if (!nick || (!phone && !id)) {
+		  throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+	  }
+	  let user, data
+	  if (id) {
+	  	user = await User.findByIdAndUpdate(id, { $set: { nick } }).select('-__v').exec()
+	  } else {
+	  	user = await User.findOneAndUpdate({ phone }, { $set: { nick } }).select('-__v').exec()
+	  }
+	  if (!user) {
+	    throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
+    }
+	  ctx.body = {
+		  data: { user }
+	  }
   }
 
   // 修改头像
   static async modifyAvatar (ctx, next) {
-    const { phone, id, nick } = ctx.request.body
-    if (!nick || (!phone && !id)) {
-      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
-    }
+
   }
 
   // 上传头像

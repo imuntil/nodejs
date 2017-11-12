@@ -9,9 +9,12 @@ const mongoose = require('mongoose')
 const passport = require('koa-passport')
 const koaBody = require('koa-body')
 const session = require('koa-session')
+const jwt = require('koa-jwt')
+const credentials = require('./lib/credentials')
 
 const responseFormatter = require('./middlewares/response-formatter')
-const phoneValidate = require('./middlewares/phone-validate')
+const phoneValidate = require('./middlewares/request-validate')
+const jwtMid = require('./middlewares/jwt')
 require('./lib/auth')
 
 const index = require('./routes/index')
@@ -52,10 +55,15 @@ app.use(async (ctx, next) => {
 // format response
 app.use(responseFormatter('^/api'))
 app.use(phoneValidate)
+app.use(jwtMid)
 
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+app.use(
+  jwt({ cookie: '_token', secret: credentials.cookieSecret })
+    .unless({ path: [/^\/api\/users\/[code|register|login]/] })
+)
 app.use(api.routes(), api.allowedMethods())
 
 // error-handling

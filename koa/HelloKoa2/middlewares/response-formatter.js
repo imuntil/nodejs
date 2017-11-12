@@ -21,7 +21,7 @@ const urlFilter = pattern => {
     try {
       await next()
     } catch (err) {
-      if (reg.test(ctx.originalUrl)) {
+			if (reg.test(ctx.originalUrl)) {
         if (err instanceof ApiError) {
           ctx.status = 200
           ctx.body = {
@@ -41,7 +41,8 @@ const urlFilter = pattern => {
             message: '字段不合法'
           }
         } else {
-          ctx.status = 200
+					console.log(err)
+					ctx.status = 200
           ctx.body = {
             code: 211,
             message: err.message || '其他',

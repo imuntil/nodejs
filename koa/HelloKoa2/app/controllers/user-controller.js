@@ -1,11 +1,24 @@
-const passport = require('koa-passport')
 const ApiError = require('../error/ApiError')
 const ApiErrorNames = require('../error/ApiErrorNames')
 const User = require('../../models/user')
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const _ = require('lodash')
+const jwt = require('jsonwebtoken')
+const credentials = require('../../lib/credentials')
+const regs = require('../../lib/common').regs
 
+function setToken(phone, ctx) {
+	const token = jwt.sign({ phone }, credentials.cookieSecret, {
+		expiresIn: '7d'
+	})
+	ctx.cookies.set('_token', token, {
+		signed: true,
+		maxAge: 1000 * 60 * 60 * 24 * 7,
+		httpOnly: true
+	})
+}
 class UserController {
   // 获取用户信息
   static async getUser (ctx, next) {
@@ -14,11 +27,18 @@ class UserController {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
     // id or phone
-    const isId = /^[0-9a-fA-F]{24}$/.test(ip)
-    const q = isId ? User.findById(ip) : User.findOne({ phone: ip })
-    const user = await q.select('-__v').exec()
-    ctx.body = { data: { user } }
-  }
+    const { phone ,objectId } = regs
+    const isId = objectId.reg.test(ip)
+    const isPhone = phone.reg.test(ip)
+		if (!isId && !isPhone) {
+      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+    }
+		const q = isId ? User.findById(ip) : User.findOne({ phone: ip })
+    const user = await q.select('nick phone _id').exec()
+		// const token = ctx.cookies.get('_token', { signed: true })
+		// const user = await User.findOne({ token }).select('nick phone _id').exec()
+		ctx.body = { data: { user } }
+	}
 
   // 获取验证码
   static async getCode (ctx, next) {
@@ -30,13 +50,19 @@ class UserController {
 
   // 用户注册
   static async register (ctx, next) {
-	  const { nick, phone, password } = ctx.request.body
+    const { nick, phone, password } = ctx.request.body
     if (!nick || !phone || !password) {
-	    throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
-    const user = await User.create({ nick, phone, password }).select('_id phone nick')
-	  console.log(user)
-	  ctx.body = { data: { nick, phone } }
+    const user = await User.findOne({ phone }).exec()
+    if (user) {
+      throw new ApiError(ApiErrorNames.THE_PHONE_WAS_REGISTERED)
+    }
+		setToken(phone, ctx)
+		const created = new Date()
+		const bt = User.encryptPassword(password)
+		await User.create({ nick, phone, password: bt, created, token })
+    ctx.body = { data: { nick, phone } }
   }
 
   // 用户登录
@@ -45,63 +71,114 @@ class UserController {
     if (!password || !phone) {
       throw new ApiError(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD)
     }
-    return passport.authenticate('local.login', (err, user, info, status) => {
-      const { msg } = info
-      if (!user) {
-        throw new ApiError(msg)
-      }
-    })(ctx)
+    const user = await User.findOne({ phone }).select('nick phone password').exec()
+		if (!user || !user.validPassword(password)) {
+      throw new ApiError(ApiErrorNames.WRONG_ACCOUNT_OR_PASSWORD)
+    }
+    setToken(phone, ctx)
+    ctx.body = {
+      data: { user: _.pick(user, ['nick', 'phone']) }
+    }
+	}
+
+	// 退出登录
+  static async logout (ctx, next) {
+    // x
+    ctx.cookies.set('_token', '', {
+			signed: true,
+			maxAge: 1000 * 60 * 60 * 24 * 7,
+			httpOnly: true
+    })
   }
 
   // 修改密码
   static async modifyPassword (ctx, next) {
-    const { phone, id, pn, po } = ctx.request.body
-    if (!pn || !po || (!phone && !id)) {
+    const { phone, userId, password } = ctx.request.body
+    if (!password || (!phone && !userId)) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
-  }
+    if (!regs.password.reg.test(password)) {
+      ctx.body = {
+        code: '1042',
+        message: '密码格式有误'
+      }
+      return false
+    }
+    const bt = User.encryptPassword(password)
+    let q
+    if (phone) {
+      q = User.findOneAndUpdate({ phone }, { password: bt })
+    } else {
+      q = User.findByIdAndUpdate(userId, { password: bt })
+    }
+    const user = await q.exec()
+		if (!user) {
+      throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
+    }
+	}
 
   // 修改昵称
   static async modifyNick (ctx, next) {
-	  const { phone, id, nick } = ctx.request.body
-	  if (!nick || (!phone && !id)) {
-		  throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
-	  }
-	  let user, data
-	  if (id) {
-	  	user = await User.findByIdAndUpdate(id, { $set: { nick } }).select('-__v').exec()
-	  } else {
-	  	user = await User.findOneAndUpdate({ phone }, { $set: { nick } }).select('-__v').exec()
-	  }
-	  if (!user) {
-	    throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
+    const { phone, userId, nick } = ctx.request.body
+    if (!nick || (!phone && !userId)) {
+      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
-	  ctx.body = {
-		  data: { user }
-	  }
+    let q
+    if (userId) {
+      q = User.findByIdAndUpdate(userId, { $set: { nick } })
+    } else {
+      q = User.findOneAndUpdate({ phone }, { $set: { nick } })
+    }
+    const user = await q.select('nick phone _id').exec()
+    if (!user) {
+      throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
+    }
+    ctx.body = {
+      data: { user }
+    }
   }
 
   // 修改头像
   static async modifyAvatar (ctx, next) {
-
-  }
+    const { phone, userId, imgStr } = ctx.request.body
+    if (!phone && !userId) {
+			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+		}
+		const q = userId ? User.findById(userId) : User.findOne({ phone })
+    const user = await q.exec()
+    if (!user) {
+      throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
+    }
+    const base64 = imgStr.replace(/^data:image\/\w+;base64,/, '')
+    const buffer = Buffer.from(base64, 'base64')
+		const p = path.resolve(__dirname, '../../public/upload/' + user.phone + '.png')
+    const res = await fs.writeFileSync(p, buffer)
+		if (res) {
+			ctx.body = {
+			  code: '1061',
+        message: '图片上传失败'
+      }
+		}
+		user.avatar = '/upload/' + user.phone + '.png'
+    await user.save()
+	}
 
   // 上传头像
-  static async uploadAvatar (ctx, next) {
-    if ('POST' !== ctx.method) return await next()
-    console.log(ctx.request.body)
-    const file = ctx.request.body.files.avatar
-    const reader = fs.createReadStream(file.path);
-    const p = '../../public/upload/' + Date.now() + '.png'
-    const stream = fs.createWriteStream(path.resolve(__dirname, p));
-    reader.pipe(stream);
-    const base = '/upload/' + path.parse(stream.path).base
-    ctx.body = {
-      data: {
-        path: base
-      }
-    }
-  }
+  // static async uploadAvatar (ctx, next) {
+  //   if ('POST' !== ctx.method) return await next()
+  //   console.log(ctx.request.body)
+  //   const file = ctx.request.body.files.avatar
+  //   const reader = fs.createReadStream(file.path);
+  //   const p = '../../public/upload/' + Date.now() + '.png'
+  //   const stream = fs.createWriteStream(path.resolve(__dirname, p));
+  //   reader.pipe(stream)
+  //   const base = '/upload/' + path.parse(stream.path).base
+  //   ctx.body = {
+  //     data: {
+  //       path: base
+  //     }
+  //   }
+  // }
 }
 
 module.exports = UserController

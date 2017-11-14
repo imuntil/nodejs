@@ -18,6 +18,7 @@ function setToken(phone, ctx) {
 		maxAge: 1000 * 60 * 60 * 24 * 7,
 		httpOnly: true
 	})
+	return token
 }
 class UserController {
   // 获取用户信息
@@ -58,7 +59,7 @@ class UserController {
     if (user) {
       throw new ApiError(ApiErrorNames.THE_PHONE_WAS_REGISTERED)
     }
-		setToken(phone, ctx)
+		const token = setToken(phone, ctx)
 		const created = new Date()
 		const bt = User.encryptPassword(password)
 		await User.create({ nick, phone, password: bt, created, token })
@@ -71,11 +72,13 @@ class UserController {
     if (!password || !phone) {
       throw new ApiError(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD)
     }
-    const user = await User.findOne({ phone }).select('nick phone password').exec()
+    const user = await User.findOne({ phone }).exec()
 		if (!user || !user.validPassword(password)) {
       throw new ApiError(ApiErrorNames.WRONG_ACCOUNT_OR_PASSWORD)
     }
-    setToken(phone, ctx)
+    const token = setToken(phone, ctx)
+	  user.token = token
+	  await user.save()
     ctx.body = {
       data: { user: _.pick(user, ['nick', 'phone']) }
     }

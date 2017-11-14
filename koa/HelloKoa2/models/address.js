@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const addressSchema = mongoose.Schema({
+const addressSchema = new mongoose.Schema({
 	_owner: { type: String, require: true },
 	province: { require: true, type: String },
 	city: { require: true, type: String },
@@ -13,4 +13,4 @@ const addressSchema = mongoose.Schema({
 })
 
 const Address = mongoose.model('Address', addressSchema)
-mongoose.exports = Address
+module.exports = Address

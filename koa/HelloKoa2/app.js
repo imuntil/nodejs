@@ -6,7 +6,6 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const mongoose = require('mongoose')
-const passport = require('koa-passport')
 const koaBody = require('koa-body')
 const session = require('koa-session')
 const jwt = require('koa-jwt')
@@ -41,8 +40,6 @@ app.use(views(__dirname + '/views', {
   extension: 'pug'
 }))
 
-app.use(passport.initialize())
-app.use(passport.session())
 
 // logger
 app.use(async (ctx, next) => {

@@ -23,7 +23,7 @@ function setToken(phone, ctx) {
 class UserController {
   // 获取用户信息
   static async getUser (ctx, next) {
-    const { ip } = ctx.params
+		const { ip } = ctx.params
     if (!ip) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }

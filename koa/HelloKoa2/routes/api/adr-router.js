@@ -2,11 +2,11 @@ const router = require('koa-router')()
 const adrController = require('../../app/controllers/address-controller')
 
 router
-	.put('/default/:id', adrController.setDefault)
+	.put('/default/:adrID', adrController.setDefault)
 	.post('/add', adrController.addAdr)
-	.del('/:id', adrController.delAdr)
-	.put('/:id', adrController.modifyAdr)
-	.get('/:id', adrController.getAdr)
+	.del('/:adrID', adrController.delAdr)
+	.put('/:adrID', adrController.modifyAdr)
+	.get('/:adrID', adrController.getAdr)
 	.get('/', adrController.getAdrList)
 
 module.exports = router

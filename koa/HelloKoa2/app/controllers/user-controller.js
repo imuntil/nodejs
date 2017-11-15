@@ -24,7 +24,8 @@ class UserController {
   // 获取用户信息
   static async getUser (ctx, next) {
 		const { ip } = ctx.params
-    if (!ip) {
+	  console.log('ip', ctx.params)
+	  if (!ip) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
     // id or phone
@@ -94,10 +95,16 @@ class UserController {
     })
   }
 
-  // 修改密码
+	/**
+	 * 修改密码
+	 * phone || uid, password
+	 * @param ctx
+	 * @param next
+	 * @return {Promise.<boolean>}
+	 */
   static async modifyPassword (ctx, next) {
-    const { phone, userId, password } = ctx.request.body
-    if (!password || (!phone && !userId)) {
+    const { phone, uid, password } = ctx.request.body
+    if (!password || (!phone && !uid)) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
     if (!regs.password.reg.test(password)) {
@@ -112,7 +119,7 @@ class UserController {
     if (phone) {
       q = User.findOneAndUpdate({ phone }, { password: bt })
     } else {
-      q = User.findByIdAndUpdate(userId, { password: bt })
+      q = User.findByIdAndUpdate(uid, { password: bt })
     }
     const user = await q.exec()
 		if (!user) {
@@ -120,15 +127,21 @@ class UserController {
     }
 	}
 
-  // 修改昵称
+	/**
+	 * 修改昵称
+	 * phone || uid, nick
+	 * @param ctx
+	 * @param next
+	 * @return {Promise.<void>}
+	 */
   static async modifyNick (ctx, next) {
-    const { phone, userId, nick } = ctx.request.body
-    if (!nick || (!phone && !userId)) {
+    const { phone, uid, nick } = ctx.request.body
+    if (!nick || (!phone && !uid)) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
     let q
-    if (userId) {
-      q = User.findByIdAndUpdate(userId, { $set: { nick } })
+    if (uid) {
+      q = User.findByIdAndUpdate(uid, { $set: { nick } })
     } else {
       q = User.findOneAndUpdate({ phone }, { $set: { nick } })
     }
@@ -141,13 +154,19 @@ class UserController {
     }
   }
 
-  // 修改头像
+	/**
+	 * 修改头像
+	 * phone || uid, imgStr(base64)
+	 * @param ctx
+	 * @param next
+	 * @return {Promise.<void>}
+	 */
   static async modifyAvatar (ctx, next) {
-    const { phone, userId, imgStr } = ctx.request.body
-    if (!phone && !userId) {
+    const { phone, uid, imgStr } = ctx.request.body
+    if (!phone && !uid) {
 			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		}
-		const q = userId ? User.findById(userId) : User.findOne({ phone })
+		const q = uid ? User.findById(uid) : User.findOne({ phone })
     const user = await q.exec()
     if (!user) {
       throw new ApiError(ApiErrorNames.USER_NOT_EXIST)

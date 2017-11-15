@@ -145,12 +145,12 @@ class UserController {
     } else {
       q = User.findOneAndUpdate({ phone }, { $set: { nick } })
     }
-    const user = await q.select('nick phone _id').exec()
+    const user = await q.select('nick phone _id').lean().exec()
     if (!user) {
       throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
     }
     ctx.body = {
-      data: { user }
+      data: { ...user, nick }
     }
   }
 

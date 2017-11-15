@@ -83,28 +83,58 @@ class AddressController {
 		if (!province || !city || !detail || !name || !phone) {
 			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		}
-		// const adr = await Adr.findByIdAndUpdate(aid, {
-		// 	province, city, detail, name, phone, label, isDefault
-		// }).select('-__v -date').exec()
-		const adr = await Adr.findById(aid).exec()
+		const adr = await Adr.findByIdAndUpdate(aid, {
+			province, city, detail, name, phone, label, isDefault
+		}).select('-__v -date').lean().exec()
+		// const adr = await Adr.findById(aid).exec()
 		if (!adr) {
 			throw new ApiError(ApiErrorNames.ADDRESS_NOT_EXIST)
 		}
 		ctx.body = {
-			data: adr
+			data: { ...adr, province, city, detail, name, phone, label, isDefault }
 		}
 	}
-	// 更新default
+
+	/**
+	 * PUT
+	 * 更新default
+	 * body = { isDefault }
+	 * params = { aid }
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
 	static async setDefault (ctx, next) {
 		const { aid } = ctx.params
 		iv(aid)
 		const { isDefault } = ctx.request.body
 		const adr = await Adr.where({ _id: aid }).update({ isDefault: !!isDefault }).exec()
 		if (!adr) throw new ApiError(ApiErrorNames.ADDRESS_NOT_EXIST)
+		ctx.body = {
+			data: 'ok'
+		}
+		// Adr.findByIdAndUpdate(aid, { isDefault: !!isDefault }, (err, doc) => {
+		// 	console.log(err);
+		// 	console.log(doc);
+		// })
 	}
-	// 删除address
+
+	/**
+	 * DELETE
+	 * 删除地址
+	 * params = { aid }
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
 	static async delAdr (ctx, next) {
-		console.log('del')
+		const { aid } = ctx.params
+		iv(aid)
+		const adr = await Adr.findByIdAndRemove(aid).exec()
+		if (!adr) throw new ApiError(ApiErrorNames.ADDRESS_NOT_EXIST)
+		ctx.body = {
+			data: 'ok'
+		}
 	}
 }
 

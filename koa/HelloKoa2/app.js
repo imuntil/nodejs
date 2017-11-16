@@ -69,8 +69,7 @@ app.on('error', (err, ctx) => {
 });
 
 mongoose.Promise = global.Promise
-
-mongoose.connect('mongodb://localhost:27017/start',{
+mongoose.connect('mongodb://localhost:27017/start', {
     useMongoClient: true
 })
 

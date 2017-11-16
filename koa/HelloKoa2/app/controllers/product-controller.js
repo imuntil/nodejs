@@ -7,13 +7,20 @@ class ProductController {
 	/**
 	 * GET
 	 * 获取产品列表(筛选)
-	 * query ? = { price, sales }
+	 * query ? = { flag = { price, sales } _type sort = { desc, asc } }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}
 	 */
 	static async getProList (ctx, next) {
-		console.log('list')
+		const { flag, type, sort = 'desc' } = ctx.request.query
+		let q = type ? Product.find({ _type: type }) : Product.find()
+		const s = sort === 'asc' ? '' : '-'
+		const f = flag ? `${flag} date` : 'date'
+		const pros = await q.sort(`${s}${f}`).select('-__v').lean().exec()
+		ctx.body = {
+			data: pros
+		}
 	}
 
 	/**
@@ -27,21 +34,40 @@ class ProductController {
 	static async getProDetail (ctx, next) {
 		const { sku } = ctx.params
 		if (!sku) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
-		const adr = await Product.findOne({ sku }).select('-__v').lean().exec()
-		if (!adr) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
+		const pro = await Product.findOne({ sku: sku.toUpperCase() }).select('-__v').lean().exec()
+		if (!pro) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
 		ctx.body = {
-			data: adr
+			data: pro
 		}
 	}
 	/**
 	 * GET
 	 * 猜你喜欢
+	 * query = { type, sku }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}
 	 */
 	static async maybeLike (ctx, next) {
-		console.log('like')
+		const { type, sku } = ctx.request.query
+		let pros = await Product
+			.find({ _type: type })
+			.nor([{ sku: sku.toUpperCase() }])
+			.select('-__v')
+			.lean()
+			.exec()
+		if (pros.length < 2) {
+			pros = await Product
+				.find()
+				.nor([{ sku: sku.toUpperCase() }])
+				.select('-__v')
+				.lean()
+				.exec()
+		}
+		const mb = _.shuffle(pros).slice(0, 2)
+		ctx.body = {
+			data: mb
+		}
 	}
 
 	// sys

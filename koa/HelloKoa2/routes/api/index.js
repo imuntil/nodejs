@@ -5,7 +5,7 @@ const proRouter = require('./pro-router')
 
 router.prefix('/api')
 router.use('/users', userRouter.routes(), userRouter.allowedMethods())
-router.use('/adr', adrRouter.routes(), adrRouter.allowedMethods())
-router.use('/pro', proRouter.routes(), proRouter.allowedMethods())
+router.use('/adrs', adrRouter.routes(), adrRouter.allowedMethods())
+router.use('/pros', proRouter.routes(), proRouter.allowedMethods())
 
 module.exports = router

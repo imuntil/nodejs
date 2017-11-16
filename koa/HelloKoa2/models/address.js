@@ -12,10 +12,5 @@ const addressSchema = new mongoose.Schema({
 	date: Date
 })
 
-addressSchema.pre('save', (next, a, b, c) => {
-	// console.log(typeof a);
-	// console.log(b());
-	next()
-})
 const Address = mongoose.model('Address', addressSchema)
 module.exports = Address

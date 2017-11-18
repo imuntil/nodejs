@@ -1,6 +1,7 @@
 const ApiError = require('../error/ApiError')
 const ApiErrorNames = require('../error/ApiErrorNames')
 const User = require('../../models/user')
+const Cart = require('../../models/cart')
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -19,6 +20,13 @@ function setToken(phone, ctx) {
 		httpOnly: true
 	})
 	return token
+}
+// 创建购物车
+createCart = async function (_owner) {
+	const date = new Date()
+	const cart = new Cart({ _owner, date })
+	await cart.save()
+	return true
 }
 class UserController {
   // 获取用户信息
@@ -52,19 +60,21 @@ class UserController {
 
   // 用户注册
   static async register (ctx, next) {
-    const { nick, phone, password } = ctx.request.body
-    if (!nick || !phone || !password) {
+	  console.log('register')
+	  const { nick, phone, password } = ctx.request.body
+	  if (!nick || !phone || !password) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
-    const user = await User.findOne({ phone }).exec()
+	  const user = await User.findOne({ phone }).exec()
     if (user) {
       throw new ApiError(ApiErrorNames.THE_PHONE_WAS_REGISTERED)
     }
 		const token = setToken(phone, ctx)
 		const created = new Date()
 		const bt = User.encryptPassword(password)
-		await User.create({ nick, phone, password: bt, created, token })
-    ctx.body = { data: { nick, phone } }
+		const _new = await User.create({ nick, phone, password: bt, created, token })
+	  await createCart(_new._id)
+    ctx.body = { data: { nick, phone, uid: _new._id } }
   }
 
   // 用户登录
@@ -81,7 +91,7 @@ class UserController {
 	  user.token = token
 	  await user.save()
     ctx.body = {
-      data: { user: _.pick(user, ['nick', 'phone']) }
+      data: { user: _.pick(user, ['nick', 'phone', '_id']) }
     }
 	}
 

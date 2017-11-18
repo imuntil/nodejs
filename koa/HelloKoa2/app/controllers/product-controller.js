@@ -17,7 +17,11 @@ class ProductController {
 		let q = type ? Product.find({ _type: type }) : Product.find()
 		const s = sort === 'asc' ? '' : '-'
 		const f = flag ? `${flag} date` : 'date'
-		const pros = await q.sort(`${s}${f}`).select('-__v').lean().exec()
+		const pros = await q
+			.sort(`${s}${f}`)
+			.select('-__v')
+			.lean()
+			.exec()
 		ctx.body = {
 			data: pros
 		}
@@ -34,7 +38,11 @@ class ProductController {
 	static async getProDetail (ctx, next) {
 		const { sku } = ctx.params
 		if (!sku) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
-		const pro = await Product.findOne({ sku: sku.toUpperCase() }).select('-__v').lean().exec()
+		const pro = await Product
+			.findOne({ sku: sku.toUpperCase() })
+			.select('-__v')
+			.lean()
+			.exec()
 		if (!pro) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
 		ctx.body = {
 			data: pro
@@ -86,17 +94,61 @@ class ProductController {
 			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		}
 		const date = new Date()
-		const pro = await Product.create({ sku, en, cn, price, _type, date, update: date, ...rest })
-		console.log(pro)
+		const pro = await Product
+			.create({ sku, en, cn, price, _type, date, update: date, ...rest })
 		ctx.body = {
 			data: _.omit(pro.toObject(), '__v')
 		}
 	}
+
+	/**
+	 * PUT
+	 * 更新产品
+	 * params = { sku }
+	 * body = { en, cn, price, type, ...rest }
+	 * @param ctx
+	 * @param next
+	 * @return {Promise.<void>}
+	 */
 	static async modifyPro (ctx, next) {
-		console.log('update')
+		const body = ctx.request.body
+		const sku = ctx.params.sku
+		const { en, cn, price, type: _type } = body
+		if (!sku || !en || !cn || !price || !_type) {
+			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+		}
+		const old = await Product
+			.findOne({ sku: sku.toUpperCase() })
+			.select('-sku')
+			.exec()
+		if (!old) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
+		for (let k in body) {
+			if (k === 'sku') continue
+			old[k] = body[k]
+		}
+		const _new = await old.save()
+		ctx.body = {
+			data: _.omit(_new.toObject(), '__v')
+		}
 	}
+
+	/**
+	 * DELETE
+	 * 删除产品
+	 * params = { sku }
+	 * @param ctx
+	 * @param next
+	 * @return {Promise.<void>}
+	 */
 	static async delPro (ctx, next) {
-		console.log('delete')
+		const sku = ctx.params.sku
+		if (!sku) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+		const { result } = await Product
+			.remove({ sku: sku.toUpperCase() })
+		ctx.body = {
+			message: '删除成功',
+			data: `已删除${result.n}条数据`
+		}
 	}
 }
 

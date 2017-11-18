@@ -13,7 +13,8 @@ const userSchema = new Scheme({
 	nick: String,
 	avatar: String,
 	openID: String,
-	token: String
+	token: String,
+	cart: { type: Scheme.Types.ObjectId, ref: 'Cart' }
 })
 
 userSchema.methods.encryptPassword = password =>

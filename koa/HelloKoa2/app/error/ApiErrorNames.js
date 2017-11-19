@@ -9,13 +9,17 @@ ApiErrorNames.THE_PHONE_WAS_REGISTERED = 'thePhoneWasRegistered'
 ApiErrorNames.WRONG_PHONE_NUMBER = 'wrongPhoneNumber'
 ApiErrorNames.WRONG_ID = 'wrongID'
 ApiErrorNames.ADDRESS_NOT_EXIST = 'addressNotExist'
+ApiErrorNames.ADR_NOT_EXIST_OR_NOT_MATCH_USER = 'addressNotExistOrNotMatchToUser'
 ApiErrorNames.PRODUCT_NOT_EXIST = 'productNotExist'
+ApiErrorNames.ORDER_NOT_EXIST = 'orderNotExist'
 
 const errorMap = new Map()
 errorMap.set(ApiErrorNames.UNKNOWN_ERROR, { code: -1, message: '未知错误' })
 errorMap.set(ApiErrorNames.USER_NOT_EXIST, { code: 101, message: '用户不存在' })
 errorMap.set(ApiErrorNames.ADDRESS_NOT_EXIST, { code: 1011, message: '请求的地址信息不存在' })
+errorMap.set(ApiErrorNames.ADR_NOT_EXIST_OR_NOT_MATCH_USER, { code: 1013, message: '地址信息不存在或地址同当前用户不匹配' })
 errorMap.set(ApiErrorNames.PRODUCT_NOT_EXIST, { code: 1012, message: '请求的产品不存在' })
+errorMap.set(ApiErrorNames.ORDER_NOT_EXIST, { code: 1014, message: '订单不存在' })
 errorMap.set(ApiErrorNames.THE_PHONE_WAS_REGISTERED, { code: 105, message: '该手机号码已被注册' })
 errorMap.set(ApiErrorNames.WRONG_ACCOUNT_OR_PASSWORD, { code: 102, message: '账号或密码有误' })
 errorMap.set(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD, { code: 103, message: '账号密码不能为空' })

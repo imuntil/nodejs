@@ -112,3 +112,4 @@ dist
 .DS_Store
 koa/examples
 koa/examples2
+nohup.out

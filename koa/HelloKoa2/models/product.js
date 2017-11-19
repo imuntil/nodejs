@@ -6,6 +6,7 @@ const productSchema = new mongoose.Schema({
 	cn: { type: String, required: true },
 	images: [String],
 	price: { type: Number, min: 0, required: true },
+	setToSales: Boolean, // 设为打折商品，只有在字段为true时，discounted和off才会可用
 	discounted: { type: Number, min: 0 },   // 优惠价
 	off: { type: Number, min: 0.1, max: 1 },  // 折扣
 	alcoholic: Number,

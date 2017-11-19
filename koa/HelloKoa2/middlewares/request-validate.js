@@ -3,7 +3,7 @@ const ApiError = require('../app/error/ApiError')
 const ApiErrorNames = require('../app/error/ApiErrorNames')
 async function validate (ctx, next) {
 	const params = ctx.method === 'GET' ? ctx.query : ctx.request.body
-	// 手机号码，用户id，地址id，产品id，订单id，购物车id
+	// 手机号码，用户id，地址id，产品id，订单id，购物车中产品的id
 	const { phone, uid, aid, pid, oid, cid } = params
 	// /api/adr 路径下的接口必须传递uid
 	// if (/^\/api\/adr/.test(ctx.originalUrl)) {

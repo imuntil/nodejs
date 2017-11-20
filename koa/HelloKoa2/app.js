@@ -9,6 +9,7 @@ const mongoose = require('mongoose')
 const koaBody = require('koa-body')
 const session = require('koa-session')
 const jwt = require('koa-jwt')
+const cors = require('koa2-cors')
 const credentials = require('./lib/credentials')
 
 const responseFormatter = require('./middlewares/response-formatter')
@@ -40,6 +41,16 @@ app.use(views(__dirname + '/views', {
   extension: 'pug'
 }))
 
+app.use(cors({
+	origin: function (ctx) {
+		return 'http://localhost:63342';
+	},
+	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+	maxAge: 5,
+	credentials: true,
+	allowMethods: ['GET', 'POST', 'DELETE'],
+	allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}))
 
 // logger
 app.use(async (ctx, next) => {
@@ -59,7 +70,7 @@ app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(
   jwt({ cookie: '_token', secret: credentials.cookieSecret })
-    .unless({ path: [/^\/api\/users\/[code|register|login]/] })
+    .unless({ path: [/^\/api\/users\/[code|register|login]/, /^\/api\/pros/] })
 )
 app.use(api.routes(), api.allowedMethods())
 

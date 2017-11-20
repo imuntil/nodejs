@@ -1658,6 +1658,10 @@ koa-views@^5.2.1:
     koa-send "^3.1.0"
     mz "^2.4.0"
 
+koa2-cors@^2.0.5:
+  version "2.0.5"
+  resolved "http://registry.npm.taobao.org/koa2-cors/download/koa2-cors-2.0.5.tgz#3404712cd092f728c7f72de704ee7b920d957658"
+
 koa@^2.2.0:
   version "2.4.1"
   resolved "http://registry.npm.taobao.org/koa/download/koa-2.4.1.tgz#d449cfb970a7e9da571f699eda40bb9e32eb1484"

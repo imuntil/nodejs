@@ -20,7 +20,7 @@ class ProductController {
 		const pros = await q
 			.sort(`${s}${f}`)
 			.select('-__v')
-			.lean()
+			// .lean()
 			.exec()
 		ctx.body = {
 			data: pros
@@ -41,11 +41,10 @@ class ProductController {
 		const pro = await Product
 			.findOne({ sku: sku.toUpperCase() })
 			.select('-__v')
-			.lean()
 			.exec()
 		if (!pro) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
 		ctx.body = {
-			data: pro
+			data: { ...pro.toObject(), truePrice: pro.truePrice }
 		}
 	}
 	/**
@@ -113,8 +112,7 @@ class ProductController {
 	static async modifyPro (ctx, next) {
 		const body = ctx.request.body
 		const sku = ctx.params.sku
-		const { en, cn, price, type: _type } = body
-		if (!sku || !en || !cn || !price || !_type) {
+		if (_.isEmpty(body)) {
 			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		}
 		const old = await Product
@@ -123,7 +121,7 @@ class ProductController {
 			.exec()
 		if (!old) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
 		for (let k in body) {
-			if (k === 'sku') continue
+			if (k === 'sku' || body[k] === undefined) continue
 			old[k] = body[k]
 		}
 		const _new = await old.save()

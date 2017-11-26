@@ -2,6 +2,8 @@ const _ = require('lodash')
 const ApiError = require('../error/ApiError')
 const ApiErrorNames = require('../error/ApiErrorNames')
 const Product = require('../../models/product')
+const fs = require('fs')
+const path = require('path')
 
 class ProductController {
 	/**
@@ -100,6 +102,7 @@ class ProductController {
 		}
 	}
 
+
 	/**
 	 * PUT
 	 * 更新产品
@@ -147,6 +150,31 @@ class ProductController {
 			message: '删除成功',
 			data: `已删除${result.n}条数据`
 		}
+	}
+
+	/**
+	 * POST
+	 * 上传图片
+	 * 仅仅处理图片的io，不会修改数据库。所有的图片都是post，不会存在覆盖的现象。
+	 * 数据的更新由后续的接口来处理。
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
+	static async productImage (ctx, next) {
+		if ('POST' !== ctx.method) return await next()
+		const file = ctx.request.body
+		console.log(file)
+		// const reader = fs.createReadStream(file);
+		// const p = '../../public/upload/' + Date.now() + '.png'
+		// const stream = fs.createWriteStream(path.resolve(__dirname, p));
+		// reader.pipe(stream)
+		// const base = '/upload/' + path.parse(stream.path).base
+		// ctx.body = {
+		// 	data: {
+		// 		path: base
+		// 	}
+		// }
 	}
 }
 

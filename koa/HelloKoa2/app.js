@@ -6,7 +6,7 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const mongoose = require('mongoose')
-const koaBody = require('koa-body')
+// const koaBody = require('koa-body')
 const session = require('koa-session')
 const jwt = require('koa-jwt')
 const cors = require('koa2-cors')
@@ -25,6 +25,7 @@ const api = require('./routes/api')
 onerror(app)
 
 // middlewares
+// app.use(koaBody({ multipart: true }))
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }))
@@ -34,7 +35,6 @@ app.use(session({
 }, app))
 app.use(json())
 app.use(logger())
-// app.use(koaBody({ multipart: true }))
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {
@@ -48,7 +48,7 @@ app.use(cors({
 	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
 	maxAge: 5,
 	credentials: true,
-	allowMethods: ['GET', 'POST', 'DELETE'],
+	allowMethods: ['GET', 'POST', 'DELETE', 'PUT'],
 	allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }))
 
@@ -80,7 +80,7 @@ app.on('error', (err, ctx) => {
 });
 
 mongoose.Promise = global.Promise
-mongoose.connect('mongodb://localhost:27017/start', {
+mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/start', {
     useMongoClient: true
 })
 

@@ -5,6 +5,7 @@ const Product = require('../../models/product')
 const fs = require('fs')
 const path = require('path')
 
+
 class ProductController {
 	/**
 	 * GET
@@ -163,18 +164,12 @@ class ProductController {
 	 */
 	static async productImage (ctx, next) {
 		if ('POST' !== ctx.method) return await next()
-		const file = ctx.request.body
-		console.log(file)
-		// const reader = fs.createReadStream(file);
-		// const p = '../../public/upload/' + Date.now() + '.png'
-		// const stream = fs.createWriteStream(path.resolve(__dirname, p));
-		// reader.pipe(stream)
-		// const base = '/upload/' + path.parse(stream.path).base
-		// ctx.body = {
-		// 	data: {
-		// 		path: base
-		// 	}
-		// }
+		const { sku } = ctx.params
+		const path = `/images/pro-pics/${sku.toUpperCase()}/${ctx.req.file.filename}`
+		// const path = ctx.req.files.map(f => `/images/pro-pics/${sku.toUpperCase()}/${f.filename}`)
+		ctx.body = {
+			data: path
+		}
 	}
 }
 

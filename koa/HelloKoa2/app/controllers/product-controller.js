@@ -123,11 +123,14 @@ class ProductController {
 			.findOne({ sku: sku.toUpperCase() })
 			.select('-sku')
 			.exec()
+		const ableUpdate = _.omit(body, ['_id', 'sku', 'date', 'update', 'sales', 'like', 'cart', 'truePrice'])
+		console.log(ableUpdate)
 		if (!old) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
-		for (let k in body) {
-			if (k === 'sku' || body[k] === undefined) continue
+		for (let k in ableUpdate) {
+			if (body[k] === undefined) continue
 			old[k] = body[k]
 		}
+		old.update = new Date()
 		const _new = await old.save()
 		ctx.body = {
 			data: _.omit(_new.toObject(), '__v')

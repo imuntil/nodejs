@@ -23,7 +23,7 @@ class ProductController {
 		const pros = await q
 			.sort(`${s}${f}`)
 			.select('-__v')
-			// .lean()
+			.lean()
 			.exec()
 		ctx.body = {
 			data: pros
@@ -121,10 +121,8 @@ class ProductController {
 		}
 		const old = await Product
 			.findOne({ sku: sku.toUpperCase() })
-			.select('-sku')
 			.exec()
 		const ableUpdate = _.omit(body, ['_id', 'sku', 'date', 'update', 'sales', 'like', 'cart', 'truePrice'])
-		console.log(ableUpdate)
 		if (!old) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
 		for (let k in ableUpdate) {
 			if (body[k] === undefined) continue

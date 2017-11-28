@@ -97,7 +97,7 @@ class ProductController {
 		}
 		const date = new Date()
 		const pro = await Product
-			.create({ sku, en, cn, price, _type, date, update: date, ...rest })
+			.create({ sku: sku.toUpperCase(), en, cn, price, _type, date, update: date, ...rest })
 		ctx.body = {
 			data: _.omit(pro.toObject(), '__v')
 		}

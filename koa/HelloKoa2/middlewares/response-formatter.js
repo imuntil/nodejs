@@ -21,35 +21,36 @@ const urlFilter = pattern => {
     try {
       await next()
     } catch (err) {
-			if (reg.test(ctx.originalUrl)) {
+      console.log(err)
+      if (reg.test(ctx.originalUrl)) {
         if (err instanceof ApiError) {
           ctx.status = 200
           ctx.body = {
             code: err.code,
             message: err.message,
           }
-        } else if (err instanceof mongoose.Error) {
-          ctx.status = 200
-          ctx.body = {
-            code: 200,
-            message: err.message
-          }
         } else if (err instanceof mongoose.Error.ValidationError) {
+          const { errors } = err
+          const e1 = Object.values(errors)[0]
           ctx.status = 200
           ctx.body = {
             code: 210,
-            message: '字段不合法'
+            message: e1.message || '字段不合法'
           }
-        } else {
-					console.log(err)
+        }else if (err instanceof mongoose.Error) {
+          ctx.status = 200
+          ctx.body = {
+            code: 200,
+            message: 'database-error: ' + err.message
+          }
+        }  else {
 					ctx.status = 200
           ctx.body = {
             code: 211,
-            message: err.message || '其他',
+            message: '->' + err.message || '其他',
           }
         }
       }
-
       // throw err
     }
     if (reg.test(ctx.originalUrl)) {

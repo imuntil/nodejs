@@ -91,13 +91,13 @@ class ProductController {
 	 * @return {Promise.<void>}
 	 */
 	static async addPro (ctx, next) {
-		const { sku, en, cn, price, _type, ...rest } = ctx.request.body
-		if (!sku || !en || !cn || !price || !_type) {
+		const { sku, ...rest } = ctx.request.body
+		if (!sku) {
 			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		}
 		const date = new Date()
 		const pro = await Product
-			.create({ sku: sku.toUpperCase(), en, cn, price, _type, date, update: date, ...rest })
+			.create({ sku: sku.toUpperCase(), date, update: date, ...rest })
 		ctx.body = {
 			data: _.omit(pro.toObject(), '__v')
 		}

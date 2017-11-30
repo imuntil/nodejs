@@ -10,6 +10,7 @@ const jwt = require('jsonwebtoken')
 const credentials = require('../../lib/credentials')
 const regs = require('../../lib/common').regs
 
+const max = 200
 function setToken(phone, ctx) {
 	const token = jwt.sign({ phone }, credentials.cookieSecret, {
 		expiresIn: '7d'
@@ -211,6 +212,30 @@ class UserController {
   //     }
   //   }
   // }
+  // crm system
+  // 获取所有用户，需要分页
+  static async getUserList (ctx, next) {
+    console.log('获取用户列表')
+    const { size = 20, page = 1 } = ctx.query
+    const count = await User.count()
+    const q = count <= max
+      ? User.find()
+      : User.find().skip((page - 1) * size).limit(page)
+    const users = await q
+      .sort('-created')
+      .select('phone created nick avatar openID cart _id')
+      .lean()
+      .exec()
+    ctx.body = {
+      data: {
+        users,
+        count,
+        total: count <= max ? 1 : (count % size + 1),
+        current: page
+      }
+    }
+  }
 }
+
 
 module.exports = UserController

@@ -20,5 +20,6 @@ router
    * 没有信息返回null
    */
   .get('/:ip', userController.getUser)
+  .get('/', userController.getUserList)
 
 module.exports = router

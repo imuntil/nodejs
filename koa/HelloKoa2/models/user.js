@@ -8,12 +8,12 @@ const userSchema = new Scheme({
 		required: true,
 		unique: true
 	},
-	created: Date,
-	password: String,
-	nick: String,
-	avatar: String,
-	openID: String,
-	token: String,
+	created: { type: Date, required: true },
+	password: { type: String, required: true },
+	nick: { type: String, required: true },
+	avatar: { type: String },
+	openID: { type: String },
+	token: { type: String },
 	cart: { type: Scheme.Types.ObjectId, ref: 'Cart' }
 })
 

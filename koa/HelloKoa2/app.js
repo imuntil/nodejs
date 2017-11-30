@@ -70,7 +70,7 @@ app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(
   jwt({ cookie: '_token', secret: credentials.cookieSecret })
-    .unless({ path: [/^\/api\/users\/[code|register|login]/, /^\/api\/pros/] })
+    .unless({ path: [/^\/api\/users\/[code|register|login]/, /^\/api\/pros/, /^\/api\/s/] })
 )
 app.use(api.routes(), api.allowedMethods())
 

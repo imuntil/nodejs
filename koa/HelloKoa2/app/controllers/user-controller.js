@@ -29,11 +29,24 @@ createCart = async function (_owner) {
 	await cart.save()
 	return true
 }
+// uid是否合法
+function validUID(uid) {
+	if (!regs.objectId.reg.test(uid)) throw new ApiError(ApiErrorNames.WRONG_ID)
+}
+// 验证码过期时间1min
+const timeout = 1000 * 60
 class UserController {
-  // 获取用户信息
+	/**
+	 * GET
+	 * /api/users/:ip
+	 * 获取用户信息
+	 * params = { ip (phone, uid)}
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
   static async getUser (ctx, next) {
 		const { ip } = ctx.params
-	  console.log('ip', ctx.params)
 	  if (!ip) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
@@ -51,15 +64,30 @@ class UserController {
 		ctx.body = { data: { user } }
 	}
 
-  // 获取验证码
+	/**
+	 * GET
+	 * /api/users/code
+	 * 获取验证码
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
   static async getCode (ctx, next) {
     const code = Math.floor(Math.random() * 1000000)
-    ctx.session.code = code
+    ctx.session.code = { result: code, timeout: Date.now() + timeout }
     ctx.body = { data: { code } }
   }
 
 
-  // 用户注册
+	/**
+	 * POST
+	 * /api/users/register
+	 * 用户注册
+	 * body = { nick, phone, password }
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
   static async register (ctx, next) {
 	  console.log('register')
 	  const { nick, phone, password } = ctx.request.body
@@ -78,7 +106,15 @@ class UserController {
     ctx.body = { data: { nick, phone, uid: _new._id } }
   }
 
-  // 用户登录
+	/**
+	 * POST
+	 * /api/users/login
+	 * 用户登录
+	 * body = { phone, password }
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
   static async login (ctx, next) {
     const { phone, password } = ctx.request.body
     if (!password || !phone) {
@@ -96,7 +132,14 @@ class UserController {
     }
 	}
 
-	// 退出登录
+	/**
+	 * GET
+	 * 退出登录
+	 * /api/users/logout
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
   static async logout (ctx, next) {
     // x
     ctx.cookies.set('_token', '', {
@@ -107,35 +150,61 @@ class UserController {
   }
 
 	/**
+	 * PUT
 	 * 修改密码
-	 * phone || uid, password
+	 * /api/users/:uid/password
+	 * body = { np, op, phone }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<boolean>}
 	 */
   static async modifyPassword (ctx, next) {
-    const { phone, uid, password } = ctx.request.body
-    if (!password || (!phone && !uid)) {
+		console.log('修改密码')
+		const { uid } = ctx.params
+		validUID(uid)
+    const { np, op } = ctx.request.body
+    if (!np || !op) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
-    if (!regs.password.reg.test(password)) {
-      ctx.body = {
-        code: '1042',
-        message: '密码格式有误'
-      }
-      return false
-    }
-    const bt = User.encryptPassword(password)
-    let q
-    if (phone) {
-      q = User.findOneAndUpdate({ phone }, { password: bt })
-    } else {
-      q = User.findByIdAndUpdate(uid, { password: bt })
-    }
-    const user = await q.exec()
-		if (!user) {
-      throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
-    }
+    // const bt = User.encryptPassword(op)
+    // const user = await User.findByIdAndUpdate(uid, { password: bt })
+		// if (!user) {
+    //   throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
+    // }
+		// 查找用户
+		const user = await User.findById(uid).exec()
+		if (!user || !user.validPassword(op)) {
+			throw new ApiError(ApiErrorNames.WRONG_ACCOUNT_OR_PASSWORD)
+		}
+		// 修改密码
+		user.password = user.encryptPassword(np)
+		// 更新token
+		user.token = setToken(user.phone, ctx)
+		await user.save()
+    ctx.body = {
+  		message: '操作成功'
+		}
+	}
+
+	static async forget (ctx, next) {
+		console.log('忘记密码')
+		const { uid } = ctx.params
+		validUID(uid)
+		const { code, password } = ctx.request.body
+		const session = ctx.session.code
+		// 服务器没有code的session
+		if (!session || !session.result) throw new ApiError(ApiErrorNames.UNKNOWN_ERROR)
+		if (code !== session.result) throw new ApiError(ApiErrorNames.WRONG_CODE)
+		if (Date.now() - session.timeout > timeout) throw new ApiError(ApiErrorNames.CODE_EXPIRED)
+		const user = await User.findById(uid).exec()
+		if (!user) throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
+		user.password = user.encryptPassword(password)
+		user.token = setToken(user.phone, ctx)
+		await user.save()
+		ctx.session.code = ''
+		ctx.body = {
+			message: '操作成功'
+		}
 	}
 
 	/**

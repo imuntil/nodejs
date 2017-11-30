@@ -4,8 +4,9 @@ const adrRouter = require('./adr-router')
 const proRouter = require('./pro-router')
 const cartRouter = require('./cart-router')
 const orderRouter = require('./order-router')
+// const v = process.env.npm_package_version
 
-router.prefix('/api')
+router.prefix(`/api`)
 router.use('/users/:uid/cart', cartRouter.routes(), cartRouter.allowedMethods())
 router.use('/users/:uid/order', orderRouter.routes(), orderRouter.allowedMethods())
 router.use('/users', userRouter.routes(), userRouter.allowedMethods())

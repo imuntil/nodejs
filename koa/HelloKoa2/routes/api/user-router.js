@@ -10,9 +10,10 @@ router
   .post('/login', userController.login)
   // 上传头像
   // .post('/upload', userController.uploadAvatar)
-  .put('/modify/password', userController.modifyPassword)
-  .put('/modify/nick', userController.modifyNick)
-  .put('/modify/avatar', userController.modifyAvatar)
+  .put('/:uid/password', userController.modifyPassword)
+  .put('/:uid/nick', userController.modifyNick)
+  .put('/:uid/avatar', userController.modifyAvatar)
+  .put('/:uid/forget', userController.forget)
   // 退出登录
   .get('/logout', userController.logout)
   /**
@@ -23,3 +24,4 @@ router
   .get('/', userController.getUserList)
 
 module.exports = router
+

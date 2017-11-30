@@ -12,6 +12,8 @@ ApiErrorNames.ADDRESS_NOT_EXIST = 'addressNotExist'
 ApiErrorNames.ADR_NOT_EXIST_OR_NOT_MATCH_USER = 'addressNotExistOrNotMatchToUser'
 ApiErrorNames.PRODUCT_NOT_EXIST = 'productNotExist'
 ApiErrorNames.ORDER_NOT_EXIST = 'orderNotExist'
+ApiErrorNames.WRONG_CODE = 'wrongCode'
+ApiErrorNames.CODE_EXPIRED = 'codeExpired'
 
 const errorMap = new Map()
 errorMap.set(ApiErrorNames.UNKNOWN_ERROR, { code: -1, message: '未知错误' })
@@ -26,6 +28,8 @@ errorMap.set(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD, { code: 103, message: '账
 errorMap.set(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR, { code: 104, message: '缺少参数或参数有误' })
 errorMap.set(ApiErrorNames.WRONG_PHONE_NUMBER, { code: 1041, message: '手机号码格式有误' })
 errorMap.set(ApiErrorNames.WRONG_ID, { code: 1043, message: '缺少id或者id格式有误' })
+errorMap.set(ApiErrorNames.WRONG_CODE, { code: 107, message: '验证码有误' })
+errorMap.set(ApiErrorNames.CODE_EXPIRED, { code: 1071, message: '验证码已过期' })
 
 ApiErrorNames.getErrorInfo = errorName => {
 	let errorInfo

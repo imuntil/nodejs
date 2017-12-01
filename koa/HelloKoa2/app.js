@@ -31,7 +31,7 @@ app.use(bodyparser({
 }))
 app.keys = ['session-key']
 app.use(session({
-  maxAge: 1000 * 60 * 30
+  maxAge: 1000 * 60 * 60
 }, app))
 app.use(json())
 app.use(logger())
@@ -43,7 +43,7 @@ app.use(views(__dirname + '/views', {
 
 app.use(cors({
 	origin: function (ctx) {
-		return '*';
+		return 'http://localhost:3000';
 	},
 	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
 	maxAge: 5,
@@ -68,9 +68,24 @@ app.use(jwtMid)
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+// admin
+app.use(
+  jwt({ cookie: '_st', secret: credentials.sysCookieSecret })
+    .unless({
+      custom ({ originalUrl: url }) {
+        console.log(url)
+        if (url === '/api/sys/login' || url === '/api/sys/register') return true
+        if (url.indexOf('/sys') >= 0) return false
+        return true
+      }
+    })
+)
+// user
 app.use(
   jwt({ cookie: '_token', secret: credentials.cookieSecret })
-    .unless({ path: [/^\/api\/users\/[code|register|login]/, /^\/api\/pros/, /^\/api\/s/] })
+    .unless({
+      path: [/^\/api\/users\/[code|register|login]/, /^\/api\/pros/, /^\/api\/sys\/[login|register]/]
+    })
 )
 app.use(api.routes(), api.allowedMethods())
 
@@ -81,7 +96,7 @@ app.on('error', (err, ctx) => {
 
 mongoose.Promise = global.Promise
 mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/start', {
-    useMongoClient: true
+  useMongoClient: true
 })
 
 module.exports = app

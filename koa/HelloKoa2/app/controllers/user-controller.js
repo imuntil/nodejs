@@ -46,7 +46,8 @@ class UserController {
 	 * @returns {Promise.<void>}
 	 */
   static async getUser (ctx, next) {
-		const { ip } = ctx.params
+    console.log('获取用户信息')
+    const { ip } = ctx.params
 	  if (!ip) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
@@ -73,9 +74,12 @@ class UserController {
 	 * @returns {Promise.<void>}
 	 */
   static async getCode (ctx, next) {
+    console.log('获取验证码')
     const code = Math.floor(Math.random() * 1000000)
-    ctx.session.code = { result: code, timeout: Date.now() + timeout }
-    ctx.body = { data: { code } }
+		// if (!ctx.session.code || !ctx.session.code.result) {
+		ctx.session.code = { result: code, timeout: Date.now() + timeout }
+		// }
+    ctx.body = { data: code }
   }
 
 
@@ -89,7 +93,7 @@ class UserController {
 	 * @returns {Promise.<void>}
 	 */
   static async register (ctx, next) {
-	  console.log('register')
+	  console.log('用户注册')
 	  const { nick, phone, password } = ctx.request.body
 	  if (!nick || !phone || !password) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
@@ -116,6 +120,7 @@ class UserController {
 	 * @returns {Promise.<void>}
 	 */
   static async login (ctx, next) {
+    console.log('用户登录')
     const { phone, password } = ctx.request.body
     if (!password || !phone) {
       throw new ApiError(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD)
@@ -124,8 +129,7 @@ class UserController {
 		if (!user || !user.validPassword(password)) {
       throw new ApiError(ApiErrorNames.WRONG_ACCOUNT_OR_PASSWORD)
     }
-    const token = setToken(phone, ctx)
-	  user.token = token
+	  user.token = setToken(phone, ctx)
 	  await user.save()
     ctx.body = {
       data: { user: _.pick(user, ['nick', 'phone', '_id']) }
@@ -141,7 +145,7 @@ class UserController {
 	 * @returns {Promise.<void>}
 	 */
   static async logout (ctx, next) {
-    // x
+    console.log('登出')
     ctx.cookies.set('_token', '', {
 			signed: true,
 			maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -186,15 +190,26 @@ class UserController {
 		}
 	}
 
+  /**
+	 * PUT
+	 * 忘记密码
+	 * /api/users/:uid/forget
+	 * params { uid }
+	 * body { code, password }
+   * @param ctx
+   * @param next
+   * @return {Promise.<void>}
+   */
 	static async forget (ctx, next) {
 		console.log('忘记密码')
 		const { uid } = ctx.params
 		validUID(uid)
 		const { code, password } = ctx.request.body
-		const session = ctx.session.code
+    console.log(ctx.session.code)
+    const session = ctx.session.code
 		// 服务器没有code的session
 		if (!session || !session.result) throw new ApiError(ApiErrorNames.UNKNOWN_ERROR)
-		if (code !== session.result) throw new ApiError(ApiErrorNames.WRONG_CODE)
+		if (code.toString() !== session.result.toString()) throw new ApiError(ApiErrorNames.WRONG_CODE)
 		if (Date.now() - session.timeout > timeout) throw new ApiError(ApiErrorNames.CODE_EXPIRED)
 		const user = await User.findById(uid).exec()
 		if (!user) throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
@@ -208,24 +223,28 @@ class UserController {
 	}
 
 	/**
+	 * PUT
+	 * /api/users/:uid/nick
 	 * 修改昵称
-	 * phone || uid, nick
+	 * params = { uid }
+	 * body = { nick }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}
 	 */
   static async modifyNick (ctx, next) {
-    const { phone, uid, nick } = ctx.request.body
-    if (!nick || (!phone && !uid)) {
+    console.log('修改昵称')
+    const { uid } = ctx.params
+    validUID(uid)
+    const {  nick } = ctx.request.body
+    if (!nick) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
-    let q
-    if (uid) {
-      q = User.findByIdAndUpdate(uid, { $set: { nick } })
-    } else {
-      q = User.findOneAndUpdate({ phone }, { $set: { nick } })
-    }
-    const user = await q.select('nick phone _id').lean().exec()
+    const user = await User
+			.findByIdAndUpdate(uid, { $set: { nick } })
+			.select('nick phone _id')
+			.lean()
+			.exec()
     if (!user) {
       throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
     }
@@ -235,19 +254,21 @@ class UserController {
   }
 
 	/**
+	 * PUT
+	 * /api/users/:uid/avatar
 	 * 修改头像
-	 * phone || uid, imgStr(base64)
+	 * params = { uid }
+	 * body = { imgStr }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}
 	 */
   static async modifyAvatar (ctx, next) {
-    const { phone, uid, imgStr } = ctx.request.body
-    if (!phone && !uid) {
-			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
-		}
-		const q = uid ? User.findById(uid) : User.findOne({ phone })
-    const user = await q.exec()
+    console.log('修改头像')
+    const { uid } = ctx.params
+    validUID(uid)
+    const { imgStr } = ctx.request.body
+    const user = await User.findById(uid).exec()
     if (!user) {
       throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
     }

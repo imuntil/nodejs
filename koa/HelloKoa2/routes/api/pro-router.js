@@ -36,17 +36,17 @@ const upload = multer({
 
 router
 	// sys
-	.post('/add', proController.addPro)
+	.post('/sys/add', proController.addPro)
 	.get('/maybe', proController.maybeLike)
 	.post('/:sku/upload', upload.single('file'), proController.productImage)
 	// .post('/:sku/upload', upload.array('file', { maxCount: 5 }), proController.productImage)
-	// sys
-	.get('/:sku', proController.getProDetail)
 	// sys only
-	.put('/:sku', proController.modifyPro)
+	.put('/sys/:sku', proController.modifyPro)
 	// sys only
-	.delete('/:sku', proController.delPro)
+	.delete('/sys/:sku', proController.delPro)
 	// sys
-	.get('/', proController.getProList)
+	.get('/(sys)?/', proController.getProList)
+	// sys
+	.get('/(sys)?/:sku', proController.getProDetail)
 
 module.exports = router

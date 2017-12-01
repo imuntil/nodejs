@@ -8,13 +8,14 @@ const userSchema = new Scheme({
 		required: true,
 		unique: true
 	},
-	created: { type: Date, required: true },
+	created: { type: Date, required: true, default: Date.now() },
 	password: { type: String, required: true },
 	nick: { type: String, required: true },
 	avatar: { type: String },
 	openID: { type: String },
 	token: { type: String },
-	cart: { type: Scheme.Types.ObjectId, ref: 'Cart' }
+	cart: { type: Scheme.Types.ObjectId, ref: 'Cart' },
+	lastLogin: { type: Date, required: true, default: Date.now()}
 })
 
 userSchema.methods.encryptPassword = password =>

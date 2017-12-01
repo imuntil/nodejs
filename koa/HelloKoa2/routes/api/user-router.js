@@ -20,8 +20,8 @@ router
    * 获取用户信息，根据id或者phone
    * 没有信息返回null
    */
+  .get('/sys', userController.getUserList)
   .get('/:ip', userController.getUser)
-  .get('/', userController.getUserList)
 
 module.exports = router
 

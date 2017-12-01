@@ -16,7 +16,8 @@ class ProductController {
 	 * @return {Promise.<void>}
 	 */
 	static async getProList (ctx, next) {
-		const { flag, type, sort = 'desc' } = ctx.request.query
+    console.log('产品列表	')
+    const { flag, type, sort = 'desc' } = ctx.request.query
 		let q = type ? Product.find({ _type: type }) : Product.find()
 		const s = sort === 'asc' ? '' : '-'
 		const f = flag ? `${flag} date` : 'date'
@@ -39,7 +40,8 @@ class ProductController {
 	 * @return {Promise.<void>}
 	 */
 	static async getProDetail (ctx, next) {
-		const { sku } = ctx.params
+    console.log('产品详情')
+    const { sku } = ctx.params
 		if (!sku) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		const pro = await Product
 			.findOne({ sku: sku.toUpperCase() })

@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken')
 const credentials = require('../../lib/credentials')
 const regs = require('../../lib/common').regs
 
-const max = 200
+const max = 2
 function setToken(phone, ctx) {
 	const token = jwt.sign({ phone }, credentials.cookieSecret, {
 		expiresIn: '7d'
@@ -303,14 +303,22 @@ class UserController {
   //   }
   // }
   // crm system
-  // 获取所有用户，需要分页
+	/**
+	 * GET
+	 * 获取用户列表
+	 * query = { size, page }
+	 * 用户总数<= max ，全部返回，忽略size, page
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
   static async getUserList (ctx, next) {
     console.log('获取用户列表')
     const { size = 20, page = 1 } = ctx.query
     const count = await User.count()
     const q = count <= max
       ? User.find()
-      : User.find().skip((page - 1) * size).limit(page)
+      : User.find().skip((page - 1) * size).limit(~~size)
     const users = await q
       .sort('-created')
       .select('phone created nick avatar openID cart _id')
@@ -320,11 +328,40 @@ class UserController {
       data: {
         users,
         count,
-        total: count <= max ? 1 : (count % size + 1),
-        current: page
+        total: Math.ceil(count / size),
+        current: page,
+				all: count <= max
       }
     }
   }
+
+	/**
+	 * GET
+	 * 检索用户
+	 * query = { ps }
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<boolean>}
+	 */
+  static async filterUsers (ctx, next) {
+		console.log('检索用户')
+		const { ps } = ctx.query
+		if (!/^1\d{2,10}$/.test(ps)) {
+			ctx.body = {
+				data: []
+			}
+			return false
+		}
+		const users = await User
+			.find({ phone: { $regex: new RegExp(`^${ps}`) } })
+			.limit(20)
+			.lean()
+			.exec()
+		console.log(users)
+		ctx.body = {
+			data: users
+		}
+	}
 }
 
 

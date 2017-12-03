@@ -11,7 +11,7 @@ const User = require('../../models/user')
 async function ifUser (uid) {
 	const user = await User.findById(uid).exec()
 	if (!user) throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
-	return true
+	return { nick: user.nick, phone: user.phone }
 }
 // 地址是否存在
 async function ifAdr (aid, uid) {
@@ -66,7 +66,7 @@ class OrderController {
 		// products是否正确
 		if (!_.isArray(body) || !body.length) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		// 用户是否存在
-		await ifUser(uid)
+		const { nick, phone } = await ifUser(uid)
 		// 地址是否存在
 		const adr = await ifAdr(aid, uid)
 		// 获取产品
@@ -84,7 +84,9 @@ class OrderController {
 			express: 0,
 			status: 0,
 			address: adr,
-			show
+			show,
+			_ownerNick: nick,
+			_ownerPhone: phone
 		})
 		const _new = await order.save()
 		ctx.body = {
@@ -179,6 +181,36 @@ class OrderController {
 			data: `发现${n}订单，更新${nModified}订单`
 		}
 		return
+	}
+
+	/**
+	 * GET
+	 * 获取订单列表（sys）
+	 * query = { size, page }
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
+	static async getOrderList (ctx, next) {
+		console.log('获取订单列表（sys）')
+		const { size = 20, page = 1 } = ctx.query
+		const count = await Order.count()
+		const orders = await Order
+			.find()
+			.sort('-date')
+			.skip((page - 1) * size)
+			.limit(~~size)
+			.select('-__v')
+			.lean()
+			.exec()
+		ctx.body = {
+			data: {
+				orders,
+				count,
+				total: Math.ceil(count / size),
+				current: page
+			}
+		}
 	}
 }
 

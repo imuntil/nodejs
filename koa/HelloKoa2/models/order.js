@@ -3,6 +3,8 @@ const Schema = mongoose.Schema
 
 const orderSchema = new Schema({
 	_owner: Schema.Types.ObjectId,	//用户id
+	_ownerNick: String,
+	_ownerPhone: String,
 	orderNumber: String,	// 订单号
 	date: Date,  // 订单日期
 	products: [{
@@ -19,7 +21,7 @@ const orderSchema = new Schema({
 	express: Number,  // 快递费用,
 	status: {		// 订单状态
 		type: Number,
-		enum: [0, 1, 2, 3]   // 未支付，已支付，已完成，已取消
+		enum: [0, 1, 2, 3, 4, 5, 6, 7]   // 未支付，已支付(待发货)，已发货，已完成，已取消, 申请退款， 已退款， 退款失败
 	},
 	address: {  // 地址信息
 		province: String,

@@ -22,6 +22,7 @@ router
    */
   .get('/sys', userController.getUserList)
   .get('/:ip', userController.getUser)
+  .get('/sys/filter', userController.filterUsers)
 
 module.exports = router
 

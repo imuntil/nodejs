@@ -186,17 +186,17 @@ class OrderController {
 	/**
 	 * GET
 	 * 获取订单列表（sys）
-	 * query = { size, page }
+	 * query = { size, page, status }
 	 * @param ctx
 	 * @param next
 	 * @returns {Promise.<void>}
 	 */
 	static async getOrderList (ctx, next) {
 		console.log('获取订单列表（sys）')
-		const { size = 20, page = 1 } = ctx.query
+		const { size = 20, page = 1, status } = ctx.query
 		const count = await Order.count()
 		const orders = await Order
-			.find()
+			.find(status ? { status } : {})
 			.sort('-date')
 			.skip((page - 1) * size)
 			.limit(~~size)

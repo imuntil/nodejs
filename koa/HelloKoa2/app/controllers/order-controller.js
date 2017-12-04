@@ -72,7 +72,7 @@ class OrderController {
 		// 获取产品
 		const { total, amount, products } = await getProducts(body)
 		const date = new Date()
-		const orderNumber = +date + '-' + Math.floor(Math.random() * 10000)
+		const orderNumber = `0${+date}${Math.floor(Math.random() * 10000)}`
 		const show = true
 		const order = new Order({
 			_owner: uid,
@@ -134,7 +134,7 @@ class OrderController {
 		console.log('order detail');
 		const { uid, orderNumber } = ctx.params
 		iv(uid)
-		if (!orderNumber || !/^\d{13}-\d{4}$/.test(orderNumber)) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+		if (!orderNumber || !/^0\d{17}$/.test(orderNumber)) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		const order = await Order
 			.findOne({ orderNumber })
 			.select('-__v')
@@ -162,7 +162,7 @@ class OrderController {
 		console.log('order delete/modify')
 		const { uid, orderNumber } = ctx.params
 		iv(uid)
-		if (!orderNumber || !/^\d{13}-\d{4}$/.test(orderNumber)) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+		if (!orderNumber || !/^0\d{17}$/.test(orderNumber)) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		const { del, status } = ctx.request.body
 		if (del === undefined && status === undefined) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		if (del) {
@@ -194,7 +194,7 @@ class OrderController {
 	static async getOrderList (ctx, next) {
 		console.log('获取订单列表（sys）')
 		const { size = 20, page = 1, status } = ctx.query
-		const count = await Order.count()
+		const count = await Order.count(status ? { status } : {})
 		const orders = await Order
 			.find(status ? { status } : {})
 			.sort('-date')
@@ -208,8 +208,31 @@ class OrderController {
 				orders,
 				count,
 				total: Math.ceil(count / size),
-				current: page
+				current: page,
+				size
 			}
+		}
+	}
+
+	/**
+	 * PUT
+	 * 确认发货 (sys)
+	 * params = { on }
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
+	static async deliverGoods (ctx, next) {
+		console.log('确认发货 (sys)')
+		const { on } = ctx.params
+		if (!on || !/^0\d{17}$/.test(on)) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+		const order = await Order.findOne({ orderNumber: on }).exec()
+		if (!order) throw new ApiError(ApiErrorNames.ORDER_NOT_EXIST)
+		if (~~order.status !== 1) throw new ApiError(ApiErrorNames.UNKNOWN_ERROR)
+		order.status = 2
+		await order.save()
+		ctx.body = {
+			message: '修改成功'
 		}
 	}
 }

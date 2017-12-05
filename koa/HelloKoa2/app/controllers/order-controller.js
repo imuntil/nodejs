@@ -193,10 +193,18 @@ class OrderController {
 	 */
 	static async getOrderList (ctx, next) {
 		console.log('获取订单列表（sys）')
-		const { size = 20, page = 1, status } = ctx.query
+		const { size = 20, page = 1, status, field, q } = ctx.query
 		const count = await Order.count(status ? { status } : {})
-		const orders = await Order
-			.find(status ? { status } : {})
+		const s = {}
+		if (status !== undefined) {
+			s.status = status
+		}
+		if (field && ['orderNumber', '_ownerPhone', '_ownerNick'].indexOf(field) >= 0 && q) {
+      s[field] = {$regex: new RegExp(`^${q}`) }
+    }
+    console.log(s)
+    const orders = await Order
+			.find(s)
 			.sort('-date')
 			.skip((page - 1) * size)
 			.limit(~~size)

@@ -10,7 +10,6 @@ const jwt = require('jsonwebtoken')
 const credentials = require('../../lib/credentials')
 const regs = require('../../lib/common').regs
 
-const max = 2
 function setToken(phone, ctx) {
 	const token = jwt.sign({ phone }, credentials.cookieSecret, {
 		expiresIn: '7d'
@@ -307,7 +306,6 @@ class UserController {
 	 * GET
 	 * 获取用户列表
 	 * query = { size, page }
-	 * 用户总数<= max ，全部返回，忽略size, page
 	 * @param ctx
 	 * @param next
 	 * @returns {Promise.<void>}
@@ -316,10 +314,9 @@ class UserController {
     console.log('获取用户列表')
     const { size = 20, page = 1 } = ctx.query
     const count = await User.count()
-    const q = count <= max
-      ? User.find()
-      : User.find().skip((page - 1) * size).limit(~~size)
-    const users = await q
+    const users = await User.find()
+			.skip((page - 1) * size)
+			.limit(~~size)
       .sort('-created')
       .select('phone created nick avatar openID cart _id')
       .lean()
@@ -330,7 +327,7 @@ class UserController {
         count,
         total: Math.ceil(count / size),
         current: page,
-				all: count <= max
+				size
       }
     }
   }
@@ -357,7 +354,6 @@ class UserController {
 			.limit(20)
 			.lean()
 			.exec()
-		console.log(users)
 		ctx.body = {
 			data: users
 		}

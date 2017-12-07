@@ -41,23 +41,19 @@ app.use(views(__dirname + '/views', {
   extension: 'pug'
 }))
 
-// app.use(cors({
-// 	origin: function (ctx) {
-// 		return process.env === 'build'
-// 			? 'http://imuntil.com:30000'
-// 			: 'http://localhost:30000';
-// 	},
-// 	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
-// 	maxAge: 5,
-// 	credentials: true,
-// 	allowMethods: ['GET', 'POST', 'DELETE', 'PUT'],
-// 	allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
-// }))
+app.use(cors({
+	origin: function (ctx) {
+		return 'http://localhost:3000'
+	},
+	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+	maxAge: 5,
+	credentials: true,
+	allowMethods: ['GET', 'POST', 'DELETE', 'PUT'],
+	allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}))
 
 // logger
 app.use(async (ctx, next) => {
-	console.log(ctx.headers)
-	console.log('-——————————————————————————————————————————')
 	const start = new Date()
   await next()
   const ms = new Date() - start

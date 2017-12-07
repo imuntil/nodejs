@@ -10,7 +10,12 @@ const mongoose = require('mongoose')
 const session = require('koa-session')
 const jwt = require('koa-jwt')
 const cors = require('koa2-cors')
+
 const credentials = require('./lib/credentials')
+
+const https = require('https')
+const enforceHttps = require('koa-sslify')
+const fs = require('fs')
 
 const responseFormatter = require('./middlewares/response-formatter')
 const phoneValidate = require('./middlewares/request-validate')
@@ -20,6 +25,9 @@ require('./lib/auth')
 const index = require('./routes/index')
 const users = require('./routes/users')
 const api = require('./routes/api')
+
+// Force HTTPS on all page
+app.use(enforceHttps())
 
 // error handler
 onerror(app)
@@ -43,7 +51,8 @@ app.use(views(__dirname + '/views', {
 
 app.use(cors({
 	origin: function (ctx) {
-		return 'http://localhost:3000'
+		// return 'http://localhost:3000'
+		return 'https://localhost'
 	},
 	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
 	maxAge: 5,
@@ -55,7 +64,7 @@ app.use(cors({
 // logger
 app.use(async (ctx, next) => {
 	const start = new Date()
-  await next()
+	await next()
   const ms = new Date() - start
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
@@ -94,9 +103,18 @@ app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
 
+
 mongoose.Promise = global.Promise
 mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/start', {
   useMongoClient: true
 })
+
+// ssl options
+const options = {
+	key: fs.readFileSync('/usr/local/etc/nginx/ssl_cer/CA/server.key'),
+	cert: fs.readFileSync('/usr/local/etc/nginx/ssl_cer/CA/server.crt')
+}
+
+https.createServer(options, app.callback()).listen(3002)
 
 module.exports = app

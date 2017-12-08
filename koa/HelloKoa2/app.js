@@ -14,8 +14,10 @@ const cors = require('koa2-cors')
 const credentials = require('./lib/credentials')
 
 const https = require('https')
+const http = require('http')
 const enforceHttps = require('koa-sslify')
 const fs = require('fs')
+const os = require('os')
 
 const responseFormatter = require('./middlewares/response-formatter')
 const phoneValidate = require('./middlewares/request-validate')
@@ -110,11 +112,13 @@ mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/start', {
 })
 
 // ssl options
-const options = {
-	key: fs.readFileSync('/usr/local/etc/nginx/ssl_cer/CA/server.key'),
-	cert: fs.readFileSync('/usr/local/etc/nginx/ssl_cer/CA/server.crt')
+const { key, cert } = credentials.ssl[os.type().toLowerCase()] || {}
+if (!key) {
+  throw new Error('未知的操作系统')
 }
+const options = { key: fs.readFileSync(key), cert: fs.readFileSync(cert) }
 
 https.createServer(options, app.callback()).listen(3002)
+http.createServer(app.callback()).listen(3000)
 
 module.exports = app

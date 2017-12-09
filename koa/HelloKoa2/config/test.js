@@ -1,6 +1,6 @@
 module.exports = {
     env: 'test',
-    port: 3002,
+    port: 3005,
     mongodbURL: '',
     redisURL: '',
     redisPort: ''

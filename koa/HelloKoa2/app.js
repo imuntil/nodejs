@@ -14,7 +14,7 @@ const cors = require('koa2-cors')
 const credentials = require('./lib/credentials')
 
 const https = require('https')
-const http = require('http')
+// const http = require('http')
 const enforceHttps = require('koa-sslify')
 const fs = require('fs')
 const os = require('os')
@@ -53,8 +53,8 @@ app.use(views(__dirname + '/views', {
 
 app.use(cors({
 	origin: function (ctx) {
-		// return 'http://localhost:3000'
-		return 'https://localhost'
+		return 'http://localhost:30000'
+		// return 'https://localhost'
 	},
 	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
 	maxAge: 5,
@@ -118,7 +118,7 @@ if (!key) {
 }
 const options = { key: fs.readFileSync(key), cert: fs.readFileSync(cert) }
 
+// http.createServer(app.callback()).listen(3003)
 https.createServer(options, app.callback()).listen(3002)
-http.createServer(app.callback()).listen(3000)
 
 module.exports = app

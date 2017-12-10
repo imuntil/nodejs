@@ -121,7 +121,7 @@ class UserController {
   static async login (ctx, next) {
     console.log('用户登录')
     const { phone, password } = ctx.request.body
-    if (!password || !phone) {
+		if (!password || !phone) {
       throw new ApiError(ApiErrorNames.NEED_ACCOUNT_AND_PASSWORD)
     }
     const user = await User.findOne({ phone }).exec()

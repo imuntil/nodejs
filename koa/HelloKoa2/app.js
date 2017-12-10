@@ -53,7 +53,7 @@ app.use(views(__dirname + '/views', {
 
 app.use(cors({
 	origin: function (ctx) {
-		return 'http://localhost:30000'
+		return 'http://localhost:8000'
 		// return 'https://localhost'
 	},
 	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],

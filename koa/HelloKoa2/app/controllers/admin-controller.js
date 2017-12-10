@@ -16,6 +16,14 @@ function setToken (ctx, account) {
   return token
 }
 class AdminController {
+	/**
+   * POST
+   * 管理员登录
+   * body = { account, password }
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise.<void>}
+	 */
   static async login (ctx, next) {
     console.log('sys 登录')
     const { account, password } = ctx.request.body
@@ -37,5 +45,16 @@ class AdminController {
       await Admin.create({ account: 'admin', password: Admin.encryptPassword('k0kEwcW@'), token })
     }
   }
+  static async logout (ctx, next) {
+		console.log('登出')
+    ctx.cookies.set('_st', '', {
+      signed: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true
+    })
+    ctx.body = {
+		  message: '已退出登录'
+    }
+	}
 }
 module.exports = AdminController

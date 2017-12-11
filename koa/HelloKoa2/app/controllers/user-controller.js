@@ -66,6 +66,7 @@ class UserController {
 
 	/**
 	 * GET
+	 * 获取验证码
 	 * /api/users/code
 	 * 获取验证码
 	 * @param ctx
@@ -77,10 +78,31 @@ class UserController {
     const code = Math.floor(Math.random() * 1000000)
 		// if (!ctx.session.code || !ctx.session.code.result) {
 		ctx.session.code = { result: code, timeout: Date.now() + timeout }
-		// }
-    ctx.body = { data: code }
+    console.log(code)
+    // }
+		ctx.body = {
+    	data: code
+		}
   }
 
+  /**
+	 * GET
+	 * 查询手机号对应的用户是否存在
+	 * /api/users/is-exist
+	 * query = { phone }
+   * @param ctx
+   * @param next
+   * @return {Promise.<void>}
+   */
+  static async isExist (ctx, next) {
+    console.log('查询手机号对应的用户是否存在')
+		const { phone } = ctx.query
+		if (!regs.phone.reg.test(phone)) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
+		const user = await User.findOne({ phone }).exec()
+    ctx.body = {
+    	data: +!!user
+		}
+  }
 
 	/**
 	 * POST
@@ -94,12 +116,12 @@ class UserController {
   static async register (ctx, next) {
 	  console.log('用户注册')
 	  const { nick, phone, password } = ctx.request.body
-	  if (!nick || !phone || !password) {
-      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
-    }
-	  const user = await User.findOne({ phone }).exec()
+    const user = await User.findOne({ phone }).exec()
     if (user) {
       throw new ApiError(ApiErrorNames.THE_PHONE_WAS_REGISTERED)
+    }
+	  if (!nick || !phone || !password) {
+      throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
 		const token = setToken(phone, ctx)
 		const created = new Date()
@@ -131,7 +153,7 @@ class UserController {
 	  user.token = setToken(phone, ctx)
 	  await user.save()
     ctx.body = {
-      data: { user: _.pick(user, ['nick', 'phone', '_id']) }
+      data: _.pick(user, ['nick', 'phone', '_id', 'cart', 'avatar'])
     }
 	}
 
@@ -271,18 +293,25 @@ class UserController {
     if (!user) {
       throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
     }
-    const base64 = imgStr.replace(/^data:image\/\w+;base64,/, '')
-    const buffer = Buffer.from(base64, 'base64')
-		const p = path.resolve(__dirname, '../../public/upload/' + user.phone + '.png')
-    const res = await fs.writeFileSync(p, buffer)
-		if (res) {
-			ctx.body = {
-			  code: '1061',
-        message: '图片上传失败'
+    if (/^\d+$/.test(imgStr)) {
+    	user.avatar = imgStr
+		} else {
+      const base64 = imgStr.replace(/^data:image\/\w+;base64,/, '')
+      const buffer = Buffer.from(base64, 'base64')
+      const p = path.resolve(__dirname, '../../public/avatar/' + user.phone + '.png')
+      const res = await fs.writeFileSync(p, buffer)
+      if (res) {
+        ctx.body = {
+          code: '1061',
+          message: '图片上传失败'
+        }
       }
 		}
-		user.avatar = '/upload/' + user.phone + '.png'
-    await user.save()
+		user.avatar = '/avatar/' + user.phone + '.png'
+    const _new = await user.save()
+		ctx.body = {
+    	data: _.pick(_new, ['nick', 'phone', '_id', 'cart', 'avatar'])
+		}
 	}
 
   // 上传头像

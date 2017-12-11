@@ -16,6 +16,7 @@ router
   .put('/:uid/forget', userController.forget)
   // 退出登录
   .get('/logout', userController.logout)
+  .get('/is-exist', userController.isExist)
   /**
    * 获取用户信息，根据id或者phone
    * 没有信息返回null

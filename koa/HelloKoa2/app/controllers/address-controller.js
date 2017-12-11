@@ -9,13 +9,14 @@ class AddressController {
 	/**
 	 * GET
 	 * 获取所有地址
-	 * query = { uid }
+	 * params = { uid }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}
 	 */
 	static async getAdrList (ctx, next) {
-		const { uid } = ctx.query
+		console.log('获取所有地址')
+		const { uid } = ctx.params
 		iv(uid)
 		const list = await Adr.find({ _owner: uid }).select('-__v').lean().exec()
 		ctx.body = {
@@ -26,15 +27,14 @@ class AddressController {
 	/**
 	 * GET
 	 * 获取地址详细信息
-	 * params = { aid }
-	 * query = { uid }  //仅用于验证
+	 * params = { aid, uid }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}
 	 */
 	static async getAdr (ctx, next) {
-		const { aid } = ctx.params
-		iv(aid)
+		const { aid, uid } = ctx.params
+		iv(aid, uid)
 		const adr = await Adr.findById(aid).select('-__v -date').lean().exec()
 		console.log(adr)
 		ctx.body = {
@@ -45,13 +45,16 @@ class AddressController {
 	/**
 	 * POST
 	 * 新增地址
-	 * body = { uid, province, city, detail, name, phone, label(optional), isDefault(optional) }
+	 * body = { province, city, detail, name, phone, label(optional), isDefault(optional) }
+	 * params = { uid }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}
 	 */
 	static async addAdr (ctx, next) {
-		const { uid: _owner, province, city, detail, name, phone, label = '', isDefault = false } = ctx.request.body
+		console.log('新增地址')
+		const { province, city, detail, name, phone, label = '', isDefault = false } = ctx.request.body
+		const { uid: _owner } = ctx.params
 		iv(_owner)
 		if (!province || !city || !detail || !name || !phone) {
 			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
@@ -77,8 +80,8 @@ class AddressController {
 	 * @return {Promise.<void>}
 	 */
 	static async modifyAdr (ctx, next) {
-		const { aid } = ctx.params
-		iv(aid)
+		const { aid, uid } = ctx.params
+		iv(aid, uid)
 		const { province, city, detail, name, phone, label = '', isDefault = false } = ctx.request.body
 		if (!province || !city || !detail || !name || !phone) {
 			throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
@@ -105,8 +108,8 @@ class AddressController {
 	 * @returns {Promise.<void>}
 	 */
 	static async setDefault (ctx, next) {
-		const { aid } = ctx.params
-		iv(aid)
+		const { aid, uid } = ctx.params
+		iv(aid, uid)
 		const { isDefault } = ctx.request.body
 		const adr = await Adr.where({ _id: aid }).update({ isDefault: !!isDefault }).exec()
 		if (!adr) throw new ApiError(ApiErrorNames.ADDRESS_NOT_EXIST)
@@ -128,8 +131,8 @@ class AddressController {
 	 * @returns {Promise.<void>}
 	 */
 	static async delAdr (ctx, next) {
-		const { aid } = ctx.params
-		iv(aid)
+		const { aid, uid } = ctx.params
+		iv(aid, uid)
 		const adr = await Adr.findByIdAndRemove(aid).exec()
 		if (!adr) throw new ApiError(ApiErrorNames.ADDRESS_NOT_EXIST)
 		ctx.body = {

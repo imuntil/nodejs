@@ -119,6 +119,11 @@ if (!key) {
 const options = { key: fs.readFileSync(key), cert: fs.readFileSync(cert) }
 
 // http.createServer(app.callback()).listen(3003)
-https.createServer(options, app.callback()).listen(3002)
+const sslServer = https.createServer(options, app.callback()).listen(3002)
+const client = require('socket.io/lib/client.js')
+const io = require('socket.io')(sslServer)
+io.on('connection', socket => {
+  console.log('socket connected....')
+})
 
 module.exports = app

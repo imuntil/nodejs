@@ -45,16 +45,17 @@ class CartController {
 		if (!sku) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
 		const cart = await Cart.findOne({ _owner: uid }).exec()
 		if (!cart) throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
-		const pros = cart.products
+		const pros = [...cart.products]
 		const date = new Date()
 		const has = _.find(pros, { sku })
-		if (!has) {
-			pros.push({ sku, count: 1, chosen: true, date })
-		} else {
+    if (!has) {
+      pros.push({ sku, count: 1, chosen: true, date })
+    } else {
 			has.count += 1
 		}
-		const _new = await cart.save()
-		ctx.body = {
+    cart.products = pros
+    const _new = await cart.save()
+    ctx.body = {
 			data: _.omit(_new.toObject(), ['__v', 'date'])
 		}
 	}

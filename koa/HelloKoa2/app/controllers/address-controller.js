@@ -18,7 +18,11 @@ class AddressController {
 		console.log('获取所有地址')
 		const { uid } = ctx.params
 		iv(uid)
-		const list = await Adr.find({ _owner: uid }).select('-__v').lean().exec()
+		const list = await Adr.find({ _owner: uid })
+			.sort('-date')
+			.select('-__v')
+			.lean()
+			.exec()
 		ctx.body = {
 			data: list
 		}
@@ -64,6 +68,13 @@ class AddressController {
 			throw new ApiError(ApiErrorNames.USER_NOT_EXIST)
 		}
 		const date = new Date()
+		if (isDefault) {
+      const res = await Adr.where({ _owner, isDefault: true })
+				.setOptions({ multi: true, overwrite: true })
+				.update({ isDefault: false })
+				.exec()
+      console.log(res)
+    }
 		const adr = await Adr.create({ _owner, province, city, detail, name, phone, label, isDefault, date })
 		ctx.body = {
 			data: _.omit(adr.toObject(), '__v')
@@ -102,16 +113,20 @@ class AddressController {
 	 * PUT
 	 * 更新default
 	 * body = { isDefault }
-	 * params = { aid }
+	 * params = { aid, uid }
 	 * @param ctx
 	 * @param next
 	 * @returns {Promise.<void>}
 	 */
 	static async setDefault (ctx, next) {
-		const { aid, uid } = ctx.params
+    console.log('更新默认地址')
+    const { aid, uid } = ctx.params
 		iv(aid, uid)
 		const { isDefault } = ctx.request.body
-		const adr = await Adr.where({ _id: aid }).update({ isDefault: !!isDefault }).exec()
+    await Adr
+      .where({ _owner: uid, isDefault: true }).update({ isDefault: false }).exec()
+    const adr = await Adr
+			.where({ _id: aid }).update({ isDefault: !isDefault }).exec()
 		if (!adr) throw new ApiError(ApiErrorNames.ADDRESS_NOT_EXIST)
 		ctx.body = {
 			data: 'ok'

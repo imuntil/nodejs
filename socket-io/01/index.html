@@ -4,17 +4,29 @@
     <meta charset="UTF-8">
     <title></title>
     <meta name="renderer" content="webkit">
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
 </head>
 <body>
 <h1>Socket.io example</h1>
 <span id="number"></span>
+<span id="msg"></span>
+<button id="button">msg</button>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    var socket = io.connect('http://127.0.0.1:3000');
-    var span = document.querySelector('#number');
-    socket.on('users', function (message) {
-         span.innerHTML = message.number;
-    });
+  var socket = io.connect('http://127.0.0.1:3000');
+  var span = document.querySelector('#number');
+  socket.on('users', function (message) {
+    span.innerHTML = message.number;
+  });
+  socket.on('msg', function (message) {
+    $('#msg').text(message)
+  })
+  $('#button').click(function () {
+    socket.emit('msg', Math.random())
+  })
 </script>
 </body>
 </html>

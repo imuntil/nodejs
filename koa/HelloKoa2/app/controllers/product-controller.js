@@ -10,7 +10,7 @@ class ProductController {
 	/**
 	 * GET
 	 * 获取产品列表(筛选)
-	 * query ? = { flag = { price, sales } _type sort = { desc, asc } }
+	 * query ? = { flag = { price, sales } type sort = { desc, asc } }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}

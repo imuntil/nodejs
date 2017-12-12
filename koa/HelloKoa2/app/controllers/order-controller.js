@@ -153,13 +153,14 @@ class OrderController {
 	 * 修改订单（状态）
 	 * 伪删除订单 (改为不可见)
 	 * params = { uid, orderNumber }
-	 * body = { del: Boolean, status: Number (0|1|2|3) }
+	 * body = { del: Boolean, status: Number }
+	 * status: [0, 1, 2, 3, 4, 5, 6, 7]   // 未支付，已支付(待发货)，已发货，已完成，已取消, 申请退款， 已退款， 退款失败
 	 * @param ctx
 	 * @param next
 	 * @returns {Promise.<void>}
 	 */
 	static async modifyOrder (ctx, next) {
-		console.log('order delete/modify')
+		console.log('订单删除或者状态修改')
 		const { uid, orderNumber } = ctx.params
 		iv(uid)
 		if (!orderNumber || !/^0\d{17}$/.test(orderNumber)) throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
@@ -176,11 +177,13 @@ class OrderController {
 		}
 		const { n, nModified } = await Order.update({ orderNumber }, { status })
 		if (!n) throw new ApiError(ApiErrorNames.ORDER_NOT_EXIST)
+		if (~~status === 2) {
+      console.log('新的待发货订单')
+    }
 		ctx.body = {
 			message: '更新成功',
 			data: `发现${n}订单，更新${nModified}订单`
 		}
-		return
 	}
 
 	/**

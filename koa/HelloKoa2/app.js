@@ -122,8 +122,13 @@ const options = { key: fs.readFileSync(key), cert: fs.readFileSync(cert) }
 const sslServer = https.createServer(options, app.callback()).listen(3002)
 const client = require('socket.io/lib/client.js')
 const io = require('socket.io')(sslServer)
-io.on('connection', socket => {
+const nsp = io.of('/socket')
+nsp.on('connection', socket => {
   console.log('socket connected....')
+	nsp.emit('msg', '00')
+	socket.emit('msg', '11')
+	socket.broadcast.emit('msg', '22')
+	socket.to('test').emit('msg', '33')
 })
 
 module.exports = app

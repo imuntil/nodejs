@@ -25,7 +25,7 @@ cartSchema.methods.getCart = async function () {
 		.find()
 		.where('sku')
 		.in(pros.map(p => p.sku))
-		.select('_id sku en cn price _type discount images off')
+		.select('_id sku en cn truePrice price _type discount images off')
 		.lean()
 		.exec()
 	// 合并产品信息和购物车信息（数量和chosen等）

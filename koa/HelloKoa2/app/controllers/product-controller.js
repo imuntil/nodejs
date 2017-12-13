@@ -18,9 +18,9 @@ class ProductController {
 	static async getProList (ctx, next) {
     console.log('产品列表	')
 		const { flag, type, sort = 'desc' } = ctx.request.query
-		let q = type ? Product.find({ _type: type }) : Product.find()
+		let q = (type && type !== 'null') ? Product.find({ _type: type }) : Product.find()
 		const s = sort === 'asc' ? '' : '-'
-		const f = flag ? `${flag} date` : 'date'
+		const f = (flag && flag !== 'null') ? `${flag} date` : 'date'
 		const pros = await q
 			.sort(`${s}${f}`)
 			.select('-__v')

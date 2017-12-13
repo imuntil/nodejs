@@ -12,20 +12,48 @@
 <body>
 <h1>Socket.io example</h1>
 <span id="number"></span>
-<span id="msg"></span>
-<button id="button">msg</button>
+<div style="display: block; min-height: 100px" id="msg"></div>
+<ul>
+    <li><a class="msg" dt="to-self" href="javascript:;">(server)仅发给自己</a></li>
+    <li><a class="msg" dt="to-others" href="javascript:;">(server)发给除了自己以外的其他客户端</a></li>
+    <li><a class="msg" dt="to-others-odd" href="javascript:;">(server)发给在odd中除了自己以外的所有客户端</a></li>
+    <li><a class="msg" dt="to-others-odd-even" href="javascript:;">(server)发给在even或odd中除了自己以外的所有客户端</a></li>
+    <li><a class="msg" dt="to-all-even" href="javascript:;">(server)发给所有在even中的客户端(包括自己)</a></li>
+    <li><a class="msg" dt="to-all-ns1" href="javascript:;">(server)发给所有在namespace1中的客户端</a></li>
+    <li><a class="msg" dt="to-one" href="javascript:;">(server)发给指定的socket id客户端</a></li>
+    <li><a class="msg" dt="acknowledgement" href="javascript:;">with acknowledgement</a></li>
+    <li><a class="msg" dt="uncompressed" href="javascript:;">不压缩数据包</a></li>
+    <li><a class="msg" dt="volatile" href="javascript:;">(server)发送一个可能被丢弃的消息</a></li>
+    <!--<li><a class="msg" dt="" href="javascript:;">(server)</a></li>-->
+    <!--<li><a class="msg" dt="" href="javascript:;">(server)</a></li>-->
+    <!--<li><a class="msg" dt="" href="javascript:;">(server)</a></li>-->
+    <!--<li><a class="msg" dt="" href="javascript:;">(server)</a></li>-->
+    <!--<li><a class="msg" dt="" href="javascript:;">(server)</a></li>-->
+</ul>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  var socket = io.connect('http://127.0.0.1:3000');
-  var span = document.querySelector('#number');
-  socket.on('users', function (message) {
-    span.innerHTML = message.number;
-  });
-  socket.on('msg', function (message) {
-    $('#msg').text(message)
-  })
-  $('#button').click(function () {
-    socket.emit('msg', Math.random())
+  $(function () {
+//    const socket = io({ path: '/my' });
+    const socket = io.connect('http://127.0.0.1:3000');
+    const ns = io.connect('http://127.0.0.1:3000/namespace1')
+    socket.on('users', function (message) {
+      $('#number').text(message.number)
+    });
+    socket.on('msg', function (message) {
+      $('#msg').append(`<p>${message}</p>`)
+    })
+    $('.msg').click(function () {
+      const e = $(this).attr('dt')
+      const text = $(this).text()
+      if (e === 'to-all-ns1') {
+        ns.emit('ns-msg', text)
+      } else {
+        socket.emit(e, text)
+      }
+    })
+    ns.on('ns-msg', msg => {
+      $('#msg').append(`<p>ns-msg: ${msg}</p>`)
+    })
   })
 </script>
 </body>

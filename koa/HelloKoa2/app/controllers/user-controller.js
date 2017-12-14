@@ -188,6 +188,7 @@ class UserController {
 		const { uid } = ctx.params
 		validUID(uid)
     const { np, op } = ctx.request.body
+    console.log(ctx.request.body)
     if (!np || !op) {
       throw new ApiError(ApiErrorNames.MISSING_PARAMETER_OR_PARAMETER_ERROR)
     }
@@ -198,7 +199,9 @@ class UserController {
     // }
 		// 查找用户
 		const user = await User.findById(uid).exec()
-		if (!user || !user.validPassword(op)) {
+    console.log(user)
+    console.log(user.validPassword(op))
+    if (!user || !user.validPassword(op)) {
 			throw new ApiError(ApiErrorNames.WRONG_ACCOUNT_OR_PASSWORD)
 		}
 		// 修改密码

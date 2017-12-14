@@ -117,7 +117,8 @@ class OrderController {
 			.select('orderNumber date products total amount express status')
 			.lean()
 			.exec()
-		ctx.body = {
+    console.log(orders)
+    ctx.body = {
 			data: orders
 		}
 	}

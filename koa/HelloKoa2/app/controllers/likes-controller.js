@@ -5,10 +5,6 @@ const User = require('../../models/user')
 const Product = require('../../models/product')
 const { iv } = require('../../lib/cc')
 
-const t = [1, 2, 3]
-console.log(_.remove(t, n => n === 1))
-console.log(t)
-
 class LikeController {
 	static async addLike (ctx, next) {
 		console.log('添加收藏')

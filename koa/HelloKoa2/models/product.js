@@ -41,7 +41,13 @@ const productSchema = new mongoose.Schema({
 	content: { type: Number, default: 1000, min: 1, max: 10000 }, // 净含量
 	weight: { type: Number, default: 1000, min: 1, max: 99999 }, // 净重
 	origin: { type: String, required: '产地是必须字段', default: '' }, // 产地
-	_type: { type: Number, required: '产品类别是必须字段', enum: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, // 类别
+	_type: { type: Number, required: '产品类别是必须字段', enum: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, // 类别，
+	recommend: { type: Boolean, default: false }, // 推荐产品（首页topbar展示）
+	hot: { type: Boolean, default: false }, // 热销，和销量无关。为手动设置的热销产品。在首页展示
+	fs: { type: Boolean, default: false }, // free shipping 免邮
+	coupon: {
+		type: String,
+	},
 	introduce: {
 		type: String,
 		validate: {

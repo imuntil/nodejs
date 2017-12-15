@@ -10,24 +10,33 @@ class ProductController {
 	/**
 	 * GET
 	 * 获取产品列表(筛选)
-	 * query ? = { flag = { price, sales } type sort = { desc, asc } }
+	 * query ? = { flag = { price, sales } type sort = { desc, asc } action = { recommend, hot } }
 	 * @param ctx
 	 * @param next
 	 * @return {Promise.<void>}
 	 */
 	static async getProList (ctx, next) {
     console.log('产品列表	')
-		const { flag, type, sort = 'desc' } = ctx.request.query
+		const { flag, type, sort = 'desc', action } = ctx.request.query
+		if (action && action.indexOf(['recommend', 'hot']) > -1) {
+    	const pros = await Product.find({ [action]: true })
+				.select('-__v')
+				.limit(action === 'hot' ? 2 : 10)
+				.exec()
+			ctx.body = {
+    		data: pros.length ? pros.map(p => p.toObject({ virtuals: true })) : []
+			}
+			return
+		}
 		let q = (type && type !== 'null') ? Product.find({ _type: type }) : Product.find()
 		const s = sort === 'asc' ? '' : '-'
 		const f = (flag && flag !== 'null') ? `${flag} date` : 'date'
 		const pros = await q
 			.sort(`${s}${f}`)
 			.select('-__v')
-			.lean()
 			.exec()
-		ctx.body = {
-			data: pros
+    ctx.body = {
+			data: pros.map(p => p.toObject({ virtuals: true }))
 		}
 	}
 
@@ -49,7 +58,7 @@ class ProductController {
 			.exec()
 		if (!pro) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
 		ctx.body = {
-			data: { ...pro.toObject(), truePrice: pro.truePrice }
+			data: { ...pro.toObject({ virtuals: true }), truePrice: pro.truePrice }
 		}
 	}
 	/**
@@ -66,17 +75,15 @@ class ProductController {
 			.find({ _type: type })
 			.nor([{ sku: sku.toUpperCase() }])
 			.select('-__v')
-			.lean()
 			.exec()
 		if (pros.length < 2) {
 			pros = await Product
 				.find()
 				.nor([{ sku: sku.toUpperCase() }])
 				.select('-__v')
-				.lean()
 				.exec()
 		}
-		const mb = _.shuffle(pros).slice(0, 2)
+		const mb = _.shuffle(pros).slice(0, 2).map(p => p.toObject({ virtuals: true }))
 		ctx.body = {
 			data: mb
 		}
@@ -133,7 +140,7 @@ class ProductController {
 		old.update = new Date()
 		const _new = await old.save()
 		ctx.body = {
-			data: _.omit(_new.toObject(), '__v')
+			data: _.omit(_new.toObject({ virtuals: true }), '__v')
 		}
 	}
 

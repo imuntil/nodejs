@@ -61,3 +61,15 @@ const buf4 = Buffer.concat([Buffer.alloc(10), Buffer.alloc(22)])
 console.log(buf4.length);
 
 // http://nodejs.cn/api/buffer.html#buffer_class_method_buffer_from_arraybuffer_byteoffset_length
+
+const ab = new ArrayBuffer(10)
+const abf = Buffer.from(ab, 0, 2)
+console.log(abf.length);
+console.log(Buffer.byteLength(abf));
+
+const a = Buffer.from('buffer')
+const b = Buffer.from(a)
+a[0] = 0x61
+console.log(a.toString());
+console.log(b.toString());
+console.log(Buffer.isEncoding('utf8'));

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
+const _ = require('lodash')
 
 const productSchema = new mongoose.Schema({
 	sku: { type: String, required: 'sku是必须字段', unique: 'sku必须唯一' },
@@ -44,10 +45,7 @@ const productSchema = new mongoose.Schema({
 	_type: { type: Number, required: '产品类别是必须字段', enum: [1, 2, 3, 4, 5, 6, 7, 8, 9] }, // 类别，
 	recommend: { type: Boolean, default: false }, // 推荐产品（首页topbar展示）
 	hot: { type: Boolean, default: false }, // 热销，和销量无关。为手动设置的热销产品。在首页展示
-	fs: { type: Boolean, default: false }, // free shipping 免邮
-	coupon: {
-		type: String,
-	},
+	fs: { type: mongoose.Schema.Types.Mixed, default: false }, // free shipping 免邮
 	introduce: {
 		type: String,
 		validate: {
@@ -63,7 +61,8 @@ const productSchema = new mongoose.Schema({
 
 productSchema.plugin(uniqueValidator)
 productSchema.pre('validate', function (next) {
-	const { setToSales, discounted, off, price } = this
+  console.log('v')
+  const { setToSales, discounted, off, price, fs } = this
 	if (!setToSales) {
 		this.truePrice = price
 		this.off = 0.01
@@ -80,9 +79,36 @@ productSchema.pre('validate', function (next) {
 	next()
 })
 productSchema.pre('save', function (next) {
-	const { price, discounted, truePrice } = this
+  console.log('s')
+  const { price, discounted, truePrice, fs } = this
 	if (discounted > price || truePrice > price) throw new Error('优惠价格不能高于原价')
+	if (_.isObject(fs)) {
+  	const { start, end } = fs
+    const s = +new Date(start)
+    const e = +new Date(end)
+    if (!s || !e) throw new Error('时间格式有误')
+    if (e <= Date.now()) throw new Error('免邮结束时间不能早于当前时间')
+    else if (s >= e) throw new Error('免邮活动开始时间不能晚于结束时间')
+    else if (e - s < 1000 * 60 * 30) throw new Error('免邮活动时间不得短于30min')
+    this.fs = { start: s, end: e }
+	} else if (+fs === 1) {
+  	this.fs = true
+	} else {
+  	this.fs = false
+	}
 	next()
+})
+productSchema.virtual('onFS').get(function () {
+	const fs = this.fs
+	if (_.isBoolean(fs)) return fs
+	else if (_.isObject(fs)) {
+		const { start, end } = fs
+		const now = Date.now()
+		if (now > end || now < start) {
+			return false
+		}
+		return true
+	}
 })
 
 module.exports = mongoose.model('Product', productSchema)

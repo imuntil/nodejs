@@ -2,9 +2,8 @@ const _ = require('lodash')
 const ApiError = require('../error/ApiError')
 const ApiErrorNames = require('../error/ApiErrorNames')
 const Product = require('../../models/product')
-const fs = require('fs')
-const path = require('path')
-
+// const fs = require('fs')
+// const path = require('path')
 
 class ProductController {
 	/**

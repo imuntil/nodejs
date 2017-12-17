@@ -6,6 +6,7 @@ const Order = require('../../models/order')
 const Product = require('../../models/product')
 const Address = require('../../models/address')
 const User = require('../../models/user')
+const io = require('../../utils/socket')
 
 // 用户是否存在
 async function ifUser (uid) {
@@ -178,8 +179,9 @@ class OrderController {
 		}
 		const { n, nModified } = await Order.update({ orderNumber }, { status })
 		if (!n) throw new ApiError(ApiErrorNames.ORDER_NOT_EXIST)
-		if (~~status === 2) {
+		if (~~status === 1) {
       console.log('新的待发货订单')
+			io.nsp.emit('new-order', '新的待发货订单')
     }
 		ctx.body = {
 			message: '更新成功',

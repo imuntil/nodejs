@@ -7,7 +7,7 @@ const Product = require('../../models/product')
 const Address = require('../../models/address')
 const User = require('../../models/user')
 const io = require('../../utils/socket')
-const cycle = require('../../utils/cycleQueue')
+const add2Cycle = require('../../utils/cycleQueue')
 
 // 用户是否存在
 async function ifUser (uid) {
@@ -91,6 +91,7 @@ class OrderController {
 			_ownerPhone: phone
 		})
 		const _new = await order.save()
+		add2Cycle({ orderNumber })
 		ctx.body = {
 			data: _.pick(_new.toObject(), ['orderNumber', 'total', 'amount', 'express'])
 		}

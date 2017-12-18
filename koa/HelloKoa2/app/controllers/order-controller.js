@@ -7,6 +7,7 @@ const Product = require('../../models/product')
 const Address = require('../../models/address')
 const User = require('../../models/user')
 const io = require('../../utils/socket')
+const cycle = require('../../utils/cycleQueue')
 
 // 用户是否存在
 async function ifUser (uid) {

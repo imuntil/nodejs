@@ -62,7 +62,7 @@ const productSchema = new mongoose.Schema({
 productSchema.plugin(uniqueValidator)
 productSchema.pre('validate', function (next) {
   console.log('v')
-  const { setToSales, discounted, off, price, fs } = this
+  const { setToSales, discounted, off, price } = this
 	if (!setToSales) {
 		this.truePrice = price
 		this.off = 0.01
@@ -87,8 +87,9 @@ productSchema.pre('save', function (next) {
     const s = +new Date(start)
     const e = +new Date(end)
     if (!s || !e) throw new Error('时间格式有误')
-    if (e <= Date.now()) throw new Error('免邮结束时间不能早于当前时间')
-    else if (s >= e) throw new Error('免邮活动开始时间不能晚于结束时间')
+		// 如果结束时间早于当前时间，默认免邮活动结束。
+    if (e <= Date.now()) this.fs = false
+		else if (s >= e) throw new Error('免邮活动开始时间不能晚于结束时间')
     else if (e - s < 1000 * 60 * 30) throw new Error('免邮活动时间不得短于30min')
     this.fs = { start: s, end: e }
 	} else if (+fs === 1) {

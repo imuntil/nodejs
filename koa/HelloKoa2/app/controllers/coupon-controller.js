@@ -7,7 +7,7 @@ const { iv } = require('../../lib/cc')
 class CouponController {
   // sys
   /**
-   * GET
+   * GET: api/sys/coupon
    * 获取优惠券列表
    * @param ctx
    * @param next

@@ -27,7 +27,7 @@ const couponSchema = new Schema({
   // 创建时间
   created: { type: Date, default: Date.now() },
   // 优惠券名称
-  name: { type: String, required: true },
+  name: { type: String },
   // 优惠券描述
   detail: { type: String, required: true }
 })

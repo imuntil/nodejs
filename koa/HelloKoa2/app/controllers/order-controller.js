@@ -26,35 +26,38 @@ async function ifAdr (aid, uid) {
 	return adr
 }
 // 获取产品
-async function getProducts (body) {
+async function  getProducts (body) {
 	const ps = await Product
 		.find()
 		.where('sku')
 		.in(body.map(p => p.sku))
-		.select('sku en cn price images content discounted off setToSales')
-		.lean()
+    // .select('sku en cn truePrice images content stock')
 		.exec()
-	// 将产品信息和count等合并，并获取total，amount
-	if (ps.length !== body.length) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
+  if (ps.length !== body.length) throw new ApiError(ApiErrorNames.PRODUCT_NOT_EXIST)
 	let total = 0, amount = 0
-	const products = ps.map( p => {
-		const index = _.findIndex(body, { sku: p.sku })
-		const t = { ...p, ...body[index] }
-		t.image = t.images[0] || ''
-		delete t._id
-		body.splice(index, 1)
-		total += t.count
-		amount += t.setToSales ? t.discounted * t.count : t.price * t.count
-		return t
+	const promises = ps.map(async p => {
+		const sku = p.sku
+		const productInBody = _.find(body, { sku })
+		if( productInBody.count > p.stock) throw new ApiError(ApiErrorNames.LACK_OF_STOCK)
+		p.stock = p.stock - productInBody.count
+		await p.save()
+    const product2Res = { ..._.pick(p.toObject(), ['sku', 'en', 'cn', 'truePrice', 'images', 'content']), ...productInBody }
+		product2Res.image = product2Res.images[0] || ''
+		delete product2Res._id
+		total += product2Res.count
+		amount += product2Res.truePrice * product2Res.count
+		return product2Res
 	})
-	return { products, total, amount }
+  const products = await Promise.all(promises)
+	return { products, amount, total }
 }
 
 class OrderController {
 	/**
+	 * POST: api/users/:uid/order
 	 * 下单
 	 * params = { uid }
-	 * body = { aid, products = [ { sku, count } ] }
+	 * body = { aid<address>, products = [ { sku, count } ], kid<coupon> }
 	 * @param ctx
 	 * @param next
 	 * @returns {Promise.<void>}
@@ -62,7 +65,7 @@ class OrderController {
 	static async placeOrder (ctx, next) {
 		console.log('下单');
 		const { uid } = ctx.params
-		const { aid, products: body } = ctx.request.body
+		const { aid, products: body, kid } = ctx.request.body
 		// id是否合法
 		iv(uid, aid)
 		// products是否正确
@@ -91,7 +94,7 @@ class OrderController {
 			_ownerPhone: phone
 		})
 		const _new = await order.save()
-		add2Cycle({ orderNumber })
+		add2Cycle({ orderNumber, body })
 		ctx.body = {
 			data: _.pick(_new.toObject(), ['orderNumber', 'total', 'amount', 'express'])
 		}

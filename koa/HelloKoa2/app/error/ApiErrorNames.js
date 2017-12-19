@@ -14,6 +14,7 @@ ApiErrorNames.PRODUCT_NOT_EXIST = 'productNotExist'
 ApiErrorNames.ORDER_NOT_EXIST = 'orderNotExist'
 ApiErrorNames.WRONG_CODE = 'wrongCode'
 ApiErrorNames.CODE_EXPIRED = 'codeExpired'
+ApiErrorNames.LACK_OF_STOCK = 'lackOfStock'
 
 const errorMap = new Map()
 errorMap.set(ApiErrorNames.UNKNOWN_ERROR, { code: -1, message: '未知错误' })
@@ -30,6 +31,7 @@ errorMap.set(ApiErrorNames.WRONG_PHONE_NUMBER, { code: 1041, message: '手机号
 errorMap.set(ApiErrorNames.WRONG_ID, { code: 1043, message: '缺少id或者id格式有误' })
 errorMap.set(ApiErrorNames.WRONG_CODE, { code: 107, message: '验证码有误' })
 errorMap.set(ApiErrorNames.CODE_EXPIRED, { code: 1071, message: '验证码已过期' })
+errorMap.set(ApiErrorNames.LACK_OF_STOCK, { code: 108, message: '库存不足' })
 
 ApiErrorNames.getErrorInfo = errorName => {
 	let errorInfo

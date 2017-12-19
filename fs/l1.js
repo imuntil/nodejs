@@ -19,4 +19,8 @@ fs.copyFile('message.txt', 'copy.txt', fs.constants.COPYFILE_EXCL, err => {
   if (err) throw err
   console.log('copy success');
 })
-// http://nodejs.cn/api/fs.html#fs_fs_ftruncate_fd_len_callback
+
+fs.watch('input.txt', (eventType, filename) => {
+  console.log(eventType);
+  console.log(filename);
+})

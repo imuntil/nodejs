@@ -35,7 +35,7 @@ class CouponController {
    */
   static async addCoupon (ctx, next) {
     console.log('新增coupon')
-    const { start, end, method, apply, count, name, detail } = ctx.request.body
+		const { start, end, method, apply, count, name, detail } = ctx.request.body
     const coupon = new Coupon({
       start, end, method, apply, count, name, detail, created: Date.now(), kid: `KD-${+Date.now()}`
     })
@@ -46,7 +46,7 @@ class CouponController {
   }
 
   /**
-   * PUT
+   * PUT: api/sys/coupon/:kid
    * 编辑coupon
    * params = { kid }
    * body = { name?, detail?, start?, end?, method?, apply? }
@@ -59,7 +59,8 @@ class CouponController {
     const kid = ctx.params.kid
     iv(kid)
     const body = _.omit(ctx.request.body, ['_id', 'kid', 'created'])
-    const old = await Coupon.findById( kid ).exec()
+		console.log(body)
+		const old = await Coupon.findById( kid ).exec()
     if (!old) throw new Error('优惠券不存在')
     for (const k in body) {
       if (body[k] === undefined) continue

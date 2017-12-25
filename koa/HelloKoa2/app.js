@@ -10,6 +10,7 @@ const mongoose = require('mongoose')
 const session = require('koa-session')
 const jwt = require('koa-jwt')
 const cors = require('koa2-cors')
+const orderCtrl = require('./app/controllers/order-controller')
 
 const credentials = require('./lib/credentials')
 
@@ -95,7 +96,12 @@ app.use(
 app.use(
   jwt({ cookie: '_token', secret: credentials.cookieSecret })
     .unless({
-      path: [/^\/api\/users\/[code|register|login|is\-exist]/, /^\/api\/pros/, /^\/api\/sys\/[login|register]/]
+      path: [
+        /^\/api\/users\/[code|register|login|is\-exist]/,
+        /^\/api\/pros/,
+        /^\/api\/sys\/[login|register]/,
+        /^\/api\/sys\/coupon/
+      ]
     })
 )
 app.use(api.routes(), api.allowedMethods())
@@ -120,15 +126,23 @@ const options = { key: fs.readFileSync(key), cert: fs.readFileSync(cert) }
 
 // http.createServer(app.callback()).listen(3003)
 const sslServer = https.createServer(options, app.callback()).listen(3002)
+
 const io = require('socket.io')(sslServer)
 const gi = require('./utils/socket')
 const nsp = gi.nsp = io.of('/socket')
 nsp.on('connection', socket => {
   console.log('socket connected....')
-	nsp.emit('msg', '00')
-	socket.emit('msg', '11')
-	socket.broadcast.emit('msg', '22')
-	socket.to('test').emit('msg', '33')
+  nsp.emit('msg', 'socket connected...')
+  orderCtrl.toBeDelevred()
+    .then(res => {
+      nsp.emit('msg', { count: res })
+    })
+    .catch(e => {
+      nsp.emit('msg', { count: 0 })
+    })
+	// socket.emit('msg', '11')
+	// socket.broadcast.emit('msg', '22')
+	// socket.to('test').emit('msg', '33')
 })
 
 module.exports = app

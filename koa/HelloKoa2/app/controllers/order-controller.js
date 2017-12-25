@@ -234,6 +234,16 @@ class OrderController {
 	}
 
 	/**
+	 * 非接口
+	 * 仅供socket使用
+	 */
+	static async toBeDelevred () {
+		console.log('socket 使用，获取是否有未发货订单')
+		const count = await Order.count({ status: 1 })
+		return count
+	}
+
+	/**
 	 * PUT
 	 * 确认发货 (sys)
 	 * params = { on }

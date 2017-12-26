@@ -1,0 +1,50 @@
+{
+    "name": "spider",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc",
+        "dev": "./node_modules/.bin/nodemon ./dist/app.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "async": "^2.6.0",
+        "cheerio": "^1.0.0-rc.2",
+        "eventproxy": "^1.0.0",
+        "koa": "^2.4.1",
+        "koa-bodyparser": "^4.2.0",
+        "koa-json": "^2.0.2",
+        "koa-jwt": "^3.3.0",
+        "koa-logger": "^3.1.0",
+        "koa-router": "^7.3.0",
+        "koa-session": "^5.5.1",
+        "koa-sslify": "^2.1.2",
+        "koa-static": "^4.0.2",
+        "koa2-cors": "^2.0.5",
+        "lodash": "^4.17.4",
+        "superagent": "^3.8.2"
+    },
+    "devDependencies": {
+        "@types/async": "^2.0.45",
+        "@types/cheerio": "^0.22.6",
+        "@types/koa": "^2.0.43",
+        "@types/koa-bodyparser": "^3.0.26",
+        "@types/koa-json": "^2.0.18",
+        "@types/koa-jwt": "^3.2.2",
+        "@types/koa-logger": "^3.1.0",
+        "@types/koa-router": "^7.0.27",
+        "@types/koa-session": "^3.0.6",
+        "@types/koa-sslify": "^2.1.0",
+        "@types/koa-static": "^3.0.2",
+        "@types/koa2-cors": "^2.0.1",
+        "@types/lodash": "^4.14.91",
+        "@types/superagent": "^3.5.6",
+        "nodemon": "^1.14.1",
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.2"
+    }
+}

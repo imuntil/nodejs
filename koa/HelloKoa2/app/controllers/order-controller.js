@@ -186,7 +186,13 @@ class OrderController {
 		if (!n) throw new ApiError(ApiErrorNames.ORDER_NOT_EXIST)
 		if (~~status === 1) {
       console.log('新的待发货订单')
+			const count = await OrderController.toBeDelevred()
+			// if (count !== io.count) {
+				
+			// } 
 			io.nsp.emit('new-order', '新的待发货订单')
+			io.nsp.emit('msg', { count })
+			io.count = count
     }
 		ctx.body = {
 			message: '更新成功',
@@ -240,6 +246,7 @@ class OrderController {
 	static async toBeDelevred () {
 		console.log('socket 使用，获取是否有未发货订单')
 		const count = await Order.count({ status: 1 })
+		io.count = count
 		return count
 	}
 
@@ -260,6 +267,10 @@ class OrderController {
 		if (~~order.status !== 1) throw new ApiError(ApiErrorNames.UNKNOWN_ERROR)
 		order.status = 2
 		await order.save()
+		console.log('订单发货，代发货订单数量-1')
+		const count = io.count - 1
+		io.nsp.emit('msg', { count })
+		io.count = count
 		ctx.body = {
 			message: '修改成功'
 		}

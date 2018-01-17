@@ -43,6 +43,7 @@ help()
  */
 console.log(program.args)
 let [, template = 'nodejs', rawName] = program.args
+console.log('rawName:', rawName)
 const inPlace = !rawName || rawName === '.'
 const name = inPlace ? path.relative('../', process.cwd()) : rawName
 const to = path.resolve(rawName || '.')
@@ -50,7 +51,7 @@ console.log('---------------')
 console.log(template, name, to)
 
 // 暂存目录
-const tmp = path.join(userHome, '.zh-templates', template.replace(/\//g, '-'))
+const tmp = path.join(userHome, '.vue-templates', template.replace(/\//g, '-'))
 console.log(tmp)
 if (program.offline) {
   console.log(`> Use cached template at ${chalk.yellow(tildify(tmp))}`)

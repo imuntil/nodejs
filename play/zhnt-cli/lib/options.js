@@ -23,8 +23,8 @@ module.exports = function options (name, dir) {
  * @return {Object}
  */
 function getMetadata (dir) {
-  const json = path.join(dir, 'mata.json')
-  const js = path.join(dir, 'mata.js')
+  const json = path.join(dir, 'meta.json')
+  const js = path.join(dir, 'meta.js')
   let opts = {}
 
   if (exists(json)) {
@@ -46,6 +46,7 @@ function getMetadata (dir) {
  * @param {String} val 
  */
 function setDefault (opts, key, val) {
+  console.log('schema:', opts.schema)
   if (opts.schema) {
     opts.prompts = opts.schema
     delete opts.schema

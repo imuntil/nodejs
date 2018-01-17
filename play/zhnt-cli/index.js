@@ -17,7 +17,7 @@ const { isLocalPath, getTemplatePath } = localPath
 program
   .usage('<template-name> [project-name]')
   .option('-t --typescript', 'use typescript')
-  .option('-s --sass', 'use sass')
+  .option('-s --scss', 'use scss')
 
 /**
  * Help
@@ -46,6 +46,7 @@ let [, template = 'nodejs', rawName] = program.args
 const inPlace = !rawName || rawName === '.'
 const name = inPlace ? path.relative('../', process.cwd()) : rawName
 const to = path.resolve(rawName || '.')
+console.log('---------------')
 console.log(template, name, to)
 
 // 暂存目录

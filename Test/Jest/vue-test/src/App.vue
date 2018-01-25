@@ -1,16 +1,19 @@
 <template>
   <div id="app">
     <MessageList :messages="messages"></MessageList>
+    <zh-form></zh-form>
   </div>
 </template>
 
 <script>
 import MessageList from './components/MessageList'
+import ZhForm from './components/Form'
 
 export default {
   name: 'App',
   components: {
-    MessageList
+    MessageList,
+    ZhForm
   },
   data () {
     return {

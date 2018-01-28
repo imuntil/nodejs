@@ -20,6 +20,13 @@ export default {
         this.inputValue.split('').reverse().join('') :
         this.inputValue
     }
+  },
+  watch: {
+    inputValue (v, o) {
+      if (v.trim().length && o !== v) {
+        console.log(v)
+      }
+    }
   }
 }
 </script>

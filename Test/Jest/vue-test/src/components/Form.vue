@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form action="">
+    <form action="" @submit.prevent="onSubmit(inputValue)">
       <input type="text" v-model="inputValue">
       <br>
       <span class="reversed">{{ reversedInput }}</span>
@@ -9,16 +9,30 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   props: ['reversed'],
   data: () => ({
-    inputValue: ''
+    inputValue: '',
+    results: []
   }),
   computed: {
     reversedInput () {
-      return this.reversed ?
-        this.inputValue.split('').reverse().join('') :
-        this.inputValue
+      return this.reversed
+        ? this.inputValue
+            .split('')
+            .reverse()
+            .join('')
+        : this.inputValue
+    }
+  },
+  methods: {
+    onSubmit (v) {
+      axios.get('https://jsonplaceholder.typicode.com/posts?q=' + v)
+        .then(results => {
+          this.results = results.data
+        })
     }
   },
   watch: {

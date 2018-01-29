@@ -1,6 +1,12 @@
 <template>
   <div id="app">
-    <MessageList :messages="messages"></MessageList>
+    <MessageList :messages="messages">
+       <Message :message="message"
+          @message-clicked="handleMessageClick"
+          v-for="message in messages"
+          :key="message">
+        </Message>
+    </MessageList>
     <zh-form></zh-form>
   </div>
 </template>
@@ -8,16 +14,23 @@
 <script>
 import MessageList from './components/MessageList'
 import ZhForm from './components/Form'
+import Message from './components/Message'
 
 export default {
   name: 'App',
   components: {
     MessageList,
-    ZhForm
+    ZhForm,
+    Message
   },
   data () {
     return {
       messages: ['Hey john', 'Howdy Paco']
+    }
+  },
+  methods: {
+    handleMessageClick (message) {
+      console.log(message)
     }
   }
 }

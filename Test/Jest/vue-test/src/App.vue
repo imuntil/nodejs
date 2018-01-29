@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <MessageList :messages="messages">
+    <MessageList>
        <Message :message="message"
           @message-clicked="handleMessageClick"
           v-for="message in messages"

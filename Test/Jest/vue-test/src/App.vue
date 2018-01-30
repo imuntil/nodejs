@@ -1,11 +1,14 @@
 <template>
   <div id="app">
     <MessageList>
-       <Message :message="message"
-          @message-clicked="handleMessageClick"
-          v-for="message in messages"
-          :key="message">
-        </Message>
+      <p slot="header">
+        Awesome header
+      </p>
+      <Message :message="message"
+        @message-clicked="handleMessageClick"
+        v-for="message in messages"
+        :key="message">
+      </Message>
     </MessageList>
     <zh-form></zh-form>
   </div>

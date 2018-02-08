@@ -1,7 +1,7 @@
 // 优惠券
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const delay = function (time) {
+const delay = function(time) {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, time)
   })
@@ -32,7 +32,7 @@ const couponSchema = new Schema({
   detail: { type: String, required: true }
 })
 
-couponSchema.pre('save', true, function (next, done) {
+couponSchema.pre('save', true, function(next, done) {
   next()
   const { achieve, cut } = this.method
   if (achieve < cut || achieve < 0 || cut < 0) {
@@ -44,15 +44,16 @@ couponSchema.pre('save', true, function (next, done) {
   done()
 })
 
-couponSchema.pre('save', true, function (next, done) {
+couponSchema.pre('save', true, function(next, done) {
   next()
   const { end, start } = this
-  let [s, e] = [ new Date(+start), new Date(+end)]
+  let [s, e] = [new Date(+start), new Date(+end)]
   if (!+s || !+e) throw new Error('时间格式有误')
   // 如果优惠券可用时间期限早于当前时间，视为优惠券已过期
   // if (e <= +Date.now())
   if (s >= e) throw new Error('优惠券活动结束时间不得早于开始时间')
-  else if ( e - s < 1000 * 60 * 30) throw new Error('优惠券活动时间不得短于30min')
+  else if (e - s < 1000 * 60 * 30)
+    throw new Error('优惠券活动时间不得短于30min')
   this.start = s
   this.end = e
   done()

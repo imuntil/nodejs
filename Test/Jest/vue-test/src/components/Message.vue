@@ -22,6 +22,9 @@ export default {
   },
   created () {
     // console.log('CREATED!')
+    // this.$on('message-clicked', (v) => {
+    //   console.log(v)
+    // })
   }
 }
 </script>

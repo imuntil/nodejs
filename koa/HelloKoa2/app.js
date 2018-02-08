@@ -38,7 +38,7 @@ onerror(app)
 // middlewares
 // app.use(koaBody({ multipart: true }))
 app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
+  enableTypes: ['json', 'form', 'text']
 }))
 app.keys = ['session-key']
 app.use(session({
@@ -53,21 +53,21 @@ app.use(views(__dirname + '/views', {
 }))
 
 app.use(cors({
-	origin: function (ctx) {
-		return 'http://localhost:8000'
-		// return 'https://localhost'
-	},
-	exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
-	maxAge: 5,
-	credentials: true,
-	allowMethods: ['GET', 'POST', 'DELETE', 'PUT'],
-	allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  origin: function (ctx) {
+    // return 'http://localhost:8000'
+    return 'https://localhost:3000'
+  },
+  exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+  maxAge: 5,
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'DELETE', 'PUT'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }))
 
 // logger
 app.use(async (ctx, next) => {
-	const start = new Date()
-	await next()
+  const start = new Date()
+  await next()
   const ms = new Date() - start
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
@@ -82,27 +82,35 @@ app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 // admin
 app.use(
-  jwt({ cookie: '_st', secret: credentials.sysCookieSecret })
-    .unless({
-      custom ({ originalUrl: url }) {
-        console.log(url)
-        if (url === '/api/sys/login' || url === '/api/sys/register') return true
-        if (url.indexOf('/sys') >= 0) return false
-        return true
-      }
-    })
+  jwt({
+    cookie: '_st',
+    secret: credentials.sysCookieSecret
+  })
+  .unless({
+    custom({
+      originalUrl: url
+    }) {
+      console.log(url)
+      if (url === '/api/sys/login' || url === '/api/sys/register') return true
+      if (url.indexOf('/sys') >= 0) return false
+      return true
+    }
+  })
 )
 // user
 app.use(
-  jwt({ cookie: '_token', secret: credentials.cookieSecret })
-    .unless({
-      path: [
-        /^\/api\/users\/[code|register|login|is\-exist]/,
-        /^\/api\/pros/,
-        /^\/api\/sys\/[login|register]/,
-        /^\/api\/sys\/coupon/
-      ]
-    })
+  jwt({
+    cookie: '_token',
+    secret: credentials.cookieSecret
+  })
+  .unless({
+    path: [
+      /^\/api\/users\/[code|register|login|is\-exist]/,
+      /^\/api\/pros/,
+      /^\/api\/sys\/[login|register]/,
+      /^\/api\/sys\/coupon/
+    ]
+  })
 )
 app.use(api.routes(), api.allowedMethods())
 
@@ -118,11 +126,17 @@ mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/start', {
 })
 
 // ssl options
-const { key, cert } = credentials.ssl[os.type().toLowerCase()] || {}
+const {
+  key,
+  cert
+} = credentials.ssl[os.type().toLowerCase()] || {}
 if (!key) {
   throw new Error('未知的操作系统')
 }
-const options = { key: fs.readFileSync(key), cert: fs.readFileSync(cert) }
+const options = {
+  key: fs.readFileSync(key),
+  cert: fs.readFileSync(cert)
+}
 
 // http.createServer(app.callback()).listen(3003)
 const sslServer = https.createServer(options, app.callback()).listen(3002)
@@ -135,14 +149,18 @@ nsp.on('connection', socket => {
   nsp.emit('msg', 'socket connected...')
   orderCtrl.toBeDelevred()
     .then(res => {
-      nsp.emit('msg', { count: res })
+      nsp.emit('msg', {
+        count: res
+      })
     })
     .catch(e => {
-      nsp.emit('msg', { count: 0 })
+      nsp.emit('msg', {
+        count: 0
+      })
     })
-	// socket.emit('msg', '11')
-	// socket.broadcast.emit('msg', '22')
-	// socket.to('test').emit('msg', '33')
+  // socket.emit('msg', '11')
+  // socket.broadcast.emit('msg', '22')
+  // socket.to('test').emit('msg', '33')
 })
 
 module.exports = app

@@ -59,7 +59,6 @@ class CouponController {
     const kid = ctx.params.kid
     iv(kid)
     const body = _.omit(ctx.request.body, ['_id', 'kid', 'created'])
-		console.log(body)
 		const old = await Coupon.findById( kid ).exec()
     if (!old) throw new Error('优惠券不存在')
     for (const k in body) {

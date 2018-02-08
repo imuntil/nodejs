@@ -22,7 +22,8 @@ describe('Message.test.js', () => {
       const stub = jest.fn()
       cmp.setMethods({ handleClick: stub })
       const el = cmp.find('.message').trigger('click')
-      expect(stub).toBeCalled()
+      // expect(stub).toBeCalled()
+      expect(stub).toHaveBeenCalled()
     })
   
     it('triggers a message-clicked event when a handClick method is called', () => {

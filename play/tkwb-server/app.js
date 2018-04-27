@@ -5,7 +5,7 @@ const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
-
+const cors = require('koa2-cors')
 const index = require('./routes/index')
 // const users = require('./routes/users')
 
@@ -13,16 +13,34 @@ const index = require('./routes/index')
 onerror(app)
 
 // middlewares
-app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
-}))
+app.use(
+  bodyparser({
+    enableTypes: ['json', 'form', 'text']
+  })
+)
 app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
 
-app.use(views(__dirname + '/views', {
-  extension: 'pug'
-}))
+app.use(
+  views(__dirname + '/views', {
+    extension: 'pug'
+  })
+)
+
+app.use(
+  cors({
+    origin(ctx) {
+      // return ctx.req.headers.origin
+      return 'https://www.takigen.cn'
+    },
+    exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+    maxAge: 5,
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'DELETE', 'PUT'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept']
+  })
+)
 
 // logger
 app.use(async (ctx, next) => {
@@ -39,6 +57,6 @@ app.use(index.routes(), index.allowedMethods())
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
-});
+})
 
 module.exports = app

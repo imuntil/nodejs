@@ -11,7 +11,7 @@ import { shallow } from 'vue-test-utils'
 //       data: {
 //         messages: ['Cat']
 //       }
-//     }).$mount()
+//     }).$mount()s
 //   })
 
 //   it('equals messages to ["Cat"]', () => {

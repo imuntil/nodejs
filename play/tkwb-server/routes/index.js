@@ -2,9 +2,43 @@ const router = require('koa-router')()
 const superagent = require('superagent')
 const cheerio = require('cheerio')
 const fs = require('fs')
+const nodemailer = require('nodemailer')
+const dateformat = require('dateformat')
+const isEqual = require('lodash.isequal')
 
 let json = null
 let date = new Date()
+const transporter = nodemailer.createTransport({
+  service: 'qq',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'zhaobin@jtuntech.com',
+    pass: '1xx1UOH3'
+  }
+})
+const mailOptions = {
+  from: 'zhaobin@jtuntech.com', // sender address
+  to: 'imuntil@qq.com', // list of receivers
+  subject: 'Hello ✔', // Subject line
+  text: 'Hello world?' // plain text body
+}
+
+const sendMail = async (content, now) => {
+  transporter.sendMail(
+    {
+      ...mailOptions,
+      subject: 'TAKIGEN微博更新-' + dateformat(now, 'isoDateTime'),
+      html: `<p>${JSON.stringify(content)}</p>`
+    },
+    (err, info) => {
+      if (err) {
+        return console.log(err)
+      }
+      console.log('success')
+    }
+  )
+}
 
 const readLocalFile = async () => {
   try {
@@ -55,9 +89,13 @@ router.get('/', async (ctx, next) => {
   if (!json || now - date >= 1000 * 60 * 60 * 2) {
     console.log('timeout ...........')
     const html = await request()
-    json = await reptile(html)
+    const newJson = await reptile(html)
+    /* 比较两次的数据，如果不一致则发送邮件 */
+    if (!isEqual(newJson, json)) {
+      sendMail(newJson, now)
+      json = newJson
+    }
     date = now
-    json = json
   }
   ctx.body = json
 })

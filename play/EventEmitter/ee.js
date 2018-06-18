@@ -29,6 +29,10 @@ class InputChecker {
       this.emit('echo', input)
     }
   }
+
+  static say () {
+    // x
+  }
 }
 
 util.inherits(InputChecker, EventEmitter)
@@ -54,11 +58,7 @@ ic.on('echo', function (data) {
   console.log(this.name + ' wrote ' + data)
 })
 
-// global.xx = 123
-
-// ic.on('echo', xx => {
-//   console.log(xx)
-// })
+// global.xx = 123 ic.on('echo', xx => {   console.log(xx) })
 
 process
   .stdin

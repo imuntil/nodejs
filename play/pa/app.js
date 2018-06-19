@@ -1,3 +1,4 @@
+const fs = require('fs')
 const superagent = require('superagent')
 const cheerio = require('cheerio')
 const async = require('async')
@@ -5,8 +6,8 @@ const async = require('async')
 const uri = 'http://www.llss.cool/wp/category/all/anime/page/1/'
 // const uri = 'http://www.llss.cool/wp/category/all/anime/'
 const magnet = /(熟|生)?[A-z\d]{20,}/g
-const totalsPages = 1
-let currentPage = 0
+let totalsPages = 0
+let currentPage = 68
 
 /* 获取每条信息内容 */
 function fetchUrl(url, cb) {
@@ -22,6 +23,8 @@ function fetchUrl(url, cb) {
           ...url,
           magnet: mgs
         })
+      } else {
+        cb(null, false)
       }
     })
 }
@@ -46,7 +49,10 @@ function fetchPage(currentPage = 1) {
 }
 function parseText(text) {
   const $ = cheerio.load(text)
-  getTotalPages($)
+  if (!totalsPages) {
+    totalsPages = getTotalPages($)
+    console.log('total-pages is ', totalsPages)
+  }
   const eros = $('.type-post').map((idx, element) => {
     const el = $(element).find('.entry-title a')
     return {
@@ -60,21 +66,34 @@ function parseText(text) {
         .attr('src')
     }
   })
+  console.log(Array.from(eros))
   return new Promise((resolve, reject) => {
     return async.mapLimit(Array.from(eros).filter(v => v.title), 5, fetchUrl, (err, result) => {
       if (err) {
         reject(err)
       }
-      resolve(result)
+      resolve(result.filter(v => !!v))
     })
   })
 }
 
 async function run() {
-  // while (currentPage < totalsPages) {
-  // }
-  const v = await fetchPage()
-  
+  const steam = fs.createWriteStream('./magnet.txt', {
+    flags: 'a',
+    encoding: 'utf8',
+    mode: 0o666
+  })
+  do {
+    try {
+      const v = await fetchPage(++currentPage)
+      console.log('current-page:', currentPage)
+      steam.write(JSON.stringify(v), 'utf8')
+
+    } catch (e) {
+      console.log('error:', e)
+    }
+  } while (currentPage < totalsPages);
+  // console.log(list)
 }
 
 run()

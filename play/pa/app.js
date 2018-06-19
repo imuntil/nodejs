@@ -7,7 +7,7 @@ const uri = 'http://www.llss.cool/wp/category/all/anime/page/1/'
 // const uri = 'http://www.llss.cool/wp/category/all/anime/'
 const magnet = /(熟|生)?[A-z\d]{20,}/g
 let totalsPages = 0
-let currentPage = 68
+let currentPage = 0
 
 /* 获取每条信息内容 */
 function fetchUrl(url, cb) {
@@ -41,7 +41,7 @@ function fetchPage(currentPage = 1) {
       .get(`http://www.llss.cool/wp/category/all/anime/page/${currentPage}/`)
       .end((err, res) => {
         if (err) {
-          reject(err)
+          return reject(err)
         }
         resolve(parseText(res.text))
       })
@@ -66,7 +66,6 @@ function parseText(text) {
         .attr('src')
     }
   })
-  console.log(Array.from(eros))
   return new Promise((resolve, reject) => {
     return async.mapLimit(Array.from(eros).filter(v => v.title), 5, fetchUrl, (err, result) => {
       if (err) {
@@ -79,7 +78,7 @@ function parseText(text) {
 
 async function run() {
   const steam = fs.createWriteStream('./magnet.txt', {
-    flags: 'a',
+    flags: 'w',
     encoding: 'utf8',
     mode: 0o666
   })

@@ -6,26 +6,29 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 
+const mongoose = require('mongoose')
+
 const index = require('./routes/index')
 const users = require('./routes/users')
+const api = require('./routes/api')
+
+const spider = require('./utils/spider')
 
 // error handler
 onerror(app)
 
 // middlewares
 app.use(bodyparser({
-  enableTypes:['json', 'form', 'text']
+  enableTypes: ['json', 'form', 'text']
 }))
 app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
 
-app.use(views(__dirname + '/views', {
-  extension: 'pug'
-}))
+app.use(views(__dirname + '/views', {extension: 'pug'}))
 
 // logger
-app.use(async (ctx, next) => {
+app.use(async(ctx, next) => {
   const start = new Date()
   await next()
   const ms = new Date() - start
@@ -35,10 +38,18 @@ app.use(async (ctx, next) => {
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
+app.use(api.routes(), api.allowedMethods())
 
 // error-handling
 app.on('error', (err, ctx) => {
   console.error('server error', err, ctx)
 });
+
+/* 连接数据库 */
+mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/zinzya')
+
+
+/* 爬虫 */
+// spider.run()
 
 module.exports = app

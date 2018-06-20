@@ -77,8 +77,8 @@ function parseText(text) {
 }
 
 async function run() {
-  const steam = fs.createWriteStream('./magnet.txt', {
-    flags: 'w',
+  const steam = fs.createWriteStream('./m.json', {
+    flags: 'a',
     encoding: 'utf8',
     mode: 0o666
   })
@@ -86,12 +86,13 @@ async function run() {
     try {
       const v = await fetchPage(++currentPage)
       console.log('current-page:', currentPage)
+      console.log('当前页面数据数:', v.length)
       steam.write(JSON.stringify(v), 'utf8')
-
+      // steam.write(JSON.stringify(v).slice(1, -1), 'utf8')
     } catch (e) {
       console.log('error:', e)
     }
-  } while (currentPage < totalsPages);
+  } while (currentPage < 2);
   // console.log(list)
 }
 

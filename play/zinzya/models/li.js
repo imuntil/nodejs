@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const liSchema = new mongoose.Schema({
   title: {
-    require: true,
+    required: true,
     type: String
   },
   link: {

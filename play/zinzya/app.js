@@ -16,6 +16,11 @@ const api = require('./routes/api')
 const spider = require('./utils/spider')
 const credentials = require('./utils/credentials')
 
+/* middle */
+const jwtAuth = require('./middlewares/jwt')
+const rfMiddle = require('./middlewares/response-formatter')
+const validMiddle = require('./middlewares/request-validate')
+
 // error handler
 onerror(app)
 
@@ -42,20 +47,11 @@ app.use(async(ctx, next) => {
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 
-/* token */
-app.use((ctx, next) => {
-  return next().catch(err => {
-    if (401 === err.status) {
-      ctx.status = 401
-      ctx.body = {
-        msg: 'Authentication Error'
-      }
-    } else {
-      throw err
-    }
-  })
-})
-app.use(jwt({cookie: '_li', secret: credentials.cookieSecret}).unless({path: [/^\/api\/user\/[login|create]/]}))
+app.use(rfMiddle())
+app.use(validMiddle)
+app.use(jwtAuth)
+
+app.use(jwt({cookie: '_li', secret: credentials.cookieSecret}).unless({path: [/^\/api\/user\/[test|login|register]/]}))
 
 app.use(api.routes(), api.allowedMethods())
 

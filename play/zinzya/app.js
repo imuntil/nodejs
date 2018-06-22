@@ -14,6 +14,7 @@ const users = require('./routes/users')
 const api = require('./routes/api')
 
 const spider = require('./utils/spider')
+const proxy = require('./utils/proxy')
 const credentials = require('./utils/credentials')
 
 /* middle */
@@ -47,6 +48,7 @@ app.use(async(ctx, next) => {
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 
+/* 自定义中间件 */
 app.use(rfMiddle())
 app.use(validMiddle)
 app.use(jwtAuth)
@@ -64,6 +66,9 @@ app.on('error', (err, ctx) => {
 mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/zinzya')
 
 /* 爬虫 */
+/* 神社数据 */
 // spider.run()
+/* ip池 */
+// proxy.fetchIpPool()
 
 module.exports = app

@@ -62,13 +62,14 @@ const filterUseful = ips => {
       .proxy(`http://${ip}`)
       .then(res => {
         if (res.statusCode === 200) {
-          pool.add(ip)
           // 保存到数据库
           saveToDB(ip)
-        } else {}
+        } else {
+          console.log(`${ip}不可用`)
+        }
       })
       .catch(e => {
-        console.log(e)
+        console.log(`${ip}不可用：${e.message}`)
       })
   })
   return Promise.all(q)
@@ -77,8 +78,10 @@ const filterUseful = ips => {
 const saveToDB = async(server) => {
   try {
     await Proxy.create({server})
+    pool.add(ip)
+    console.log(`${server}可用!!!!!!!!!!!!!!!!!!!!!!`)
   } catch (e) {
-    console.log(e)
+    console.log(e.message)
   }
 }
 
@@ -93,6 +96,7 @@ const run = async() => {
   do {
     console.log('currentPage:', currentPage)
     const ips = await fetchIPS(currentPage)
+    console.log(ips)
     await filterUseful(ips)
     currentPage++
   } while (currentPage < totalsPages);

@@ -119,7 +119,7 @@ async function forceResfresh() {
 }
 
 module.exports = {
-  run,
+  crawlPer2h: run,
   forceResfresh,
   getCount() {
     return newCount

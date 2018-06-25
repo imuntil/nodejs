@@ -13,8 +13,12 @@ const index = require('./routes/index')
 const users = require('./routes/users')
 const api = require('./routes/api')
 
-const spider = require('./utils/spider')
+// 琉璃神社
+const ruri = require('./utils/ruri')
+// 代理ip
 const proxy = require('./utils/proxy')
+// 动漫大风堂
+const bangumi = require('./utils/bangumi')
 const credentials = require('./utils/credentials')
 
 /* middle */
@@ -67,8 +71,11 @@ mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/zinzya')
 
 /* 爬虫 */
 /* 神社数据 */
-// spider.run()
+// ruri.crawlPer2h()
 /* ip池 */
 // proxy.fetchIpPool()
+/* 番剧列表 */
+// bangumi.runQueue()
+// bangumi.forceUpdate()
 
 module.exports = app

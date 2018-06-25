@@ -3,6 +3,8 @@ const pick = require('lodash.pick')
 const User = require('../../models/user')
 const credentials = require('../../utils/credentials')
 const {ApiError, ApiErrorNames} = require('../error/ApiError')
+const pm = require('../../utils/permission')
+const {getCurrentUser} = require('../../utils/ct')
 
 function setToken(phone, ctx) {
   const token = jwt.sign({
@@ -41,20 +43,19 @@ class UserController {
     }
   }
 
+  /**
+   * 添加账号 pm>=lv5
+   * POST
+   * @param {ctx} ctx
+   * @param {func} next
+   */
   static async createAccount(ctx, next) {
     const {phone} = ctx.request.body
     if (!phone) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
-    const token = ctx
-      .cookies
-      .get('_li', {signed: true})
-    if (!token) {
-      throw new ApiError(ApiErrorNames.UNKNOWN_ERROR)
-    }
-    /* 权限不足 */
-    const who = await User.findOne({token})
-    if (!who || who.auth < 3) {
+    const who = await getCurrentUser(ctx)
+    if (!who || who.auth < pm.LV5) {
       throw new ApiError(ApiErrorNames.PERMISSION_DENIED)
     }
     const user = await User.findOne({phone})
@@ -76,8 +77,8 @@ class UserController {
 
   static async register(ctx, next) {
     console.log('注册')
-    const {phone, password} = ctx.request.body
-    if (!phone || !password) {
+    const {phone, password, nick} = ctx.request.body
+    if (!phone || !password || !nick) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
     const account = await User.findOne({phone})
@@ -93,6 +94,7 @@ class UserController {
     const bt = User.encryptPassword(password)
     account.token = token
     account.password = bt
+    account.nick = nick
     await account.save()
   }
 

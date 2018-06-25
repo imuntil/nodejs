@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt-nodejs')
+const pm = require('../utils/permission')
 
 const userSchema = new mongoose.Schema({
   phone: {
@@ -14,14 +15,15 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String
   },
-  nick: String,
+  nick: {
+    type: String,
+    required: true
+  },
+  avatar: String,
   token: String,
   auth: {
     type: Number,
-    /* 默认1，全部功能，其他后续可能开放, 管理员4，可以添加账号 */
-    enum: [
-      1, 2, 3, 4
-    ],
+    enum: Object.values(pm),
     default: 1
   }
 })

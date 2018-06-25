@@ -4,6 +4,7 @@ const ApiErrorNames = {
   MISSING_OR_WRONG_PARAMETERS: 'missing_or_wrong_parameters',
   WRONG_PHONE_NUMBER: 'wrong_phone_number',
   WRONG_PHONE_OR_PWD: 'wrong_phone_or_pwd',
+  WRONG_ID: 'wrong_id',
   FIELD_IS_ILLEGAL: 'field_is_illegal',
   UNKNOWN_ERROR: 'unknown_error',
   THE_PHONE_CANT_REG: 'the_phone_cant_register',
@@ -55,6 +56,10 @@ errorMap.set(ApiErrorNames.WRONG_PHONE_OR_PWD, {
 errorMap.set(ApiErrorNames.FIELD_IS_ILLEGAL, {
   code: 1023,
   message: '字段不合法'
+})
+errorMap.set(ApiErrorNames.WRONG_ID, {
+  code: 1024,
+  message: 'ID有误'
 })
 
 errorMap.set(ApiErrorNames.PHONE_IS_EXIST, {

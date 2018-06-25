@@ -20,13 +20,22 @@ const validate = async(ctx, next) => {
   const params = ctx.method === 'GET'
     ? ctx.query
     : ctx.request.body
-  const {phone, password} = params
+  /* 
+  bid: bangumi id
+  */
+  const {phone, password, bid} = params
   if (phone && !regs.phone.reg.test(phone)) {
     throw new ApiError(ApiErrorNames.WRONG_PHONE_NUMBER)
   }
   if (password && !regs.password.reg.test(password)) {
     throw new ApiError(ApiErrorNames.WRONG_PHONE_OR_PWD)
   }
+  const ids = [bid].filter(v => v)
+  ids.forEach(v => {
+    if (!regs.objectId.reg.test(v)) {
+      throw new ApiError(ApiErrorNames.WRONG_ID)
+    }
+  })
   await next()
 }
 

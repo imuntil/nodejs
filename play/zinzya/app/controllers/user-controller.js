@@ -61,32 +61,52 @@ class UserController {
       throw new ApiError(ApiErrorNames.PERMISSION_DENIED)
     }
     const user = await User.findOne({email})
-    /* 用户或者账号已经存在 */
-    if (user && user.password) {
+    const itCode = user && user.invitationCode
+    const newCode = UserController.getItCode()
+
+    if (!user) {
+      /* 用户不存在 */
+      try {
+        await Promise.all([
+          User.create({email, invitationCode: newCode}),
+          sendMail(email, newCode.value)
+        ])
+        ctx.body = {
+          message: '创建账号成功'
+        }
+      } catch (e) {
+        console.log(e)
+        throw e
+      }
+    } else if (user && user.password) {
+      /* 用户已注册 */
       ctx.body = {
-        code: 1039,
+        code: 0,
         message: '用户已存在'
       }
-      return
-    }
-    try {
-      const code = Math.trunc(Math.random() * 100000)
+    } else if (!itCode.value || Date.now() >= itCode.expired) {
+      /* code 过期，重发 */
+      user.invitationCode = newCode
       await Promise.all([
-        User.create({
-          email,
-          invationCode: {
-            value: `${code}`,
-            expired: Date.now() + 1000 * 60 * 60 * 24 * 2
-          }
-        }),
-        sendMail(email, code)
+        user.save(),
+        sendMail(email, newCode.value)
       ])
+
       ctx.body = {
-        message: '创建账号成功'
+        message: '已重新发送邀请码'
       }
-    } catch (e) {
-      console.log(e)
-      throw e
+    } else {
+      /* 账号之前已经创建 */
+      ctx.body = {
+        message: '账号已经创建'
+      }
+    }
+  }
+
+  static getItCode() {
+    return {
+      value: `${Math.random()}`.split('.')[1].slice(0, 6),
+      expired: Date.now() + 1000 * 60 * 60 * 24 * 2
     }
   }
 
@@ -105,20 +125,35 @@ class UserController {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
     const account = await User.findOne({email})
+    const itCode = account && account.invitationCode
     if (!account) {
       /* 没有账号，无权注册 */
       throw new ApiError(ApiErrorNames.THE_EMAIL_CANT_REG)
-    } else if (account && account.password) {
+    } else if (account.password) {
       /* 有账号，且密码不为空，已被注册 */
       throw new ApiError(ApiErrorNames.EMAIL_IS_EXIST)
+    } else if (!itCode.value || itCode.expired < Date.now()) {
+      /* 邀请码已过期 */
+      ctx.body = {
+        code: 0,
+        message: '邀请码已过期'
+      }
+    } else if (+ itCode.value !== + code) {
+      ctx.body = {
+        code: 0,
+        message: '邀请码错误'
+      }
+    } else {
+      /* 有账号，且密码为空，可以注册 */
+      const token = setToken(email, ctx)
+      const bt = User.encryptPassword(password)
+      account.token = token
+      account.password = bt
+      account.nick = nick
+      account.invitationCode = null
+      await account.save()
     }
-    /* 有账号，且密码为空，可以注册 */
-    const token = setToken(email, ctx)
-    const bt = User.encryptPassword(password)
-    account.token = token
-    account.password = bt
-    account.nick = nick
-    await account.save()
+
   }
 
   static async test(ctx) {

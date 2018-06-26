@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
     enum: Object.values(pm),
     default: 1
   },
-  invationCode: {
+  invitationCode: {
     value: String,
     expired: Date
   }

@@ -17,7 +17,11 @@ const sendMail = async(to, code) => {
       from: 'zhin@imuntil.com',
       to,
       subject: 'nakuna邀请码',
-      html: `<h2 style="color: #ff0000;">${code}</h2>`
+      html: `
+      <p>您的邀请码为</p>
+      <h2 style="color: #ff0000;">${code}</h2>
+      <p>有效期2天，请及时注册</p>
+      `
     }, (err, info) => {
       if (err) {
         reject(err)

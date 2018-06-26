@@ -1,7 +1,9 @@
 const Anime = require('../../models/bangumi')
 const jwt = require('jsonwebtoken')
+const pick = require('lodash.pick')
 const {ApiError, ApiErrorNames} = require('../error/ApiError')
 const {ct, PM, credentials} = require('../../utils')
+const idReg = ct.regs.objectId.reg
 
 class BangumiController {
   /**
@@ -11,17 +13,20 @@ class BangumiController {
    */
   static async getList(ctx) {
     console.log('获取番剧列表')
-    let {year} = ctx.request.query
+    let {year} = ctx.params
     if (!/^\d{4}$/.test(year)) {
       // throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
       year = (new Date()).getFullYear()
     }
     const bangumi = await Anime
       .find()
+      .where('visible')
+      .equals(true)
       .where('date')
       .gte(new Date(`${year}-01-01`))
       .lte(new Date(`${year}-12-31`))
       .sort('date')
+      .select('-visible')
       .lean()
       .exec();
     ctx.body = {
@@ -52,7 +57,8 @@ class BangumiController {
       throw new ApiError(ApiErrorNames.PERMISSION_DENIED)
     }
     const bgm = await Anime.create({
-      ...ctx.request.body
+      ...ctx.request.body,
+      adder: who.id
     })
     ctx.body = {
       data: bgm
@@ -62,34 +68,61 @@ class BangumiController {
   /**
    * 编辑番剧 pm >= lv4
    * PUT
-   * body = {name, date, bid, kantoku?, maker?...}
+   * /api/bangumi/:bid
+   * body = {name?, date?, kantoku?, maker?...}
    * @param {ctx} ctx
    */
   static async modifyBangumi(ctx) {
     console.log('编辑番剧')
-    let {bid, ...rest} = ctx.request.body
-    if (!bid || ct.isEmptyObj(rest)) {
+
+    const {bid} = ctx.params
+    const rest = pick(ctx.request.body, ['date', 'name', 'kantoku', 'maker', 'type'])
+    if (!bid || !idReg.test(bid) || ct.isEmptyObj(rest)) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
     const who = await ct.getCurrentUser(ctx)
-    // jwt.verify(who.token, credentials.cookieSecret, (err, decoded) => {
-    // console.log(err)   console.log(decoded) })
     if (!who || who.auth < PM.LV4) {
       throw new ApiError(ApiErrorNames.PERMISSION_DENIED)
     }
-    const res = await Anime.findOneAndUpdate(
-      { _id: bid },
-      { ...rest }
-    ).exec()
+
+    const bgm = await Anime
+      .findById(bid)
+      .exec()
+    for (let [k, v] of Object.entries(rest)) {
+      if (k === 'date' && isNaN(new Date(v))) {
+        throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
+      }
+      bgm[k] = v
+    }
+    /* 更新编辑人员信息 */
+    if (bgm.editor) {
+      bgm
+        .editor
+        .unshift({uid: who.id, nick: who.nick})
+      bgm.editor = bgm
+        .editor
+        .slice(0, 5)
+    } else {
+      bgm.editor = [{ id: who.id, nick: who.nick }]
+    }
+    await bgm.save()
   }
 
   /**
    * 删除番剧 pm >= lv5
    * DEL
+   * /api/bangumi/:bid
    * @param {ctx} ctx
    */
   static async deleteBangumi(ctx) {
     console.log('删除番剧（伪）')
+    const bid = ctx.params.bid
+    if (!bid || !idReg.test(bid)) {
+      throw new ApiError(ApiErrorNames.WRONG_ID)
+    }
+    await Anime
+      .findByIdAndUpdate(bid, {visible: false})
+      .exec()
   }
 }
 

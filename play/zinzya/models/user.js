@@ -3,10 +3,10 @@ const bcrypt = require('bcrypt-nodejs')
 const pm = require('../utils/permission')
 
 const userSchema = new mongoose.Schema({
-  phone: {
+  email: {
     type: String,
-    required: true,
-    unique: true
+    unique: true,
+    required: true
   },
   created: {
     type: Date,
@@ -16,8 +16,7 @@ const userSchema = new mongoose.Schema({
     type: String
   },
   nick: {
-    type: String,
-    required: true
+    type: String
   },
   avatar: String,
   token: String,
@@ -25,6 +24,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     enum: Object.values(pm),
     default: 1
+  },
+  invationCode: {
+    value: String,
+    expired: Date
   }
 })
 

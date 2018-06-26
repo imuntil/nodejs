@@ -3,13 +3,14 @@ const ApiErrorNames = {
   USER_NOT_EXIST: 'user_not_exist',
   MISSING_OR_WRONG_PARAMETERS: 'missing_or_wrong_parameters',
   WRONG_PHONE_NUMBER: 'wrong_phone_number',
-  WRONG_PHONE_OR_PWD: 'wrong_phone_or_pwd',
+  WRONG_ACCOUNT_OR_PWD: 'WRONG_ACCOUNT_OR_PWD',
+  INVALID_EMAIL: 'invalid_email',
   WRONG_ID: 'wrong_id',
   FIELD_IS_ILLEGAL: 'field_is_illegal',
   UNKNOWN_ERROR: 'unknown_error',
-  THE_PHONE_CANT_REG: 'the_phone_cant_register',
+  THE_EMAIL_CANT_REG: 'THE_EMAIL_CANT_REGister',
   PERMISSION_DENIED: 'permission_denied',
-  PHONE_IS_EXIST: 'phone_is_exist',
+  EMAIL_IS_EXIST: 'email_is_exist',
   
 
   getErrorInfo: errorName => {
@@ -49,7 +50,7 @@ errorMap.set(ApiErrorNames.WRONG_PHONE_NUMBER, {
   code: 1021,
   message: '手机号码格式有误'
 })
-errorMap.set(ApiErrorNames.WRONG_PHONE_OR_PWD, {
+errorMap.set(ApiErrorNames.WRONG_ACCOUNT_OR_PWD, {
   code: 1022,
   message: '账号或密码有误'
 })
@@ -61,10 +62,14 @@ errorMap.set(ApiErrorNames.WRONG_ID, {
   code: 1024,
   message: 'ID有误'
 })
+errorMap.set(ApiErrorNames.INVALID_EMAIL, {
+  code: 1025,
+  message: '邮箱账号不合法'
+})
 
-errorMap.set(ApiErrorNames.PHONE_IS_EXIST, {
+errorMap.set(ApiErrorNames.EMAIL_IS_EXIST, {
   code: 1031,
-  message: '该手机号码已被注册'
+  message: '该邮箱已被注册'
 })
 
 errorMap.set(ApiErrorNames.PERMISSION_DENIED, {
@@ -72,9 +77,9 @@ errorMap.set(ApiErrorNames.PERMISSION_DENIED, {
   message: 'Permission denied'
 })
 
-errorMap.set(ApiErrorNames.THE_PHONE_CANT_REG, {
+errorMap.set(ApiErrorNames.THE_EMAIL_CANT_REG, {
   code: 1201,
-  message: '该手机号不能注册'
+  message: '该邮箱不能注册'
 })
 
 class ApiError extends Error {

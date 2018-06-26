@@ -1,9 +1,9 @@
 const router = require('koa-router')()
 const BgmController = require('../../app/controllers/bangumi-controller')
 
-router.get('/', BgmController.getList)
+router.get('/:year', BgmController.getList)
 router.post('/', BgmController.addBangumi)
-router.put('/', BgmController.modifyBangumi)
-router.del('/', BgmController.deleteBangumi)
+router.put('/:bid', BgmController.modifyBangumi)
+router.del('/:bid', BgmController.deleteBangumi)
 
 module.exports = router

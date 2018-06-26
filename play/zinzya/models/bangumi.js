@@ -16,8 +16,15 @@ const animeSchema = new mongoose.Schema({
     enum: ['动画', '剧场版', 'OVA/OAD', '其他'],
     default: '动画'
   },
-  adder: String,
-  editor: String
+  visible: {
+    type: Boolean,
+    default: true
+  },
+  adder: mongoose.Schema.Types.ObjectId,
+  editor: [{
+    nick: String,
+    uid: mongoose.Schema.Types.ObjectId
+  }]
 })
 
 module.exports = mongoose.model('Anime', animeSchema)

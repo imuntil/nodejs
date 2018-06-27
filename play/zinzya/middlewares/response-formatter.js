@@ -10,13 +10,23 @@ const responseFormatter = ctx => {
   }
 }
 
-const URLFiler = (pattern = '^/api') => {
+const URLFiler = (pattern = '^/shizuku') => {
   return async(ctx, next) => {
     const reg = new RegExp(pattern)
     try {
       await next()
+      const status = ctx.status || 404
+      if (status === 404) {
+        ctx.throw(404)
+      }
     } catch (err) {
-      if (reg.test(ctx.originalUrl)) {
+      ctx.status = err.status || 500
+      if (ctx.status === 404) {
+        ctx.body = {
+          code: 0,
+          message: 'Not Found'
+        }
+      } else if (reg.test(ctx.originalUrl)) {
 
         if (err instanceof ApiError) {
           ctx.body = {

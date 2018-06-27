@@ -152,12 +152,14 @@ class UserController {
       account.nick = nick
       account.invitationCode = null
       await account.save()
+      ctx.body = {}
     }
-
   }
 
   static async test(ctx) {
-    console.log('test')
+    ctx.body = {
+      message: 'test api'
+    }
   }
 }
 

@@ -50,6 +50,7 @@ class LiController {
     // ctx.body = {
     //   data: li.toObject()
     // }
+    ctx.body = {}
   }
 }
 

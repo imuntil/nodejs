@@ -106,6 +106,7 @@ class BangumiController {
       bgm.editor = [{ id: who.id, nick: who.nick }]
     }
     await bgm.save()
+    ctx.body = {}
   }
 
   /**
@@ -123,6 +124,7 @@ class BangumiController {
     await Anime
       .findByIdAndUpdate(bid, {visible: false})
       .exec()
+    ctx.body = {}
   }
 }
 

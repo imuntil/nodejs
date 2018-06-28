@@ -10,6 +10,7 @@ const ApiErrorNames = {
   UNKNOWN_ERROR: 'unknown_error',
   THE_EMAIL_CANT_REG: 'THE_EMAIL_CANT_REGister',
   PERMISSION_DENIED: 'permission_denied',
+  UNAUTHORIZED: 'Unauthorized',
   EMAIL_IS_EXIST: 'email_is_exist',
   
 
@@ -72,8 +73,12 @@ errorMap.set(ApiErrorNames.EMAIL_IS_EXIST, {
   message: '该邮箱已被注册'
 })
 
-errorMap.set(ApiErrorNames.PERMISSION_DENIED, {
+errorMap.set(ApiErrorNames.UNAUTHORIZED, {
   code: 104,
+  message: 'Unauthorized'
+})
+errorMap.set(ApiErrorNames.PERMISSION_DENIED, {
+  code: 1041,
   message: 'Permission denied'
 })
 

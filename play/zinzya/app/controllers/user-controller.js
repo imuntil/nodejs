@@ -22,6 +22,7 @@ function setToken(email, ctx) {
 
 class UserController {
   static async login(ctx, next) {
+    console.log('用户登录')
     const {email, password} = ctx.request.body
     if (!email || !password) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)

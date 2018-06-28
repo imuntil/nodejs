@@ -2,6 +2,7 @@ const {ApiError, errorMap, ApiErrorNames} = require('../app/error/ApiError')
 const mongoose = require('mongoose')
 
 const responseFormatter = ctx => {
+
   const body = ctx.body || {}
   ctx.body = {
     code: 1,
@@ -15,18 +16,9 @@ const URLFiler = (pattern = '^/shizuku') => {
     const reg = new RegExp(pattern)
     try {
       await next()
-      const status = ctx.status || 404
-      if (status === 404) {
-        ctx.throw(404)
-      }
+
     } catch (err) {
-      ctx.status = err.status || 500
-      if (ctx.status === 404) {
-        ctx.body = {
-          code: 0,
-          message: 'Not Found'
-        }
-      } else if (reg.test(ctx.originalUrl)) {
+      if (reg.test(ctx.originalUrl)) {
 
         if (err instanceof ApiError) {
           ctx.body = {
@@ -47,8 +39,9 @@ const URLFiler = (pattern = '^/shizuku') => {
             message: err.message || '未知错误2'
           }
         }
-
       }
+      // if (ctx.status === 404) {   ctx.body = {     code: 0,     message: 'Not
+      // Found'   } }
     }
     if (reg.test(ctx.originalUrl)) {
       responseFormatter(ctx)

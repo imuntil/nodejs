@@ -78,15 +78,15 @@ function parseText(text) {
 }
 
 /* 对比新数据和数据库中的数据 */
-async function contrast(newData) {
+async function contrast (newData) {
   while (newData.length) {
     const li = newData.shift()
     const dbLi = await Li
       .findOne({title: li.title})
       .exec()
     if (dbLi) {
-      console.log('没有新的资源')
-      break
+      console.log('旧资源')
+      continue
     } else {
       console.log(`有新的资源:${li.title}`)
       await Li.create(li)
@@ -97,7 +97,7 @@ async function contrast(newData) {
 
 /* 定时重复爬, 2h */
 async function run() {
-  newCount += 10
+  // newCount += 10
   while (true) {
     const now = Date.now()
     if (now - prevTime > 1000 * 60 * 60 * 2) {
@@ -110,7 +110,7 @@ async function run() {
 }
 
 /* 强制刷新 */
-async function forceResfresh() {
+async function forceRefresh() {
   console.log('强制刷新')
   prevTime = Date.now()
   const v = await fetchPage()
@@ -120,7 +120,7 @@ async function forceResfresh() {
 
 module.exports = {
   crawlPer2h: run,
-  forceResfresh,
+  forceRefresh,
   getCount() {
     return newCount
   }

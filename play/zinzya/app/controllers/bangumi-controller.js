@@ -39,6 +39,47 @@ class BangumiController {
   }
 
   /**
+   * 搜索番剧
+   * GET
+   * /shizuku/bangumi/search?name=xx
+   * @param {*} ctx
+   */
+  static async searchBGMs(ctx) {
+    console.log('搜索番剧')
+    const {name} = ctx.query
+    if (!name || !name.trim()) {
+      throw new ApiError.ApiErrorNames(MISSING_OR_WRONG_PARAMETERS)
+    }
+    const bs = await Anime
+      .find({name: new RegExp(name)})
+      .exec()
+    ctx.body = {
+      data: {
+        count: bs.length,
+        result: bs
+      }
+    }
+  }
+
+  /**
+   * 获取时间范围
+   * GET
+   * /shizuku/bangumi/range
+   * @param {*} ctx 
+   */
+  static async getDateRange(ctx) {
+    console.log('获取时间范围')
+    const end = (new Date()).getFullYear()
+    const data = []
+    for (let i = 1990; i <= end; i++) {
+      data.push(i)
+    }
+    ctx.body = {
+      data
+    }
+  }
+
+  /**
    * 新增番剧 pm>= lv4
    * POST
    * body = {name, date, kantoku?, maker?}
@@ -88,7 +129,8 @@ class BangumiController {
     const bgm = await Anime
       .findById(bid)
       .exec()
-    for (let [k, v] of Object.entries(rest)) {
+    for (let [k,
+      v]of Object.entries(rest)) {
       if (k === 'date' && isNaN(new Date(v))) {
         throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
       }
@@ -103,7 +145,12 @@ class BangumiController {
         .editor
         .slice(0, 5)
     } else {
-      bgm.editor = [{ id: who.id, nick: who.nick }]
+      bgm.editor = [
+        {
+          id: who.id,
+          nick: who.nick
+        }
+      ]
     }
     await bgm.save()
     ctx.body = {}

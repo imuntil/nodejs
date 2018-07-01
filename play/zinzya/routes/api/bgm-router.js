@@ -1,6 +1,8 @@
 const router = require('koa-router')()
 const BgmController = require('../../app/controllers/bangumi-controller')
 
+router.get('/search', BgmController.searchBGMs)
+router.get('/range', BgmController.getDateRange)
 router.get('/:year', BgmController.getList)
 router.post('/', BgmController.addBangumi)
 router.put('/:bid', BgmController.modifyBangumi)

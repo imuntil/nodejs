@@ -12,6 +12,7 @@ const ApiErrorNames = {
   PERMISSION_DENIED: 'permission_denied',
   UNAUTHORIZED: 'Unauthorized',
   EMAIL_IS_EXIST: 'email_is_exist',
+  NO_PROXY_AVAILABLE: 'no_proxy_available',
   
 
   getErrorInfo: errorName => {
@@ -30,6 +31,7 @@ const ApiErrorNames = {
 103 数据重复错误
 104 权限不足
 110 数据库错误
+119 代理相关
 120 其他错误
 */
 
@@ -80,6 +82,11 @@ errorMap.set(ApiErrorNames.UNAUTHORIZED, {
 errorMap.set(ApiErrorNames.PERMISSION_DENIED, {
   code: 1041,
   message: 'Permission denied'
+})
+
+errorMap.set(ApiErrorNames.NO_PROXY_AVAILABLE, {
+  code: 1191,
+  message: '没有可用的代理'
 })
 
 errorMap.set(ApiErrorNames.THE_EMAIL_CANT_REG, {

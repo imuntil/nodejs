@@ -2,7 +2,7 @@ const Anime = require('../../models/bangumi')
 const jwt = require('jsonwebtoken')
 const pick = require('lodash.pick')
 const {ApiError, ApiErrorNames} = require('../error/ApiError')
-const {ct, PM, credentials} = require('../../utils')
+const {ct, PM, credentials, dmhy} = require('../../utils')
 const idReg = ct.regs.objectId.reg
 
 class BangumiController {
@@ -65,7 +65,7 @@ class BangumiController {
    * 获取时间范围
    * GET
    * /shizuku/bangumi/range
-   * @param {*} ctx 
+   * @param {*} ctx
    */
   static async getDateRange(ctx) {
     console.log('获取时间范围')
@@ -109,7 +109,7 @@ class BangumiController {
   /**
    * 编辑番剧 pm >= lv4
    * PUT
-   * /api/bangumi/:bid
+   * /shizuku/bangumi/:bid
    * body = {name?, date?, kantoku?, maker?...}
    * @param {ctx} ctx
    */
@@ -159,7 +159,7 @@ class BangumiController {
   /**
    * 删除番剧 pm >= lv5
    * DEL
-   * /api/bangumi/:bid
+   * /shizuku/bangumi/:bid
    * @param {ctx} ctx
    */
   static async deleteBangumi(ctx) {
@@ -171,6 +171,22 @@ class BangumiController {
     await Anime
       .findByIdAndUpdate(bid, {visible: false})
       .exec()
+    ctx.body = {}
+  }
+
+  /**
+   * 获取番剧详细，主要为下载磁链
+   * GET
+   * /shizuku/bangumi/detail?name={}
+   * @param {*} ctx
+   */
+  static async fetchDetail(ctx) {
+    console.log('获取番剧详细')
+    const name = (ctx.query.name || '').trim()
+    if (!name) {
+      throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
+    }
+    await dmhy.crawlDmhy(name)
     ctx.body = {}
   }
 }

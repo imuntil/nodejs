@@ -71,7 +71,7 @@ mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/zinzya')
 
 /* 爬虫 */
 /* 神社数据 */
-ruri.crawlPer2h()
+// ruri.crawlPer2h()
 /* ip池 */
 // proxy.fetchIpPool()
 /* 番剧列表 */

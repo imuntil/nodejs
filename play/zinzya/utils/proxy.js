@@ -64,8 +64,6 @@ const filterUseful = ips => {
         if (res.statusCode === 200) {
           // 保存到数据库
           saveToDB(ip)
-        } else {
-          console.log(`${ip}不可用`)
         }
       })
       .catch(e => {
@@ -96,7 +94,6 @@ const run = async() => {
   do {
     console.log('currentPage:', currentPage)
     const ips = await fetchIPS(currentPage)
-    console.log(ips)
     await filterUseful(ips)
     currentPage++
   } while (currentPage < totalsPages);

@@ -1,16 +1,10 @@
 const Proxy = require('../models/proxy')
 const superagent = require('superagent')
+const cheerio = require('cheerio')
 const {ApiError, ApiErrorNames} = require('../app/error/ApiError')
-// require('superagent-proxy')(superagent)
-require('superagent-charset')(superagent)
+require('superagent-proxy')(superagent)
 
 class DmhyCrawler {
-  constructor() {
-    console.log('________________dmhy init______________')
-    // 队列索引
-    this.index = -1
-    this.getProxies()
-  }
 
   async getProxies() {
     try {
@@ -29,34 +23,71 @@ class DmhyCrawler {
   }
 
   async crawlDmhy(name) {
-    // if (!this.crawlAble) {
-    //   throw new ApiError(ApiErrorNames.NO_PROXY_AVAILABLE)
-    // }
-    // this.index >= this.proxies.length
-    //   ? (this.index = 0)
-    //   : (this.index++)
-    // const p = this.proxies[this.index].server
-    // console.log(p)
     superagent
-      .get('http://share.dmhy.org/')
-      .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like ' +
-          'Gecko) Chrome/67.0.3396.87 Safari/537.36')
+      .get(`https://share.dmhy.org/topics/list?keyword=${name}`)
+      .set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)' +
+          ' Chrome/67.0.3396.79 Safari/537.36')
       // .proxy(`http://118.212.137.135:31288`)
-      .charset('gbk')
-      .timeout(10000)
+      .timeout(15000)
       .then(res => {
         if (res.statusCode === 200) {
-          console.log(res.text)
+          this.parseDOM(res.text)
         }
       })
       .catch(e => {
         console.log(e)
-        // this.crawlDmhy(name)
       })
   }
 
-  get crawlAble() {
-    return this.proxies && this.proxies.length
+  async parseDOM(text) {
+    const $ = this.$ = cheerio.load(text)
+    return $('#topic_list tr').map((i, el) => {
+      const tds = $(el).find('td')
+      const {
+        date,
+        type,
+        title,
+        magnet,
+        size,
+        subtitle
+      } = {
+        date: tds
+          .eq(0)
+          .find('span')
+          .text()
+          .trim(),
+        type: tds
+          .eq(1)
+          .text()
+          .trim(),
+        subtitle: tds
+          .eq(2)
+          .find('.tag')
+          .text()
+          .trim(),
+        title: tds
+          .eq(2)
+          .find('.tag+a')
+          .text()
+          .trim(),
+        magnet: tds
+          .eq(3)
+          .find('a')
+          .attr('href'),
+        size: tds
+          .eq(4)
+          .text()
+          .trim()
+      }
+      return {
+        date,
+        type,
+        title,
+        magnet,
+        size,
+        subtitle
+      }
+    }).get()
   }
 }
 

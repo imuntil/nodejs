@@ -186,8 +186,10 @@ class BangumiController {
     if (!name) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
-    await dmhy.crawlDmhy(name)
-    ctx.body = {}
+    const res = await dmhy.crawlDmhy(name)
+    ctx.body = {
+      data: res
+    }
   }
 }
 

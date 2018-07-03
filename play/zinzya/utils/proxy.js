@@ -57,7 +57,7 @@ const fetchIPS = async(page = 0) => {
 const filterUseful = ips => {
   const q = ips.map(ip => {
     return superagent
-      .get('http://share.dmhy.org/')
+      .get('https://share.dmhy.org/')
       .timeout(5000)
       .proxy(`http://${ip}`)
       .then(res => {

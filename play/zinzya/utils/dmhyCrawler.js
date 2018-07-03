@@ -1,7 +1,7 @@
 const Proxy = require('../models/proxy')
 const superagent = require('superagent')
 const {ApiError, ApiErrorNames} = require('../app/error/ApiError')
-require('superagent-proxy')(superagent)
+// require('superagent-proxy')(superagent)
 require('superagent-charset')(superagent)
 
 class DmhyCrawler {
@@ -29,17 +29,19 @@ class DmhyCrawler {
   }
 
   async crawlDmhy(name) {
-    if (!this.crawlAble) {
-      throw new ApiError(ApiErrorNames.NO_PROXY_AVAILABLE)
-    }
-    this.index >= this.proxies.length
-      ? (this.index = 0)
-      : (this.index++)
-    const p = this.proxies[this.index].server
-    console.log(p)
+    // if (!this.crawlAble) {
+    //   throw new ApiError(ApiErrorNames.NO_PROXY_AVAILABLE)
+    // }
+    // this.index >= this.proxies.length
+    //   ? (this.index = 0)
+    //   : (this.index++)
+    // const p = this.proxies[this.index].server
+    // console.log(p)
     superagent
       .get('http://share.dmhy.org/')
-      .proxy(`http://118.212.137.135:31288`)
+      .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like ' +
+          'Gecko) Chrome/67.0.3396.87 Safari/537.36')
+      // .proxy(`http://118.212.137.135:31288`)
       .charset('gbk')
       .timeout(10000)
       .then(res => {
@@ -48,7 +50,7 @@ class DmhyCrawler {
         }
       })
       .catch(e => {
-        console.log(e.message)
+        console.log(e)
         // this.crawlDmhy(name)
       })
   }

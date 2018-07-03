@@ -41,7 +41,7 @@ class DmhyCrawler {
       .get('http://share.dmhy.org/')
       .proxy(`http://118.212.137.135:31288`)
       .charset('gbk')
-      .timeout(5000)
+      .timeout(10000)
       .then(res => {
         if (res.statusCode === 200) {
           console.log(res.text)

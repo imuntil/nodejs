@@ -9,16 +9,16 @@ const isEqual = require('lodash.isequal')
 let json = null
 let date = new Date()
 const transporter = nodemailer.createTransport({
-  service: 'qq',
+  host: 'smtp.exmail.qq.com',
   port: 465,
   secure: true,
   auth: {
-    user: 'zhaobin@jtuntech.com',
-    pass: '1xx1UOH3'
+    user: 'zhin@imuntil.com',
+    pass: 'eVcybJ4QzvjxjzGv'
   }
 })
 const mailOptions = {
-  from: 'zhaobin@jtuntech.com', // sender address
+  from: 'zhin@imuntil.com', // sender address
   to: 'imuntil@qq.com', // list of receivers
   subject: 'Hello ✔', // Subject line
   text: 'Hello world?' // plain text body

@@ -29,7 +29,7 @@ const sendMail = async (content, now) => {
     {
       ...mailOptions,
       subject: 'TAKIGEN微博更新-' + dateformat(now, 'isoDateTime'),
-      html: `<p>${JSON.stringify(content, '', 2)}</p>`
+      text: JSON.stringify(content, '', 4)
     },
     (err, info) => {
       if (err) {

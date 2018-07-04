@@ -31,6 +31,9 @@ class DmhyCrawler {
    * @param {number} page
    */
   async crawlDmhy(name, sort = 2, page) {
+    console.log('====================================');
+    console.log(`name: ${name}; type: ${sort}; page: ${page}`);
+    console.log('====================================');
     // 'https://share.dmhy.org/topics/list/page/1'
     return superagent.get(`https://share.dmhy.org/topics/list${page
       ? `/page/${page}`

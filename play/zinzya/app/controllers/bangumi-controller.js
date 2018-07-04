@@ -177,17 +177,19 @@ class BangumiController {
   /**
    * 获取番剧详细，主要为下载磁链
    * GET
-   * /shizuku/bangumi/detail?name={}
+   * /shizuku/bangumi/detail
+   * query = [name, page?, type?]
+   * type 2=>动画   31=》季度全集  7=》raw
    * @param {*} ctx
    */
   static async fetchDetail(ctx) {
     console.log('获取番剧详细')
-    const name = (ctx.query.name || '').trim()
+    const { name, page, type = 2 } = ctx.query
     if (!name) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
     try {
-      const res = await dmhy.crawlDmhy(name, 2, 2)
+      const res = await dmhy.crawlDmhy(name, type, page)
       ctx.body = {
         data: res
       }

@@ -33,7 +33,7 @@ class DmhyCrawler {
   async crawlDmhy(name, sort = 2, page) {
     console.log('====================================');
     console.log(`name: ${name}; type: ${sort}; page: ${page}`);
-    const url = `https://share.dmhy.org/topics/list${page
+    const url = `https://share.dmhy.org/topics/list${page !== 'undefined'
       ? `/page/${page}`
       : ''}?keyword=${encodeURI(name)}&sort_id=${sort}`
     console.log('====================================');

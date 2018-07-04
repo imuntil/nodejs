@@ -33,13 +33,14 @@ class DmhyCrawler {
   async crawlDmhy(name, sort = 2, page) {
     console.log('====================================');
     console.log(`name: ${name}; type: ${sort}; page: ${page}`);
-    console.log('====================================');
-    // 'https://share.dmhy.org/topics/list/page/1'
-    return superagent.get(`https://share.dmhy.org/topics/list${page
+    const url = `https://share.dmhy.org/topics/list${page
       ? `/page/${page}`
-      : ''}?keyword=${encodeURI(name)}&sort_id=${sort}`)
+      : ''}?keyword=${encodeURI(name)}&sort_id=${sort}`
+    console.log('====================================');
+    return superagent
+      .get(url)
       .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like ' +
-        'Gecko) Chrome/67.0.3396.99 Safari/537.36')
+          'Gecko) Chrome/67.0.3396.99 Safari/537.36')
       .timeout(15000)
       .then(res => {
         if (res.statusCode === 200) {
@@ -131,7 +132,7 @@ class DmhyCrawler {
     const l = el
       .find('.fl a')
       .length === 2
-    if (!l && +current !== 1) {
+    if (!l && + current !== 1) {
       return {current, next: false}
     }
     return {current, next: true}

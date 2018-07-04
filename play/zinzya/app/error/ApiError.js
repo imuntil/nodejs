@@ -13,6 +13,7 @@ const ApiErrorNames = {
   UNAUTHORIZED: 'Unauthorized',
   EMAIL_IS_EXIST: 'email_is_exist',
   NO_PROXY_AVAILABLE: 'no_proxy_available',
+  SUPERAGENT_ERROR: 'superagent_error',
   
 
   getErrorInfo: errorName => {
@@ -88,6 +89,9 @@ errorMap.set(ApiErrorNames.NO_PROXY_AVAILABLE, {
   code: 1191,
   message: '没有可用的代理'
 })
+// errorMap.set(ApiErrorNames.SUPERAGENT_ERROR, {
+
+// })
 
 errorMap.set(ApiErrorNames.THE_EMAIL_CANT_REG, {
   code: 1201,

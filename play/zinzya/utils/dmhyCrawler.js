@@ -22,26 +22,38 @@ class DmhyCrawler {
     }
   }
 
-  async crawlDmhy(name) {
-    superagent
-      .get(`https://share.dmhy.org/topics/list?keyword=${name}`)
-      .set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)' +
-          ' Chrome/67.0.3396.79 Safari/537.36')
-      // .proxy(`http://118.212.137.135:31288`)
+  /**
+   * 爬
+   * sort [2, 31, 7]
+   * page
+   * @param {string} name
+   * @param {number} sort
+   * @param {number} page
+   */
+  async crawlDmhy(name, sort = 2, page) {
+    // 'https://share.dmhy.org/topics/list/page/1'
+    return superagent.get(`https://share.dmhy.org/topics/list${page
+      ? `/page/${page}`
+      : ''}?keyword=${encodeURI(name)}&sort_id=${sort}`)
+      .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like ' +
+        'Gecko) Chrome/67.0.3396.99 Safari/537.36')
       .timeout(15000)
       .then(res => {
         if (res.statusCode === 200) {
-          this.parseDOM(res.text)
+          return this.parseDOM(res.text)
         }
-      })
-      .catch(e => {
-        console.log(e)
+        throw res.statusType
       })
   }
 
+  /**
+   * 解析dom
+   * @param {string} text
+   */
   async parseDOM(text) {
     const $ = this.$ = cheerio.load(text)
-    return $('#topic_list tr').map((i, el) => {
+    const state = this.getPages($)
+    const data = $('#topic_list tbody tr').map((i, el) => {
       const tds = $(el).find('td')
       const {
         date,
@@ -67,13 +79,14 @@ class DmhyCrawler {
           .trim(),
         title: tds
           .eq(2)
-          .find('.tag+a')
+          .children('a')
           .text()
           .trim(),
         magnet: tds
           .eq(3)
           .find('a')
-          .attr('href'),
+          .attr('href')
+          .split('&')[0],
         size: tds
           .eq(4)
           .text()
@@ -88,6 +101,37 @@ class DmhyCrawler {
         subtitle
       }
     }).get()
+    return {
+      count: data.length,
+      ...state,
+      res: data
+    }
+  }
+
+  /**
+   * 获取当前页数，下一页是否存在
+   * @param {$} $
+   */
+  getPages($) {
+    const el = $('.nav_title').eq(1)
+    const text = el
+      .text()
+      .trim()
+    if (text === '只有一頁') {
+      return {current: 1, next: false}
+    }
+    const v = /第(\d+)頁/.exec(text)
+    const current = v && v[1]
+    if (!current) {
+      return {current: 1, next: false}
+    }
+    const l = el
+      .find('.fl a')
+      .length === 2
+    if (!l && +current !== 1) {
+      return {current, next: false}
+    }
+    return {current, next: true}
   }
 }
 

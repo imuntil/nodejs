@@ -186,9 +186,16 @@ class BangumiController {
     if (!name) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
-    const res = await dmhy.crawlDmhy(name)
-    ctx.body = {
-      data: res
+    try {
+      const res = await dmhy.crawlDmhy(name, 2, 2)
+      ctx.body = {
+        data: res
+      }
+    } catch (e) {
+      ctx.body = {
+        code: -1,
+        message: `superagent fail: ${e.message}`
+      }
     }
   }
 }

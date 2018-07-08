@@ -10,9 +10,9 @@ const magnet = /(熟|生)?[A-z\d]{20,}/g
 let newCount = 0
 let prevTime = 0
 
-const delay = ms => new Promise((resolve, reject) => setTimeout(() => {
-  resolve()
-}, ms))
+const delay = ms => new Promise((resolve, reject) => {
+  setTimeout(resolve, ms)
+})
 
 function fetchLi(li, cb) {
   return superagent
@@ -78,7 +78,7 @@ function parseText(text) {
 }
 
 /* 对比新数据和数据库中的数据 */
-async function contrast (newData) {
+async function contrast(newData) {
   while (newData.length) {
     const li = newData.shift()
     const dbLi = await Li
@@ -100,12 +100,12 @@ async function run() {
   // newCount += 10
   while (true) {
     const now = Date.now()
-    if (now - prevTime > 1000 * 60 * 60 * 2) {
+    if (now - prevTime > 1000 * 60 * 60 * 24) {
       const v = await fetchPage()
       await contrast(v)
       prevTime = Date.now()
     }
-    await delay(1000 * 60)
+    await delay(1000 * 60 * 60)
   }
 }
 

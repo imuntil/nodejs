@@ -184,7 +184,11 @@ class BangumiController {
    */
   static async fetchDetail(ctx) {
     console.log('获取番剧详细')
-    const { name, page, type = 2 } = ctx.query
+    const {
+      name,
+      page,
+      type = 2
+    } = ctx.query
     if (!name) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
@@ -196,7 +200,11 @@ class BangumiController {
     } catch (e) {
       ctx.body = {
         code: -1,
-        message: `superagent fail: ${e.message}`
+        message: e
+          .message
+          .indexOf('Timeout') > -1
+          ? '爬虫超时了-，-'
+          : `爬虫犯错了: ${e.message}`
       }
     }
   }

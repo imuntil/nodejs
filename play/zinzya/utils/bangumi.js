@@ -29,7 +29,8 @@ class AnimeCrawler {
           date,
           name: name.replace(/《(.+)》/, '$1'),
           maker,
-          kantoku
+          kantoku,
+          visible: true
         }
       }
     })).get()

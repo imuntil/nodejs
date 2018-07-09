@@ -114,15 +114,15 @@ class UserController {
   /**
    * 注册
    * PUT
-   * /api/user/register
+   * /shizuku/user/register
    * body = {email, code, password, nick}
    * @param {*} ctx
    * @param {*} next
    */
   static async register(ctx, next) {
     console.log('注册')
-    const {email, code, password, nick} = ctx.request.body
-    if (!email || !code || !password || !nick) {
+    const {email, code, password, nick = ''} = ctx.request.body
+    if (!email || !code || !password) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
     const account = await User.findOne({email})

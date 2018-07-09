@@ -4,6 +4,7 @@ const ApiErrorNames = {
   MISSING_OR_WRONG_PARAMETERS: 'missing_or_wrong_parameters',
   WRONG_PHONE_NUMBER: 'wrong_phone_number',
   WRONG_ACCOUNT_OR_PWD: 'WRONG_ACCOUNT_OR_PWD',
+  INVALID_PWD: 'INVALID_PWD',
   INVALID_EMAIL: 'invalid_email',
   WRONG_ID: 'wrong_id',
   FIELD_IS_ILLEGAL: 'field_is_illegal',
@@ -69,6 +70,10 @@ errorMap.set(ApiErrorNames.WRONG_ID, {
 errorMap.set(ApiErrorNames.INVALID_EMAIL, {
   code: 1025,
   message: '邮箱账号不合法'
+})
+errorMap.set(ApiErrorNames.INVALID_PWD, {
+  code: 1026,
+  message: '密码不合法'
 })
 
 errorMap.set(ApiErrorNames.EMAIL_IS_EXIST, {

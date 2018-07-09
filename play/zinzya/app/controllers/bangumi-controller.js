@@ -189,9 +189,9 @@ class BangumiController {
       page,
       type = 2
     } = ctx.query
-    if (!name) {
-      throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
-    }
+    // if (!name) {
+    //   throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
+    // }
     try {
       const res = await dmhy.crawlDmhy(name, type, page)
       ctx.body = {

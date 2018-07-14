@@ -47,7 +47,7 @@ class UserController {
   /**
    * 添加账号 pm>=lv5
    * POST
-   * /api/user/create
+   * /shizuku/user/create
    * body = {email}
    * @param {ctx} ctx
    * @param {func} next

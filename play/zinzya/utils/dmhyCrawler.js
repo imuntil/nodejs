@@ -31,9 +31,7 @@ class DmhyCrawler {
    * @param {number} page
    */
   async crawlDmhy(name, sort = 2, page = 1) {
-    console.log(typeof page)
-    const url = `https://share.dmhy.org/topics/list/${page}?keyword=${name ? encodeURI(name) : ''}&sort_id=${sort}`
-    console.log(url)
+    const url = `https://share.dmhy.org/topics/list/page/${page}?keyword=${name ? encodeURI(name) : ''}&sort_id=${sort}`
     return superagent
       .get(url)
       .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like ' +

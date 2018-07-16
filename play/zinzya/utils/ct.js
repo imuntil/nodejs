@@ -39,7 +39,7 @@ async function getCurrentUser(ctx) {
 
 /**
  * 判断对象是否为空
- * @param {obj} obj 
+ * @param {obj} obj
  */
 function isEmptyObj(obj) {
   if (typeof obj !== 'object') {
@@ -54,9 +54,28 @@ const delay = ms => new Promise((resolve, reject) => {
   setTimeout(resolve, ms)
 })
 
+/* 将size转换成数值 */
+const transformSize = size => {
+  const [s, num, unit] = /(\d+\.?\d?)([g|m|k]b)/.exec(size.toLowerCase()) || [0, 0, 'kb']
+  if (!num || !unit) {
+    return 0
+  }
+  switch (unit) {
+    case 'gb':
+      return num * 1000 * 1000
+    case 'mb':
+      return num * 1000
+    case 'tb':
+      return num * Math.pow(1000, 3)
+    default:
+      return + num
+  }
+}
+
 module.exports = {
   getCurrentUser,
   isEmptyObj,
   regs,
-  delay
+  delay,
+  transformSize
 }

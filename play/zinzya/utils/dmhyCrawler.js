@@ -1,7 +1,8 @@
 const Proxy = require('../models/proxy')
 const superagent = require('superagent')
 const cheerio = require('cheerio')
-const { delay } = require('./ct')
+const Dmhy = require('../models/dmhy')
+const {delay} = require('./ct')
 const {ApiError, ApiErrorNames} = require('../app/error/ApiError')
 require('superagent-proxy')(superagent)
 
@@ -16,7 +17,9 @@ class DmhyCrawler {
    * @param {number} page
    */
   async crawlDmhy(name, sort = 2, page = 1) {
-    const url = `https://share.dmhy.org/topics/list/page/${page}?keyword=${name ? encodeURI(name) : ''}&sort_id=${sort}`
+    const url = `https://share.dmhy.org/topics/list/page/${page}?keyword=${name
+      ? encodeURI(name)
+      : ''}&sort_id=${sort}`
     return superagent
       .get(url)
       .set('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like ' +
@@ -119,14 +122,28 @@ class DmhyCrawler {
   }
 
   async runQueue() {
-    let [hasNext, page] = [true, 1]
+    let [hasNext,
+      page] = [true, 1]
     while (hasNext) {
-      const {current, next} = await this.crawlDmhy('', 2, page)
+      const {current, next, res} = await this.crawlDmhy('', 2, page)
       hasNext = next
       next && (page++)
       console.log(`current page is ${current}`)
-      await delay(1000)
+      await this.insertToDB(res)
+      await delay(5000)
     }
+  }
+
+  async insertToDB(data) {
+    return new Promise((resolve, reject) => {
+      Dmhy
+        .collection
+        .insert(data, (err, docs) => {
+          err
+            ? reject(err)
+            : resolve(docs)
+        })
+    })
   }
 }
 

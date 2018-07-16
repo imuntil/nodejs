@@ -1,26 +1,11 @@
 const Proxy = require('../models/proxy')
 const superagent = require('superagent')
 const cheerio = require('cheerio')
+const { delay } = require('./ct')
 const {ApiError, ApiErrorNames} = require('../app/error/ApiError')
 require('superagent-proxy')(superagent)
 
 class DmhyCrawler {
-
-  async getProxies() {
-    try {
-      this.proxies = await Proxy
-        .find()
-        .where('failed')
-        .lte(5)
-        .lean()
-        .exec()
-    } catch (e) {
-      console.log(e)
-      setTimeout(() => {
-        this.getProxies()
-      }, 1000 * 60)
-    }
-  }
 
   /**
    * 爬
@@ -131,6 +116,17 @@ class DmhyCrawler {
       return {current, next: false}
     }
     return {current, next: true}
+  }
+
+  async runQueue() {
+    let [hasNext, page] = [true, 1]
+    while (hasNext) {
+      const {current, next} = await this.crawlDmhy('', 2, page)
+      hasNext = next
+      next && (page++)
+      console.log(`current page is ${current}`)
+      await delay(1000)
+    }
   }
 }
 

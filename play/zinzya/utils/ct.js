@@ -50,8 +50,13 @@ function isEmptyObj(obj) {
     .length
 }
 
+const delay = ms => new Promise((resolve, reject) => {
+  setTimeout(resolve, ms)
+})
+
 module.exports = {
   getCurrentUser,
   isEmptyObj,
-  regs
+  regs,
+  delay
 }

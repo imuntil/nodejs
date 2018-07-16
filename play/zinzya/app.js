@@ -19,6 +19,8 @@ const ruri = require('./utils/ruri')
 const proxy = require('./utils/proxy')
 // 动漫大风堂
 const bangumi = require('./utils/bangumi')
+// 动漫花园
+const dmhy = require('./utils/dmhyCrawler')
 const credentials = require('./utils/credentials')
 
 /* middle */
@@ -71,11 +73,12 @@ mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/zinzya')
 
 /* 爬虫 */
 /* 神社数据 */
-ruri.crawlPer2h()
+// ruri.crawlPer2h()
 /* ip池 */
 // proxy.fetchIpPool()
 /* 番剧列表 */
 // bangumi.runQueue()
 // bangumi.forceUpdate()
+dmhy.runQueue()
 
 module.exports = app

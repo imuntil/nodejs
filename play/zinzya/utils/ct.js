@@ -29,7 +29,7 @@ const regs = {
 async function getCurrentUser(ctx) {
   const token = ctx
     .cookies
-    .get('_li', {signed: true})
+    .get('_li')
   console.log(token)
   if (!token) {
     throw new ApiError(ApiErrorNames.UNKNOWN_ERROR)

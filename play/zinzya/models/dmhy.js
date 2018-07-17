@@ -1,9 +1,8 @@
 const mongoose = require('mongoose')
-const { transformSize } = require('../utils/ct')
 
 const dmhySchema = new mongoose.Schema({
-  date: Date,
-  category: String,
+  date: String,
+  type: String,
   title: {
     type: String,
     required: true
@@ -16,16 +15,17 @@ const dmhySchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  subtitle: String,
   real_size: Number,
-  subtitle: String
+  real_date: Date
 })
 
-dmhySchema.pre('save', function (next) {
-  const { date, size, type } = this
-  this.date = new Date(date)
-  this.real_size = transformSize(size)
-  this.category = type
-  next()
-})
+// dmhySchema.pre('save', function (next) {
+//   const { date, size, type } = this
+//   this.date = new Date(date)
+//   this.real_size = transformSize(size)
+//   this.category = type
+//   next()
+// })
 
 module.exports = mongoose.model('Dmhy', dmhySchema)

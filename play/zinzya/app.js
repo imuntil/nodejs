@@ -79,6 +79,6 @@ mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/zinzya')
 /* 番剧列表 */
 // bangumi.runQueue()
 // bangumi.forceUpdate()
-dmhy.runQueue()
+// dmhy.runQueue()
 
 module.exports = app

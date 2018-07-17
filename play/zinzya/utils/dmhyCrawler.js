@@ -2,7 +2,7 @@ const Proxy = require('../models/proxy')
 const superagent = require('superagent')
 const cheerio = require('cheerio')
 const Dmhy = require('../models/dmhy')
-const {delay} = require('./ct')
+const {delay, transformSize} = require('./ct')
 const {ApiError, ApiErrorNames} = require('../app/error/ApiError')
 require('superagent-proxy')(superagent)
 
@@ -85,7 +85,9 @@ class DmhyCrawler {
         title,
         magnet,
         size,
-        subtitle
+        subtitle,
+        real_date: new Date(date),
+        real_size: transformSize(size)
       }
     }).get()
     return {
@@ -130,7 +132,7 @@ class DmhyCrawler {
       next && (page++)
       console.log(`current page is ${current}`)
       await this.insertToDB(res)
-      await delay(5000)
+      await delay(4000)
     }
   }
 

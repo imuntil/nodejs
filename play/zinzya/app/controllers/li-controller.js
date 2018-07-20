@@ -103,7 +103,7 @@ class LiController {
       return
     }
     const count = await Li
-      .find({title: new RegExp(keyword)})
+      .find({title: new RegExp(keyword, 'i')})
       .count()
     const totalPages = await Math.ceil(count / size)
     const [skip, limit] = LiController.getRange(size, totalPages, page, count)

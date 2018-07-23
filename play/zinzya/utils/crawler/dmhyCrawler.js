@@ -1,9 +1,8 @@
-const Proxy = require('../models/proxy')
 const superagent = require('superagent')
 const cheerio = require('cheerio')
-const Dmhy = require('../models/dmhy')
-const {delay, transformSize} = require('./ct')
-const {ApiError, ApiErrorNames} = require('../app/error/ApiError')
+const Dmhy = require('../../models/dmhy')
+const {delay, transformSize} = require('../ct')
+const {ApiError, ApiErrorNames} = require('../../app/error/ApiError')
 require('superagent-proxy')(superagent)
 
 class DmhyCrawler {

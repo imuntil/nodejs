@@ -2,7 +2,7 @@
 const superagent = require('superagent')
 const cheerio = require('cheerio')
 const async = require('async')
-const Li = require('../models/li')
+const Li = require('../../models/li')
 
 const url = 'http://llss.li/wp/category/all/anime/'
 const magnet = /(熟|生)?[A-z\d]{20,}/g

@@ -1,7 +1,7 @@
 const Li = require('../../models/li')
 const {ct, PM} = require('../../utils')
 const {ApiError, ApiErrorNames} = require('../error/ApiError')
-const {forceRefresh} = require('../../utils/ruri')
+const {forceRefresh} = require('../../utils/crawler/ruri')
 
 class LiController {
 

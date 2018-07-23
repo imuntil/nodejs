@@ -1,6 +1,6 @@
 const superagent = require('superagent')
 const cheerio = require('cheerio')
-const Anime = require('../models/bangumi')
+const Anime = require('../../models/bangumi')
 require('superagent-charset')(superagent)
 
 class AnimeCrawler {

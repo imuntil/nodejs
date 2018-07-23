@@ -2,7 +2,7 @@ const Anime = require('../../models/bangumi')
 const jwt = require('jsonwebtoken')
 const pick = require('lodash.pick')
 const {ApiError, ApiErrorNames} = require('../error/ApiError')
-const {ct, PM, credentials, dmhy} = require('../../utils')
+const {ct, PM, credentials, dmhy, daily} = require('../../utils')
 const idReg = ct.regs.objectId.reg
 
 class BangumiController {
@@ -206,6 +206,13 @@ class BangumiController {
           ? '爬虫超时了-，-'
           : `爬虫犯错了: ${e.message}`
       }
+    }
+  }
+
+  static async fetchDaily(ctx) {
+    const res = await daily()
+    ctx.body = {
+      data: res
     }
   }
 }

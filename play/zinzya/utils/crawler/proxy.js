@@ -1,7 +1,7 @@
 const superagent = require('superagent')
 const cheerio = require('cheerio')
 require('superagent-proxy')(superagent)
-const Proxy = require('../models/proxy')
+const Proxy = require('../../models/proxy')
 
 const ipReg = /((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)/
 

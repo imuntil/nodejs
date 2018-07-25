@@ -59,7 +59,7 @@ app.use(rfMiddle())
 app.use(validMiddle)
 app.use(jwtAuth)
 
-app.use(jwt({cookie: '_li', secret: credentials.cookieSecret}).unless({path: [/^\/shizuku\/user\/[test|login|register]/]}))
+app.use(jwt({secret: credentials.cookieSecret}).unless({path: [/^\/shizuku\/user\/[test|login|register]/]}))
 
 app.use(api.routes(), api.allowedMethods())
 

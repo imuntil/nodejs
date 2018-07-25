@@ -10,13 +10,8 @@ function setToken(email, ctx) {
   const token = jwt.sign({
     email
   }, credentials.cookieSecret, {expiresIn: '7d'})
-  ctx
-    .cookies
-    .set('_li', token, {
-      signed: true,
-      maxAge: 60 * 60 * 24 * 7,
-      httpOnly: true
-    })
+  // ctx   .cookies   .set('_li', token, {     signed: true,     maxAge: 60 * 60 *
+  // 24 * 7,     httpOnly: true   })
   return token
 }
 
@@ -40,7 +35,10 @@ class UserController {
     user.token = setToken(email, ctx)
     await user.save()
     ctx.body = {
-      data: pick(user.toObject(), ['auth', 'created', 'nick', 'email'])
+      data: {
+        ...pick(user.toObject(), ['auth', 'created', 'nick', 'email']),
+        token: user.token
+      }
     }
   }
 
@@ -106,7 +104,9 @@ class UserController {
 
   static getItCode() {
     return {
-      value: `${Math.random()}`.split('.')[1].slice(0, 6),
+      value: `${Math.random()}`
+        .split('.')[1]
+        .slice(0, 6),
       expired: Date.now() + 1000 * 60 * 60 * 24 * 2
     }
   }
@@ -121,7 +121,12 @@ class UserController {
    */
   static async register(ctx, next) {
     console.log('注册')
-    const {email, code, password, nick = ''} = ctx.request.body
+    const {
+      email,
+      code,
+      password,
+      nick = ''
+    } = ctx.request.body
     if (!email || !code || !password) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
@@ -146,9 +151,9 @@ class UserController {
       }
     } else {
       /* 有账号，且密码为空，可以注册 */
-      const token = setToken(email, ctx)
+      // const token = setToken(email, ctx)
       const bt = User.encryptPassword(password)
-      account.token = token
+      // account.token = token
       account.password = bt
       account.nick = nick
       account.invitationCode = null

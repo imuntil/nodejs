@@ -89,6 +89,10 @@ class LiController {
    */
   static async searchLi(ctx, next) {
     console.log('搜索Li')
+    const who = await ct.getCurrentUser(ctx)
+    if (!who || who.auth < PM.LV2) {
+      throw new ApiError(ApiErrorNames.PERMISSION_DENIED)
+    }
     const {
       keyword,
       size = 10,

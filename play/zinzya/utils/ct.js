@@ -27,10 +27,7 @@ const regs = {
  * @param {ctx} ctx
  */
 async function getCurrentUser(ctx) {
-  const token = ctx
-    .cookies
-    .get('_li')
-  console.log(token)
+  const token = ctx.header.authorization.replace('Bearer ', '')
   if (!token) {
     throw new ApiError(ApiErrorNames.UNKNOWN_ERROR)
   }

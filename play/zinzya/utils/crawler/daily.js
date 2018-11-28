@@ -18,12 +18,8 @@ const parse = html => {
         }
         let r = s.match(/第\d+?话/)
         return {
-          name: r
-            ? s.replace(/\s第\d+?话/, '')
-            : s,
-          wa: r
-            ? r[0]
-            : ''
+          name: r ? s.replace(/\s第\d+?话/, '') : s,
+          wa: r ? r[0] : ''
         }
       })
       .get()
@@ -32,7 +28,7 @@ const parse = html => {
   return daily
 }
 
-module.exports = async() => {
+module.exports = async () => {
   const url = 'http://www.dilidili.wang/'
   try {
     const res = await superagent

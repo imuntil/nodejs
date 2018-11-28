@@ -1,13 +1,12 @@
 const Li = require('../../models/li')
-const {ct, PM} = require('../../utils')
-const {ApiError, ApiErrorNames} = require('../error/ApiError')
-const {forceRefresh} = require('../../utils/crawler/ruri')
+const { ct, PM } = require('../../utils')
+const { ApiError, ApiErrorNames } = require('../error/ApiError')
+const { forceRefresh } = require('../../utils/crawler/ruri')
 
 class LiController {
-
   static getRange(size, totalPages, page, count) {
     let [skip, limit] = [0, size]
-    if (+ page < totalPages) {
+    if (+page < totalPages) {
       skip = count - size * page
     } else {
       skip = 0
@@ -21,10 +20,9 @@ class LiController {
     if (!who || who.auth < PM.LV2) {
       throw new ApiError(ApiErrorNames.PERMISSION_DENIED)
     }
-    const {
-      page = 1,
-      size = 10
-    } = ctx.request.query
+    let { page = 1, size = 10 } = ctx.request.query
+    page = +page
+    size = +size
 
     if (!LiController.count) {
       LiController.count = await Li.count()
@@ -35,8 +33,7 @@ class LiController {
 
     const [skip, limit] = LiController.getRange(size, totalPages, page, count)
 
-    const list = await Li
-      .find()
+    const list = await Li.find()
       .skip(skip)
       .limit(limit)
       .lean()
@@ -46,8 +43,8 @@ class LiController {
         total: count,
         totalPages,
         totalOfCurPage: list.length,
-        currentPage: page,
-        pageSize: size,
+        page,
+        size,
         result: list
       }
     }
@@ -93,11 +90,9 @@ class LiController {
     if (!who || who.auth < PM.LV2) {
       throw new ApiError(ApiErrorNames.PERMISSION_DENIED)
     }
-    const {
-      keyword,
-      size = 10,
-      page = 1
-    } = ctx.query
+    let { keyword, size = 10, page = 1 } = ctx.query
+    size = +size
+    page = +page
     if (size <= 0 || page <= 0) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
@@ -107,13 +102,10 @@ class LiController {
       return
     }
     const title = new RegExp(keyword, 'i')
-    const count = await Li
-      .find({title})
-      .count()
+    const count = await Li.find({ title }).count()
     const totalPages = await Math.ceil(count / size)
     const [skip, limit] = LiController.getRange(size, totalPages, page, count)
-    const li = await Li
-      .find({title})
+    const li = await Li.find({ title })
       .skip(skip)
       .limit(limit)
       .lean()
@@ -123,8 +115,8 @@ class LiController {
         total: count,
         totalPages,
         totalOfCurPage: li.length,
-        currentPage: page,
-        pageSize: size,
+        page,
+        size,
         result: li
       }
     }

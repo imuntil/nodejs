@@ -1,8 +1,8 @@
 const Anime = require('../../models/bangumi')
 const jwt = require('jsonwebtoken')
 const pick = require('lodash.pick')
-const {ApiError, ApiErrorNames} = require('../error/ApiError')
-const {ct, PM, credentials, dmhy, daily} = require('../../utils')
+const { ApiError, ApiErrorNames } = require('../error/ApiError')
+const { ct, PM, credentials, dmhy, daily } = require('../../utils')
 const idReg = ct.regs.objectId.reg
 
 class BangumiController {
@@ -13,13 +13,12 @@ class BangumiController {
    */
   static async getList(ctx) {
     console.log('获取番剧列表')
-    let {year} = ctx.params
+    let { year } = ctx.params
     if (!/^\d{4}$/.test(year)) {
       // throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
-      year = (new Date()).getFullYear()
+      year = new Date().getFullYear().toString()
     }
-    const bangumi = await Anime
-      .find()
+    const bangumi = await Anime.find()
       .where('visible')
       .equals(true)
       .where('date')
@@ -28,7 +27,7 @@ class BangumiController {
       .sort('date')
       .select('-visible')
       .lean()
-      .exec();
+      .exec()
     ctx.body = {
       data: {
         count: bangumi.length,
@@ -46,13 +45,11 @@ class BangumiController {
    */
   static async searchBGMs(ctx) {
     console.log('搜索番剧')
-    const {name} = ctx.query
+    const { name } = ctx.query
     if (!name || !name.trim()) {
       throw new ApiError.ApiErrorNames(MISSING_OR_WRONG_PARAMETERS)
     }
-    const bs = await Anime
-      .find({name: new RegExp(name)})
-      .exec()
+    const bs = await Anime.find({ name: new RegExp(name) }).exec()
     ctx.body = {
       data: {
         count: bs.length,
@@ -69,10 +66,10 @@ class BangumiController {
    */
   static async getDateRange(ctx) {
     console.log('获取时间范围')
-    const end = (new Date()).getFullYear()
+    const end = new Date().getFullYear()
     const data = []
     for (let i = 1990; i <= end; i++) {
-      data.push(i)
+      data.push(i + '')
     }
     ctx.body = {
       data
@@ -87,7 +84,7 @@ class BangumiController {
    */
   static async addBangumi(ctx) {
     console.log('新增番剧')
-    let {name, date} = ctx.request.body
+    let { name, date } = ctx.request.body
     date = new Date(date)
     if (!name || isNaN(date)) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
@@ -116,8 +113,14 @@ class BangumiController {
   static async modifyBangumi(ctx) {
     console.log('编辑番剧')
 
-    const {bid} = ctx.params
-    const rest = pick(ctx.request.body, ['date', 'name', 'kantoku', 'maker', 'type'])
+    const { bid } = ctx.params
+    const rest = pick(ctx.request.body, [
+      'date',
+      'name',
+      'kantoku',
+      'maker',
+      'type'
+    ])
     if (!bid || !idReg.test(bid) || ct.isEmptyObj(rest)) {
       throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     }
@@ -126,11 +129,8 @@ class BangumiController {
       throw new ApiError(ApiErrorNames.PERMISSION_DENIED)
     }
 
-    const bgm = await Anime
-      .findById(bid)
-      .exec()
-    for (let [k,
-      v]of Object.entries(rest)) {
+    const bgm = await Anime.findById(bid).exec()
+    for (let [k, v] of Object.entries(rest)) {
       if (k === 'date' && isNaN(new Date(v))) {
         throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
       }
@@ -138,12 +138,8 @@ class BangumiController {
     }
     /* 更新编辑人员信息 */
     if (bgm.editor) {
-      bgm
-        .editor
-        .unshift({uid: who.id, nick: who.nick})
-      bgm.editor = bgm
-        .editor
-        .slice(0, 5)
+      bgm.editor.unshift({ uid: who.id, nick: who.nick })
+      bgm.editor = bgm.editor.slice(0, 5)
     } else {
       bgm.editor = [
         {
@@ -168,9 +164,7 @@ class BangumiController {
     if (!bid || !idReg.test(bid)) {
       throw new ApiError(ApiErrorNames.WRONG_ID)
     }
-    await Anime
-      .findByIdAndUpdate(bid, {visible: false})
-      .exec()
+    await Anime.findByIdAndUpdate(bid, { visible: false }).exec()
     ctx.body = {}
   }
 
@@ -184,11 +178,7 @@ class BangumiController {
    */
   static async fetchDetail(ctx) {
     console.log('获取番剧详细')
-    const {
-      name,
-      page,
-      type = 2
-    } = ctx.query
+    const { name, page, type = 2 } = ctx.query
     // if (!name) {
     //   throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     // }
@@ -200,11 +190,10 @@ class BangumiController {
     } catch (e) {
       ctx.body = {
         code: -1,
-        message: e
-          .message
-          .indexOf('Timeout') > -1
-          ? '爬虫超时了-，-'
-          : `爬虫犯错了: ${e.message}`
+        message:
+          e.message.indexOf('Timeout') > -1
+            ? '爬虫超时了-，-'
+            : `爬虫犯错了: ${e.message}`
       }
     }
   }

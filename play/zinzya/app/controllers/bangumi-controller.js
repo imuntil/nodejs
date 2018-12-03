@@ -173,12 +173,12 @@ class BangumiController {
    * GET
    * /shizuku/bangumi/detail
    * query = [name, page?, type?]
-   * type 2=>动画   31=》季度全集  7=》raw
+   * type 2=>动画   31=》季度全集  7=》raw  null => all
    * @param {*} ctx
    */
   static async fetchDetail(ctx) {
     console.log('获取番剧详细')
-    const { name, page, type = 2 } = ctx.query
+    const { name, page, type } = ctx.query
     // if (!name) {
     //   throw new ApiError(ApiErrorNames.MISSING_OR_WRONG_PARAMETERS)
     // }

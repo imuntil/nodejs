@@ -31,7 +31,8 @@
     "pug": "^2.0.0-rc.1",
     "superagent": "^3.8.3",
     "superagent-charset": "^1.2.0",
-    "superagent-proxy": "^1.0.3"
+    "superagent-proxy": "^1.0.3",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.8.1"

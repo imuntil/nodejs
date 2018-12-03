@@ -1,5 +1,6 @@
 const superagent = require('superagent')
 const cheerio = require('cheerio')
+const uuidv4 = require('uuid/v4')
 const Dmhy = require('../../models/dmhy')
 const { delay, transformSize } = require('../ct')
 const { ApiError, ApiErrorNames } = require('../../app/error/ApiError')
@@ -16,7 +17,7 @@ class DmhyCrawler {
    * @param {number} sort
    * @param {number} page
    */
-  async crawlDmhy(name, sort = 2, page = 1) {
+  async crawlDmhy(name, sort, page = 1) {
     const url = `https://share.dmhy.org/topics/list/page/${page}?keyword=${
       name ? encodeURI(name) : ''
     }&sort_id=${sort}`
@@ -91,7 +92,8 @@ class DmhyCrawler {
           subtitle,
           link,
           real_date: new Date(date),
-          real_size: transformSize(size)
+          real_size: transformSize(size),
+          id: uuidv4()
         }
       })
       .get()

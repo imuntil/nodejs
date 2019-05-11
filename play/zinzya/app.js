@@ -69,7 +69,7 @@ app.on('error', (err, ctx) => {
 });
 
 /* 连接数据库 */
-mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/zinzya')
+mongoose.connect('mongodb://zhin:13140054yyz@106.14.8.246:27017/zinzya', { useNewUrlParser: true })
 
 /* 爬虫 */
 /* 神社数据 */

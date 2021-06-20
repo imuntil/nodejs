@@ -23,7 +23,7 @@ app.use(
     // ctx.status = 200
     // ctx.body = `id is ${columnid}`
     const result = await new Promise((resolve, reject) => {
-      rpcClient.write({ columnid }, function myCallback1bac(err, data) {
+      rpcClient.write({ columnid }, function (err, data) {
         err ? reject(err) : resolve(data)
       })
     })

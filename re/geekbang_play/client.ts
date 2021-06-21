@@ -1,6 +1,4 @@
-import * as fs from 'fs'
 import * as EasySock from 'easy_sock'
-import * as protobuf from 'protocol-buffers'
 
 const encode = (requestSchema) => (data, seq) => {
   const body = requestSchema.encode(data)

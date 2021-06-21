@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "tsnd -P ./tsconfig.json --respawn ./__server/index.ts",
+    "client": "tsnd -P ./tsconfig.json --respawn ./node/index.ts",
+    "webpack": "webpack --config ./browser/webpack.config.js"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +21,8 @@
     "koa-static": "^5.0.0",
     "protocol-buffers": "^4.2.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "webpack": "^5.39.1"
   },
   "devDependencies": {
     "@types/node": "^15.12.4",
@@ -26,6 +30,7 @@
     "@types/react-dom": "^17.0.8",
     "ts-node": "^10.0.0",
     "ts-node-dev": "^1.1.6",
-    "typescript": "^4.3.4"
+    "typescript": "^4.3.4",
+    "webpack-cli": "^4.7.2"
   }
 }

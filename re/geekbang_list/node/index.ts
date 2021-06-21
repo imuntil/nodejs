@@ -1,7 +1,7 @@
 import * as koa from 'koa'
 import * as mount from 'koa-mount'
 import * as statics from 'koa-static'
-import ReactDOMServer from 'react-dom/server'
+import * as ReactDOMServer from 'react-dom/server'
 import babelRegister from '@babel/register'
 
 import App from './app'

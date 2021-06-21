@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import ColumnItem from './column_item'
 
 export default (props: any) => {
@@ -7,16 +7,18 @@ export default (props: any) => {
       <div className="_3KjZQbwk_0">
         <div className="kcMABq6U_0">
           <span>课程：</span>
-          <a className="_2TWCBjxa_0" onClick={props.filt(0)}>
+          <a className="_2TWCBjxa_0" onClick={function() {
+            props.filt(0)
+          }}>
             全部
           </a>
-          <a className="_2TWCBjxa_0" onClick={props.filt(1)}>
+          <a className="_2TWCBjxa_0" onClick={props.filt.bind(null, 1)}>
             专栏
           </a>
-          <a className="_2TWCBjxa_0" onClick={props.filt(2)}>
+          <a className="_2TWCBjxa_0" onClick={props.filt.bind(null, 2)}>
             视频课程
           </a>
-          <a className="_2TWCBjxa_0" onClick={props.filt(3)}>
+          <a className="_2TWCBjxa_0" onClick={props.filt.bind(null, 3)}>
             微课
           </a>
         </div>

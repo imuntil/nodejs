@@ -3,11 +3,16 @@
     "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
-    "lib": ["dom", "es2015"],
+    "lib": [
+      "dom",
+      "es2015"
+    ],
     "allowSyntheticDefaultImports": true,
-    "removeComments": true,    
+    "removeComments": true,
     "resolveJsonModule": true,
     "jsx": "react"
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

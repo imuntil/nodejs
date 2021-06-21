@@ -1,5 +1,5 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import Container from '../component/container'
 
 class App extends React.Component<
@@ -43,4 +43,5 @@ class App extends React.Component<
     )
   }
 }
+
 ReactDOM.render(<App />, document.getElementById('reactapp'))

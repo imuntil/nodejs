@@ -1,5 +1,5 @@
-import * as fs from 'fs'
-import * as vm from 'vm'
+import  fs from 'fs'
+import  vm from 'vm'
 
 const templateCache: Record<string, any> = {}
 

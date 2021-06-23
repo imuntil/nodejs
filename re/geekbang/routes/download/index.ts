@@ -1,7 +1,7 @@
-import * as fs from 'fs'
-import * as Koa from 'koa'
-import * as mount from 'koa-mount'
-import * as statics from 'koa-static'
+import  fs from 'fs'
+import  Koa from 'koa'
+import  mount from 'koa-mount'
+import  statics from 'koa-static'
 
 const app = new Koa()
 

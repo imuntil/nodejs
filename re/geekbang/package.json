@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server:node": "tsnd -P ./tsconfig.json --respawn ./index.ts",
+    "server:data": "tsnd -P ./tsconfig.json --respawn ./__server/index.ts"
   },
   "keywords": [],
   "author": "",

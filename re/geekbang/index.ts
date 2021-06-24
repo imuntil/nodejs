@@ -8,10 +8,10 @@ console.log(`detailService`, detailService)
 console.log(`downloadService`, downloadService)
 const app = new koa()
 
-const paths = ['/download']
+const paths = ['/download', '/detail']
 app.use(async (ctx, next) => {
   const url = new URL(ctx.href)
-  console.log(`url.pathname`, url.pathname)
+  // console.log(`url.pathname`, url.pathname)
   if (paths.indexOf(url.pathname) > -1) {
     url.pathname += '/'
     ctx.redirect(url.toString())

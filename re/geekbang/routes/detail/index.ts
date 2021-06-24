@@ -17,29 +17,27 @@ const tpl = engine(`${__dirname}/template/index.html`)
 
 const app = new koa()
 
-app.use(mount('/static', statics(__dirname + '/source/static')))
+app.use(statics(__dirname + '/source/ '))
 
-app.use(
-  mount<any, Context>('/', async (ctx) => {
-    const id = ctx.query.columnid
+app.use(async (ctx) => {
+  const id = ctx.query.columnid
 
-    if (!id || Array.isArray(id)) {
-      ctx.status = 400
-      ctx.body = 'invalid columnid'
-      return
-    }
+  if (!id || Array.isArray(id)) {
+    ctx.status = 400
+    ctx.body = 'invalid columnid'
+    return
+  }
 
-    const result = await new Promise((resolve, reject) => {
-      // 与data server通信，获取id对应数据
-      rpc.write({ columnid: +id }, (err: Error, data: any) => {
-        err ? reject(err) : resolve(data)
-      })
+  const result = await new Promise((resolve, reject) => {
+    // 与data server通信，获取id对应数据
+    rpc.write({ columnid: +id }, (err: Error, data: any) => {
+      err ? reject(err) : resolve(data)
     })
-
-    ctx.status = 200
-    // 通过模板渲染数据
-    ctx.body = tpl(result)
   })
-)
+
+  ctx.status = 200
+  // 通过模板渲染数据
+  ctx.body = tpl(result)
+})
 
 export default app

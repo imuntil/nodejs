@@ -28,14 +28,14 @@ const isReceiveComplete = (buffer: Buffer) => {
 
 export default (port: number, schemaReq: SchemaRes, schemaRes: SchemaRes) => {
   const rpc = new EasySock({
-    id: '127.0.0.1',
+    ip: '127.0.0.1',
     port,
     timeout: 500,
     keepAlive: true,
   })
 
   rpc.encode = encode(schemaReq)
-  rpc.deocde = decode(schemaRes)
+  rpc.decode = decode(schemaRes)
   rpc.isReceiveComplete = isReceiveComplete
 
   return rpc

@@ -12,7 +12,10 @@
     "resolveJsonModule": true,
     "jsx": "react",
     "noImplicitAny": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "*" : ["@types/*"]
+  }
   },
   "exclude": [
     "node_modules"

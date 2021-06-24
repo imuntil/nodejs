@@ -20,7 +20,7 @@ const app = new koa()
 app.use(mount('/static', statics(__dirname + '/source/static')))
 
 app.use(
-  mount<any, Context>('/detail', async (ctx) => {
+  mount<any, Context>('/', async (ctx) => {
     const id = ctx.query.columnid
 
     if (!id || Array.isArray(id)) {
@@ -31,7 +31,7 @@ app.use(
 
     const result = await new Promise((resolve, reject) => {
       // 与data server通信，获取id对应数据
-      rpc.write({ columnid: id }, (err: Error, data: any) => {
+      rpc.write({ columnid: +id }, (err: Error, data: any) => {
         err ? reject(err) : resolve(data)
       })
     })

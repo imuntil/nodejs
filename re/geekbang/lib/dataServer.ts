@@ -12,11 +12,11 @@ type Ed = {
   encode: (data: any) => Buffer
 }
 
-export interface SchemaSeq extends Pick<Ed, 'decode'> {}
-export interface SchemaRes extends Pick<Ed, 'encode'> {}
+export interface  SchemaReq extends Ed {}
+export interface SchemaRes extends Ed {}
 
 class DataServer {
-  constructor(public schemaSeq: SchemaSeq, public schemaRes: SchemaRes) {}
+  constructor(public schemaReq:  SchemaReq, public schemaRes: SchemaRes) {}
 
   isCompleteRequest = (buffer: Buffer) => {
     return buffer.readInt32BE(4) + 8
@@ -25,7 +25,7 @@ class DataServer {
   decodeRequest = (buffer: Buffer) => {
     return {
       seq: buffer.readInt32BE(),
-      result: this.schemaSeq.decode(buffer.slice(8)),
+      result: this.schemaReq.decode(buffer.slice(8)),
     }
   }
 

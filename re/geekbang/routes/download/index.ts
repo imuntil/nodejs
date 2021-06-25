@@ -1,6 +1,6 @@
 import fs from 'fs'
 import Koa from 'koa'
-import mount from 'koa-mount'
+// import mount from 'koa-mount'
 import statics from 'koa-static'
 
 const app = new Koa()

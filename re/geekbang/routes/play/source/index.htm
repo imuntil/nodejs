@@ -3311,26 +3311,26 @@
               const $bindtarget = e.target.className.indexOf('_praise') != -1 ? e.target :
                 (e.target.parentElement.className.indexOf('_praise') != -1 ? e.target.parentElement : null)
               if ($bindtarget) {
-                fetch("./api", {
+                fetch("/api/praise", {
                   method: "POST",
                   headers: {
                     'content-type': 'application/json'
                   },
                   body: JSON.stringify({
-                    "query": "mutation { praise(id: " + $bindtarget.getAttribute("data-id") + ") }"
+                    id: $bindtarget.getAttribute("data-id"),
                   })
                 }).then(res => res.json())
                   .then(res => {
-                    $bindtarget.querySelector('span').innerHTML = res.data.praise
+                    $bindtarget.querySelector('span').innerHTML = res.praiseNum
                   })
               }
             })
-            fetch('./api?query={comment{id,avatar,name,isTop,content,publishDate,commentNum,praiseNum}}')
+            fetch('/api/comment?id=1,2,3')
 
               .then(res => res.json())
               .then(res => {
-                document.getElementById("comment_list_num").innerHTML = `(${res.data.comment.length})`;
-                document.getElementById('comment_list').innerHTML = res.data.comment.map(item => {
+                document.getElementById("comment_list_num").innerHTML = `(${res.comments.length})`;
+                document.getElementById('comment_list').innerHTML = res.comments.map(item => {
                   return `
                       <li class="reJj6Thl_0"><img src="${item.avatar} class="_2273kGdT_0">
                         <div class="_2CG0SquK_0">

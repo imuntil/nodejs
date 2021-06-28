@@ -2,10 +2,10 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./browser/index.tsx":
-/*!***************************!*\
-  !*** ./browser/index.tsx ***!
-  \***************************/
+/***/ "./routes/list/browser/index.tsx":
+/*!***************************************!*\
+  !*** ./routes/list/browser/index.tsx ***!
+  \***************************************/
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -24,10 +24,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-var container_1 = __webpack_require__(/*! ../component/container */ "./component/container.tsx");
+var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+var react_dom_1 = __importDefault(__webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js"));
+var container_1 = __importDefault(__webpack_require__(/*! ../component/container */ "./routes/list/component/container.tsx"));
 var App = (function (_super) {
     __extends(App, _super);
     function App(props) {
@@ -41,140 +44,148 @@ var App = (function (_super) {
     }
     App.prototype.render = function () {
         var _this = this;
-        return (React.createElement(container_1.default, { columns: this.state.columns, filt: function (filtType) {
-                fetch("./data?sort=" + _this.state.sortType + "&filt=" + filtType)
+        console.log("this.state.columns", this.state.columns);
+        return (react_1.default.createElement(container_1.default, { columns: this.state.columns, filt: function (filtType) {
+                fetch("/list/data?sort=" + _this.state.sortType + "&filt=" + filtType)
                     .then(function (res) { return res.json(); })
                     .then(function (json) {
                     _this.setState({
-                        columns: json,
+                        columns: json.columns,
                         filtType: filtType,
                     });
                 });
             }, sort: function (sortType) {
-                fetch("./data?sort=" + sortType + "&filt=" + _this.state.filtType)
+                fetch("/list/data?sort=" + sortType + "&filt=" + _this.state.filtType)
                     .then(function (res) { return res.json(); })
                     .then(function (json) {
                     _this.setState({
-                        columns: json,
+                        columns: json.columns,
                         sortType: sortType,
                     });
                 });
             } }));
     };
     return App;
-}(React.Component));
-ReactDOM.render(React.createElement(App, null), document.getElementById('reactapp'));
+}(react_1.default.Component));
+react_dom_1.default.render(react_1.default.createElement(App, null), document.getElementById('reactapp'));
 
 
 /***/ }),
 
-/***/ "./component/column_item.tsx":
-/*!***********************************!*\
-  !*** ./component/column_item.tsx ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ "./routes/list/component/column_item.tsx":
+/*!***********************************************!*\
+  !*** ./routes/list/component/column_item.tsx ***!
+  \***********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 exports.default = (function (props) {
     var column = props.column;
-    return (React.createElement("div", { className: "_20Cq3Rn7_0" },
-        React.createElement("div", { className: "_2sej44xY_0" },
-            React.createElement("a", { "data-seo": "", href: "//time.geekbang.org/course/intro/237" },
-                React.createElement("img", { src: column.column_cover, alt: "", className: "_1miPDP4s_0" }),
-                React.createElement("span", { className: "_1wLiyUbR_0" }))),
-        React.createElement("div", { className: "_3M3E-ESU_0" },
-            React.createElement("div", { className: "_3gQBs_6X_0" },
-                React.createElement("div", { className: "_3G50nw0p_0" },
-                    React.createElement("h2", null, column.column_title),
+    return (react_1.default.createElement("div", { className: "_20Cq3Rn7_0" },
+        react_1.default.createElement("div", { className: "_2sej44xY_0" },
+            react_1.default.createElement("a", { "data-seo": "", href: "//time.geekbang.org/course/intro/237" },
+                react_1.default.createElement("img", { src: column.column_cover, alt: "", className: "_1miPDP4s_0" }),
+                react_1.default.createElement("span", { className: "_1wLiyUbR_0" }))),
+        react_1.default.createElement("div", { className: "_3M3E-ESU_0" },
+            react_1.default.createElement("div", { className: "_3gQBs_6X_0" },
+                react_1.default.createElement("div", { className: "_3G50nw0p_0" },
+                    react_1.default.createElement("h2", null, column.column_title),
                     ' ',
-                    React.createElement("p", null,
+                    react_1.default.createElement("p", null,
                         column.column_unit,
                         " ",
-                        React.createElement("em", null, "|"),
+                        react_1.default.createElement("em", null, "|"),
                         " ",
                         column.sub_count,
                         "\u4EBA\u5DF2\u5B66\u4E60")),
-                React.createElement("div", { className: "_33lENDr7_0" },
+                react_1.default.createElement("div", { className: "_33lENDr7_0" },
                     column.author_name,
                     " ",
                     column.author_intro)),
-            React.createElement("div", { className: "_14n6BJoa_0" },
-                React.createElement("ul", null, column.articles.map(function (article, index) {
-                    return (React.createElement("li", { key: article.id },
-                        React.createElement("a", { href: "", className: article.is_video_preview ? '_10vvBdC9_0' : '' },
-                            article.is_video_preview ? (React.createElement("span", { className: "_ffA7FdL_0" }, "\u514D\u8D39")) : (''),
+            react_1.default.createElement("div", { className: "_14n6BJoa_0" },
+                react_1.default.createElement("ul", null, column.articles.map(function (article, index) {
+                    return (react_1.default.createElement("li", { key: article.id },
+                        react_1.default.createElement("a", { href: "", className: article.is_video_preview ? '_10vvBdC9_0' : '' },
+                            article.is_video_preview ? (react_1.default.createElement("span", { className: "_ffA7FdL_0" }, "\u514D\u8D39")) : (''),
                             '0' + index + ' | ' + article.article_title)));
                 }))),
-            React.createElement("div", { className: "_2zRFFX7P_0" },
-                React.createElement("p", { className: "_14cxbu2p_0" },
-                    React.createElement("span", { className: "_1BSc9YvC_0" },
+            react_1.default.createElement("div", { className: "_2zRFFX7P_0" },
+                react_1.default.createElement("p", { className: "_14cxbu2p_0" },
+                    react_1.default.createElement("span", { className: "_1BSc9YvC_0" },
                         "\u9650\u65F6 \u00A5",
                         column.column_price / 100),
-                    column.column_price_market ? (React.createElement("s", { className: "_1EwQIhcU_0" },
+                    column.column_price_market ? (react_1.default.createElement("s", { className: "_1EwQIhcU_0" },
                         "\u539F\u4EF7 \u00A5",
                         column.column_price_market / 100)) : ('')),
-                React.createElement("div", { className: "_1NLR_mQs_0" },
-                    React.createElement("button", { className: "_272_Yrle_0" }, "\u7ACB\u5373\u8BA2\u9605"))))));
+                react_1.default.createElement("div", { className: "_1NLR_mQs_0" },
+                    react_1.default.createElement("button", { className: "_272_Yrle_0" }, "\u7ACB\u5373\u8BA2\u9605"))))));
 });
 
 
 /***/ }),
 
-/***/ "./component/container.tsx":
-/*!*********************************!*\
-  !*** ./component/container.tsx ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ "./routes/list/component/container.tsx":
+/*!*********************************************!*\
+  !*** ./routes/list/component/container.tsx ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-var column_item_1 = __webpack_require__(/*! ./column_item */ "./component/column_item.tsx");
+var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+var column_item_1 = __importDefault(__webpack_require__(/*! ./column_item */ "./routes/list/component/column_item.tsx"));
 exports.default = (function (props) {
-    return (React.createElement("div", { className: '_2lx4a-CP_0' },
-        React.createElement("div", { className: '_3KjZQbwk_0' },
-            React.createElement("div", { className: 'kcMABq6U_0' },
-                React.createElement("span", null, "\u8BFE\u7A0B\uFF1A"),
-                React.createElement("a", { className: '_2TWCBjxa_0', onClick: function () {
+    console.log('xxxx', props);
+    return (react_1.default.createElement("div", { className: '_2lx4a-CP_0' },
+        react_1.default.createElement("div", { className: '_3KjZQbwk_0' },
+            react_1.default.createElement("div", { className: 'kcMABq6U_0' },
+                react_1.default.createElement("span", null, "\u8BFE\u7A0Bxx\uFF1A"),
+                react_1.default.createElement("a", { className: '_2TWCBjxa_0', onClick: function () {
                         props.filt(0);
                     } }, "\u5168\u90E8"),
-                React.createElement("a", { className: '_2TWCBjxa_0', onClick: function () {
+                react_1.default.createElement("a", { className: '_2TWCBjxa_0', onClick: function () {
                         props.filt(1);
                     } }, "\u4E13\u680F"),
-                React.createElement("a", { className: '_2TWCBjxa_0', onClick: function () {
+                react_1.default.createElement("a", { className: '_2TWCBjxa_0', onClick: function () {
                         props.filt(2);
                     } }, "\u89C6\u9891\u8BFE\u7A0B"),
-                React.createElement("a", { className: '_2TWCBjxa_0', onClick: function () {
+                react_1.default.createElement("a", { className: '_2TWCBjxa_0', onClick: function () {
                         props.filt(3);
                     } }, "\u5FAE\u8BFE"))),
-        React.createElement("div", { className: '_3hVBef3W_0' },
-            React.createElement("div", { className: '_3S9KmBtG_0' },
-                React.createElement("div", { className: '_1o6EOwiF_0' },
-                    React.createElement("div", { className: '_3HUryTHs_0' },
-                        React.createElement("a", { className: '_1kRLIDSR_0', onClick: function () {
+        react_1.default.createElement("div", { className: '_3hVBef3W_0' },
+            react_1.default.createElement("div", { className: '_3S9KmBtG_0' },
+                react_1.default.createElement("div", { className: '_1o6EOwiF_0' },
+                    react_1.default.createElement("div", { className: '_3HUryTHs_0' },
+                        react_1.default.createElement("a", { className: '_1kRLIDSR_0', onClick: function () {
                                 props.sort(1);
                             } }, "\u4E0A\u65B0"),
-                        React.createElement("a", { className: '_1kRLIDSR_0', onClick: function () {
+                        react_1.default.createElement("a", { className: '_1kRLIDSR_0', onClick: function () {
                                 props.sort(2);
                             } }, "\u8BA2\u9605\u6570"),
-                        React.createElement("a", { className: '_1kRLIDSR_0', onClick: function () {
+                        react_1.default.createElement("a", { className: '_1kRLIDSR_0', onClick: function () {
                                 props.sort(3);
                             } },
                             "\u4EF7\u683C",
-                            React.createElement("span", { className: '_1Yk9PA11_0' },
-                                React.createElement("i", { className: 'iconfont _2jewjGCJ_0' }, "\uE621"),
+                            react_1.default.createElement("span", { className: '_1Yk9PA11_0' },
+                                react_1.default.createElement("i", { className: 'iconfont _2jewjGCJ_0' }, "\uE621"),
                                 ' ',
-                                React.createElement("i", { className: 'iconfont _38FM8KCt_0' }, "\uE621")))),
-                    React.createElement("span", { className: 'JfgzzksA_0' },
+                                react_1.default.createElement("i", { className: 'iconfont _38FM8KCt_0' }, "\uE621")))),
+                    react_1.default.createElement("span", { className: 'JfgzzksA_0' },
                         props.columns.length,
                         "\u4E2A\u8BFE\u7A0B")),
-                React.createElement("div", null, props.columns.map(function (column) {
-                    return React.createElement(column_item_1.default, { column: column, key: column.id });
+                react_1.default.createElement("div", null, props.columns.map(function (column) {
+                    return react_1.default.createElement(column_item_1.default, { column: column, key: column.id });
                 })),
-                React.createElement("div", { className: 'OjL5wNoM_0' },
-                    React.createElement("span", null, "\u2014 \u6CA1\u6709\u66F4\u591A\u4E86 \u2014"))))));
+                react_1.default.createElement("div", { className: 'OjL5wNoM_0' },
+                    react_1.default.createElement("span", null, "\u2014 \u6CA1\u6709\u66F4\u591A\u4E86 \u2014"))))));
 });
 
 
@@ -26935,7 +26946,7 @@ Component.prototype.isReactComponent = {};
  * accessing `this.state` after calling this method may return the old value.
  *
  * There is no guarantee that calls to `setState` will run synchronously,
-  they may eventually be batched together.  You can provide an optional
+ * as they may eventually be batched together.  You can provide an optional
  * callback that will be executed when the call to setState is actually
  * completed.
  *
@@ -30022,7 +30033,7 @@ if (false) {} else {
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./browser/index.tsx");
+/******/ 	var __webpack_exports__ = __webpack_require__("./routes/list/browser/index.tsx");
 /******/ 	
 /******/ })()
 ;

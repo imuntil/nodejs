@@ -13,9 +13,13 @@
     "jsx": "react",
     "noImplicitAny": true,
     "esModuleInterop": true,
+    "baseUrl": "./",
     "paths": {
-      "*" : ["@types/*"]
-  }
+      "*": [
+        "@types/*"
+      ],
+      "@babel/register": ["@types/babel__register"]
+    }
   },
   "exclude": [
     "node_modules"

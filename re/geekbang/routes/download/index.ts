@@ -7,8 +7,11 @@ const app = new Koa()
 
 app.use(statics(__dirname + '/source/'))
 
+const buf = fs.readFileSync(__dirname + '/source/index.htm')
 app.use(async (ctx) => {
-  ctx.body = fs.readFileSync(__dirname + '/source/index.htm', 'utf-8')
+  ctx.status = 200
+  ctx.type = 'html'
+  ctx.body = buf
 })
 
 export default app

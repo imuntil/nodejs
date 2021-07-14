@@ -21,6 +21,8 @@ http
       })
 
       fs.createReadStream(filePath).pipe(gzip).pipe(res)
+      // 字符串压缩
+      // res.end(zlib.gzipSync('some data'))
     } else {
       fs.createReadStream(filePath).pipe(res)
     }
